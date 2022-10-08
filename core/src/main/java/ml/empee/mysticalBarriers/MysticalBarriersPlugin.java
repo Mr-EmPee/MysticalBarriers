@@ -13,6 +13,7 @@ import ml.empee.mysticalBarriers.services.BarriersService;
 import ml.empee.mysticalBarriers.services.components.BarrierBlocksSpawner;
 import ml.empee.mysticalBarriers.services.components.BarrierGuard;
 import ml.empee.mysticalBarriers.services.components.BarrierRefresher;
+import ml.empee.notifier.SimpleNotifier;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 
 public final class MysticalBarriersPlugin extends EmpeePlugin {
@@ -20,7 +21,14 @@ public final class MysticalBarriersPlugin extends EmpeePlugin {
   @Override
   public void onEnable() {
     adventure = BukkitAudiences.create(this);
+    scheduleSimpleNotifier();
     super.onEnable();
+  }
+
+  private void scheduleSimpleNotifier() {
+    getServer().getScheduler().runTaskTimerAsynchronously(this, () -> {
+      SimpleNotifier.checkNotifications("105671", this);
+    }, 0, 20 * 60 * 60);
   }
 
   @Override
