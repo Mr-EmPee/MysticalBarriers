@@ -2,8 +2,8 @@ package ml.empee.mysticalBarriers.utils.serialization;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.NoSuchFileException;
 import java.util.function.Consumer;
 
 import org.bukkit.Bukkit;
@@ -56,7 +56,7 @@ public final class SerializationUtils {
   public static <T> T deserialize(String source, Class<T> clazz) {
     try {
       return gson.fromJson(FileUtils.buildReader(new File(plugin.getDataFolder(), source)), clazz);
-    } catch (FileNotFoundException e) {
+    } catch (NoSuchFileException e) {
       return null;
     } catch (IOException e) {
       throw new MysticalBarrierException("Error while deserializing the source " + source, e);
