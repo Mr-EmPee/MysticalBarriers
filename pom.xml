@@ -18,10 +18,10 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <compiler.source>1.8</compiler.source>
-        <compiler.target>17</compiler.target>
+        <compiler.target>1.8</compiler.target>
 
         <plugin.spigot.version>1.18-R0.1-SNAPSHOT</plugin.spigot.version>
-        <plugin.api>1.18</plugin.api>
+        <plugin.api>1.13</plugin.api>
         <plugin.output-dir>${env.MINECRAFT_PLUGIN_OUTPUT_DIR}\1.18.2</plugin.output-dir>
     </properties>
 
@@ -76,7 +76,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>2.2</version>
+                <version>3.3.0</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -99,6 +99,13 @@
                                     </excludes>
                                 </filter>
                             </filters>
+
+                            <relocations>
+                                <relocation>
+                                    <pattern>net.kyori</pattern>
+                                    <shadedPattern>ml.empee.relocations.kyori</shadedPattern>
+                                </relocation>
+                            </relocations>
                         </configuration>
                     </execution>
                 </executions>
