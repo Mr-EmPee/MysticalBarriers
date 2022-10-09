@@ -14,6 +14,7 @@ import ml.empee.commandsManager.command.CommandContext;
 import ml.empee.commandsManager.command.annotations.CommandNode;
 import ml.empee.commandsManager.command.annotations.CommandRoot;
 import ml.empee.commandsManager.parsers.types.annotations.IntegerParam;
+import ml.empee.commandsManager.parsers.types.annotations.StringParam;
 import ml.empee.mysticalBarriers.helpers.PlayerContext;
 import ml.empee.mysticalBarriers.helpers.Tuple;
 import ml.empee.mysticalBarriers.model.Barrier;
@@ -34,7 +35,7 @@ public class MysticalBarriersCommand extends Command {
                   + "or cancel the operation with a left click",
       permission = "mysticalbarriers.command.create"
   )
-  public void onBarrierCreate(CommandContext context, String barrier) {
+  public void onBarrierCreate(CommandContext context, @StringParam(label = "name") String barrier) {
     Player player = context.getPlayer();
 
     if(barriersService.findBarrierByID(barrier) != null) {

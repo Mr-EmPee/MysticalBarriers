@@ -8,6 +8,7 @@ import org.bukkit.command.CommandSender;
 
 import lombok.EqualsAndHashCode;
 import ml.empee.commandsManager.parsers.ParameterParser;
+import ml.empee.commandsManager.parsers.ParserDescription;
 import ml.empee.mysticalBarriers.model.Barrier;
 import ml.empee.mysticalBarriers.services.BarriersService;
 
@@ -18,6 +19,7 @@ public class BarrierParser extends ParameterParser<Barrier> {
 
   public BarrierParser(BarriersService barriersService, String label, String defaultValue) {
     super(label, defaultValue);
+    this.descriptor = new ParserDescription("barrier", "Thia parameter identify a barrier by it's name", null);
     this.barriersService = barriersService;
   }
 
