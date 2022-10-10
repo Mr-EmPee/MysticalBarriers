@@ -1,10 +1,11 @@
 package ml.empee.mysticalBarriers.services.components;
 
+import java.lang.reflect.InvocationTargetException;
+
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -18,8 +19,10 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 
+import ml.empee.mysticalBarriers.exceptions.MysticalBarrierException;
 import ml.empee.mysticalBarriers.helpers.EmpeePlugin;
 import ml.empee.mysticalBarriers.model.Barrier;
+import ml.empee.mysticalBarriers.model.packets.MultiBlockPacket;
 import ml.empee.mysticalBarriers.services.BarriersService;
 import ml.empee.mysticalBarriers.utils.LocationUtils;
 import ml.empee.mysticalBarriers.utils.Logger;
@@ -64,12 +67,18 @@ public class BarrierGuard implements Listener {
       Logger.debug("Player %s tried to break a barrier block", player.getName());
       event.setCancelled(true);
 
-      BlockData block = blockLocation.getBlock().getBlockData();
-      if (Material.AIR == block.getMaterial()) {
-        block = barrier.getMaterial().createBlockData();
+      Material block = blockLocation.getBlock().getType();
+      if (Material.AIR == block) {
+        block = barrier.getMaterial();
       }
 
-      player.sendBlockChange(blockLocation, block);
+      MultiBlockPacket blockPacket = new MultiBlockPacket(blockLocation, true);
+      blockPacket.addBlock(block, blockLocation);
+      try {
+        blockPacket.send(player);
+      } catch (InvocationTargetException e) {
+        throw new MysticalBarrierException("Error while sending multi-block packet", e);
+      }
     }
   }
 

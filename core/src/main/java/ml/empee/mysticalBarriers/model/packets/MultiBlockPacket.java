@@ -12,9 +12,11 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.BlockPosition;
+import com.comphenix.protocol.wrappers.ChunkCoordIntPair;
+import com.comphenix.protocol.wrappers.MultiBlockChangeInfo;
 import com.comphenix.protocol.wrappers.WrappedBlockData;
 
-import ml.empee.mysticalBarriers.utils.ArrayUtils;
+import ml.empee.mysticalBarriers.utils.ServerVersion;
 
 public final class MultiBlockPacket {
     private static final PacketType type = PacketType.Play.Server.MULTI_BLOCK_CHANGE;
@@ -27,7 +29,7 @@ public final class MultiBlockPacket {
     private final int packetChunkY;
     private final int packetChunkZ;
 
-    private final ArrayList<Short> blocksLocations = new ArrayList<>();
+    private final ArrayList<Location> blocksLocations = new ArrayList<>();
     private final ArrayList<WrappedBlockData> blocksData = new ArrayList<>();
     private MultiBlockPacket subPacket;
 
@@ -48,23 +50,27 @@ public final class MultiBlockPacket {
         this.suppressLightUpdates = suppressLightUpdates;
     }
 
-    public void addBlock(Material type, int x, int y, int z) {
+    public void addBlock(Material type, Location location) {
 
-        int blockChunkX = x >> 4;
-        int blockChunkY = y >> 4;
-        int blockChunkZ = z >> 4;
+        int blockChunkX = location.getBlockX() >> 4;
+        int blockChunkY = location.getBlockY() >> 4;
+        int blockChunkZ = location.getBlockZ() >> 4;
 
         if(this.packetChunkX != blockChunkX || this.packetChunkY != blockChunkY || this.packetChunkZ != blockChunkZ) {
             if(subPacket == null) {
                 subPacket = new MultiBlockPacket(blockChunkX, blockChunkY, blockChunkZ, suppressLightUpdates);
             }
 
-            subPacket.addBlock(type, x, y, z);
+            subPacket.addBlock(type, location);
         } else {
             blocksData.add(WrappedBlockData.createData(type));
-            blocksLocations.add( getRelativePosition(x, y, z) );
+            blocksLocations.add(location);
         }
 
+    }
+
+    public void addBlock(Material type, int x, int y, int z) {
+        addBlock(type, new Location(null, x, y, z));
     }
 
     /**
@@ -86,14 +92,12 @@ public final class MultiBlockPacket {
             return;
         }
 
-        WrappedBlockData[] blocksDataArray = blocksData.toArray(new WrappedBlockData[0]);
-        short[] blocksLocationsArray = ArrayUtils.toPrimitive(this.blocksLocations);
+        if(ServerVersion.isGreaterThan(1, 16, 2)) {
+            writePacketAfter1_16_2();
+        } else {
+            writePacketBefore1_16_2();
+        }
 
-        packet.getSectionPositions().write(0, new BlockPosition(packetChunkX, packetChunkY, packetChunkZ) );
-        packet.getBooleans().writeSafely(0, suppressLightUpdates);
-
-        packet.getBlockDataArrays().write(0, blocksDataArray);
-        packet.getShortArrays().write(0, blocksLocationsArray);
 
         for(Player player : players) {
             protocolManager.sendServerPacket(player, packet);
@@ -102,6 +106,31 @@ public final class MultiBlockPacket {
         if(subPacket != null) {
             subPacket.send(players);
         }
+    }
+
+    private void writePacketAfter1_16_2() {
+        WrappedBlockData[] blocksDataArray = blocksData.toArray(new WrappedBlockData[0]);
+        short[] blocksLocationsArray = new short[blocksLocations.size()];
+        for(int i = 0; i < blocksLocationsArray.length; i++) {
+            Location location = blocksLocations.get(i);
+            blocksLocationsArray[i] = getRelativePosition(location.getBlockX(), location.getBlockY(), location.getBlockZ());
+        }
+
+        packet.getSectionPositions().write(0, new BlockPosition(packetChunkX, packetChunkY, packetChunkZ) );
+        packet.getBooleans().writeSafely(0, suppressLightUpdates);
+
+        packet.getBlockDataArrays().write(0, blocksDataArray);
+        packet.getShortArrays().write(0, blocksLocationsArray);
+    }
+
+    private void writePacketBefore1_16_2() {
+        packet.getChunkCoordIntPairs().write(0, new ChunkCoordIntPair(packetChunkX, packetChunkZ) );
+        MultiBlockChangeInfo[] multiBlockChangeInfo = new MultiBlockChangeInfo[blocksData.size()];
+        for(int i = 0; i <blocksData.size(); i++) {
+            multiBlockChangeInfo[i] = new MultiBlockChangeInfo(blocksLocations.get(i), blocksData.get(i));
+        }
+
+        packet.getMultiBlockChangeInfoArrays().write(0, multiBlockChangeInfo);
     }
 
 }
