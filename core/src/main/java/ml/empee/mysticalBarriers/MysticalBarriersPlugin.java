@@ -26,9 +26,8 @@ public final class MysticalBarriersPlugin extends EmpeePlugin {
   }
 
   private void scheduleSimpleNotifier() {
-    getServer().getScheduler().runTaskTimerAsynchronously(this, () -> {
-      SimpleNotifier.checkNotifications("105671", this);
-    }, 0, 20 * 60 * 60);
+    getServer().getScheduler().runTaskTimerAsynchronously(this, () ->
+        SimpleNotifier.checkNotifications("105671", this), 0, 20 * 60 * 60L);
   }
 
   @Override
