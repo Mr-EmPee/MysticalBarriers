@@ -21,13 +21,9 @@ public final class MysticalBarriersPlugin extends EmpeePlugin {
   @Override
   public void onEnable() {
     adventure = BukkitAudiences.create(this);
-    scheduleSimpleNotifier();
     super.onEnable();
-  }
 
-  private void scheduleSimpleNotifier() {
-    getServer().getScheduler().runTaskTimerAsynchronously(this, () ->
-        SimpleNotifier.checkNotifications("105671", this), 0, 20 * 60 * 60L);
+    SimpleNotifier.scheduleNotifier("105671", this, 1L);
   }
 
   @Override
