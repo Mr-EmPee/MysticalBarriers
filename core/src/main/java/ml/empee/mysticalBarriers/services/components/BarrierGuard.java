@@ -76,6 +76,7 @@ public class BarrierGuard implements Listener {
       blockPacket.addBlock(block, blockLocation);
       try {
         blockPacket.send(player);
+        Logger.debug("Refreshed barrier block for player %s", player.getName());
       } catch (InvocationTargetException e) {
         throw new MysticalBarrierException("Error while sending multi-block packet", e);
       }
@@ -103,6 +104,7 @@ public class BarrierGuard implements Listener {
 
     Barrier barrier = barriersService.findBarrierAt(blockLocation);
     if (barrier != null) {
+      Logger.debug("Server is trying to change a barrier block");
       Material material = packet.getBlockData().read(0).getType();
       if (barrier.isHiddenFor(player)) {
 
@@ -112,13 +114,14 @@ public class BarrierGuard implements Listener {
 
       } else {
 
+        Logger.debug("Checking if the block is valid for the player %s", player.getName());
         if (material == barrier.getMaterial() || isJustifiedAir(material, player, blockLocation, barrier)) {
+          Logger.debug("Refreshed barrier block for player %s", player.getName());
           return;
         }
 
       }
 
-      Logger.debug("The server has tried to edit a barrier block");
       event.setCancelled(true);
     }
 
