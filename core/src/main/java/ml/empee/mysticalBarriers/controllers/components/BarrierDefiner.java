@@ -15,6 +15,7 @@ import ml.empee.mysticalBarriers.helpers.Tuple;
 import ml.empee.mysticalBarriers.model.Barrier;
 import ml.empee.mysticalBarriers.services.BarriersService;
 import ml.empee.mysticalBarriers.utils.Logger;
+import ml.empee.mysticalBarriers.utils.ServerVersion;
 
 @RequiredArgsConstructor
 public class BarrierDefiner implements Listener {
@@ -25,13 +26,12 @@ public class BarrierDefiner implements Listener {
 
   @EventHandler(priority = EventPriority.HIGH)
   public void onPlayerInteract(PlayerInteractEvent event) {
-
     targetedPlayers.iterate((iterator, player, tuple) -> {
       if (!player.equals(event.getPlayer())) {
         return;
       }
       event.setCancelled(true);
-      if (EquipmentSlot.OFF_HAND == event.getHand()) {
+      if (ServerVersion.isGreaterThan(1, 9) && EquipmentSlot.OFF_HAND == event.getHand()) {
         return;
       }
 
