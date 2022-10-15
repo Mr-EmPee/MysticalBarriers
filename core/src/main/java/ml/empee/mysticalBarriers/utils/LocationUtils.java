@@ -10,9 +10,16 @@ import ml.empee.mysticalBarriers.helpers.TriConsumer;
 public final class LocationUtils {
 
   public static void radiusSearch(Location location, int radius, TriConsumer<Integer, Integer, Integer> consumer) {
-    for(int x = location.getBlockX() - radius; x <= location.getBlockX() + radius; x++) {
-      for(int y = location.getBlockY() - radius; y <= location.getBlockY() + radius; y++) {
-        for(int z = location.getBlockZ() - radius; z <= location.getBlockZ() + radius; z++) {
+    int maxX = location.getBlockX() + radius;
+    int maxY = location.getBlockY() + radius;
+    int maxZ = location.getBlockZ() + radius;
+    int minX = location.getBlockX() - radius;
+    int minY = location.getBlockY() - radius;
+    int minZ = location.getBlockZ() - radius;
+
+    for(int y = minY; y<=maxY; y++) {
+      for(int x = minX; x <= maxX; x++) {
+        for (int z = minZ; z <= maxZ; z++) {
           consumer.accept(x, y, z);
         }
       }
