@@ -1,10 +1,10 @@
 package ml.empee.mysticalBarriers.utils;
 
-import org.apache.logging.log4j.util.TriConsumer;
 import org.bukkit.Location;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import ml.empee.mysticalBarriers.helpers.TriConsumer;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class LocationUtils {

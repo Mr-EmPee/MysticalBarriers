@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-import org.apache.logging.log4j.util.TriConsumer;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -15,6 +14,7 @@ import com.google.gson.annotations.Expose;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import ml.empee.mysticalBarriers.helpers.TriConsumer;
 import ml.empee.mysticalBarriers.helpers.Tuple;
 import ml.empee.mysticalBarriers.utils.LocationUtils;
 
