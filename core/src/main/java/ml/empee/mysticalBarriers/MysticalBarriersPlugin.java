@@ -8,6 +8,7 @@ import ml.empee.mysticalBarriers.controllers.commands.MysticalBarriersCommand;
 import ml.empee.mysticalBarriers.controllers.commands.parsers.BarrierParser;
 import ml.empee.mysticalBarriers.controllers.components.BarrierDefiner;
 import ml.empee.mysticalBarriers.helpers.EmpeePlugin;
+import ml.empee.mysticalBarriers.helpers.Metrics;
 import ml.empee.mysticalBarriers.model.Barrier;
 import ml.empee.mysticalBarriers.services.BarriersService;
 import ml.empee.mysticalBarriers.services.components.BarrierBlocksSpawner;
@@ -21,8 +22,10 @@ public final class MysticalBarriersPlugin extends EmpeePlugin {
   @Override
   public void onEnable() {
     adventure = BukkitAudiences.create(this);
+
     super.onEnable();
 
+    Metrics metrics = new Metrics(this, 16669);
     SimpleNotifier.scheduleNotifier("105671", this, 1L);
   }
 
