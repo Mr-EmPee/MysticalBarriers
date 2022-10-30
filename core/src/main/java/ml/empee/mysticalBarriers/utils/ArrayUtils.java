@@ -26,7 +26,7 @@ public final class ArrayUtils {
   }
 
   @NotNull
-  public static <T> List<T> toSafeList(@Nullable T[] array) {
+  public static <T> List<T> toList(@Nullable T[] array) {
     ArrayList<T> result = new ArrayList<>();
 
     if(array != null) {

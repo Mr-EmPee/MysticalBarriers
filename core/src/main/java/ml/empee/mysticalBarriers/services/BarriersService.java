@@ -27,7 +27,7 @@ public class BarriersService {
   private final AtomicBoolean savingScheduled;
 
   public BarriersService() {
-    barriers.addAll( ArrayUtils.toSafeList(SerializationUtils.deserialize(FILE_NAME, Barrier[].class)) );
+    barriers.addAll( ArrayUtils.toList(SerializationUtils.deserialize(FILE_NAME, Barrier[].class)) );
     savingScheduled = FileSaver.scheduleSaving(barriers, FILE_NAME);
   }
 
