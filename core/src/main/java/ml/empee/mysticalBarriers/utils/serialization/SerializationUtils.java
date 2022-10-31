@@ -3,6 +3,7 @@ package ml.empee.mysticalBarriers.utils.serialization;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.util.function.Consumer;
 
@@ -18,7 +19,6 @@ import com.google.gson.GsonBuilder;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import ml.empee.mysticalBarriers.exceptions.MysticalBarrierException;
-import ml.empee.mysticalBarriers.utils.FileUtils;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SerializationUtils {
@@ -44,7 +44,7 @@ public final class SerializationUtils {
     File file = new File(plugin.getDataFolder(), target);
     file.getParentFile().mkdirs();
 
-    try(BufferedWriter w = FileUtils.buildWriter(file)) {
+    try(BufferedWriter w = Files.newBufferedWriter(file.toPath())) {
       w.append(gson.toJson(object));
     } catch (IOException e) {
       throw new MysticalBarrierException("Error while serializing " + target, e);
@@ -55,7 +55,7 @@ public final class SerializationUtils {
   @Nullable
   public static <T> T deserialize(String source, Class<T> clazz) {
     try {
-      return gson.fromJson(FileUtils.buildReader(new File(plugin.getDataFolder(), source)), clazz);
+      return gson.fromJson(Files.newBufferedReader(new File(plugin.getDataFolder(), source).toPath()), clazz);
     } catch (NoSuchFileException e) {
       return null;
     } catch (IOException e) {
