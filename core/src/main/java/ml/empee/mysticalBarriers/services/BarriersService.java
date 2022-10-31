@@ -4,7 +4,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -16,7 +15,6 @@ import ml.empee.mysticalBarriers.exceptions.MysticalBarrierException;
 import ml.empee.mysticalBarriers.model.Barrier;
 import ml.empee.mysticalBarriers.model.packets.MultiBlockPacket;
 import ml.empee.mysticalBarriers.utils.ArrayUtils;
-import ml.empee.mysticalBarriers.utils.FileSaver;
 import ml.empee.mysticalBarriers.utils.Logger;
 import ml.empee.mysticalBarriers.utils.serialization.SerializationUtils;
 
@@ -25,13 +23,10 @@ public class BarriersService extends AbstractService {
   private static final String FILE_NAME = "barriers.json";
 
   private final Set<Barrier> barriers = ConcurrentHashMap.newKeySet();
-  private final AtomicBoolean savingScheduled;
 
   public BarriersService() {
     barriers.addAll( ArrayUtils.toList(SerializationUtils.deserialize(FILE_NAME, Barrier[].class)) );
     Logger.info("Loaded " + barriers.size() + " barriers");
-
-    savingScheduled = FileSaver.scheduleSaving(barriers, FILE_NAME);
 
     for(Player player : Bukkit.getOnlinePlayers()) {
       for (Barrier barrier : barriers) {
@@ -49,9 +44,13 @@ public class BarriersService extends AbstractService {
     }
   }
 
+  private void saveFile() {
+    SerializationUtils.serializeAsync(barriers, FILE_NAME);
+  }
+
   public boolean saveBarrier(Barrier barrier) {
     if(barriers.add(barrier)) {
-      savingScheduled.set(true);
+      saveFile();
       return true;
     }
 
@@ -67,7 +66,7 @@ public class BarriersService extends AbstractService {
         }
       }
 
-      savingScheduled.set(true);
+      saveFile();
       return true;
     }
 
@@ -103,7 +102,7 @@ public class BarriersService extends AbstractService {
         }
       }
 
-      savingScheduled.set(true);
+      saveFile();
       return true;
     }
 
