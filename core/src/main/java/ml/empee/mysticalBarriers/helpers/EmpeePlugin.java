@@ -14,8 +14,8 @@ import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 
 public abstract class EmpeePlugin extends JavaPlugin {
 
-  private AbstractService[] services;
-  private AbstractListener[] listeners;
+  private AbstractService[] services = new AbstractService[0];
+  private AbstractListener[] listeners = new AbstractListener[0];
 
   protected CommandManager commandManager;
   protected BukkitAudiences adventure;
@@ -36,7 +36,9 @@ public abstract class EmpeePlugin extends JavaPlugin {
   }
 
   protected void unregisterAll() {
-    commandManager.unregisterCommands();
+    if(commandManager != null) {
+      commandManager.unregisterCommands();
+    }
 
     for (AbstractListener listener : listeners) {
       HandlerList.unregisterAll(listener);
