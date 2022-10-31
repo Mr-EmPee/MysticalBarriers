@@ -1,7 +1,6 @@
 package ml.empee.mysticalBarriers.utils;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.bukkit.Bukkit;
@@ -9,50 +8,59 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
 
 import lombok.NoArgsConstructor;
 import ml.empee.mysticalBarriers.utils.serialization.SerializationUtils;
 
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
-public final class FileSaver {
+public final class ScheduledFileSaver {
 
-  private static final JavaPlugin plugin = JavaPlugin.getProvidingPlugin(FileSaver.class);
-  private static final List<FileSaveTask> tasks = new ArrayList<>();
+  private static final JavaPlugin plugin = JavaPlugin.getProvidingPlugin(ScheduledFileSaver.class);
+  private static final ArrayList<Task> tasks = new ArrayList<>();
 
   static {
     Bukkit.getPluginManager().registerEvents(new FileSaverListener(), plugin);
   }
 
-  public static AtomicBoolean scheduleSaving(Object object, String target, Long saveInterval) {
-    FileSaveTask task = new FileSaveTask(object, target);
+  public static Task scheduleSaving(Object object, String target, Long saveInterval) {
+    Task task = new Task(object, target);
     tasks.add(task);
 
-    Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, task, saveInterval, saveInterval);
-    return task.savingScheduled;
+    BukkitTask bukkitTask = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, task, saveInterval, saveInterval);
+    task.taskId = bukkitTask.getTaskId();
+
+    return task;
   }
 
-  public static AtomicBoolean scheduleSaving(Object object, String target) {
-    return scheduleSaving(object, target, 20L * 120);
+  public static void unregisterTask(Task task) {
+    Bukkit.getScheduler().cancelTask(task.taskId);
+    tasks.remove(task);
   }
 
-  private static class FileSaveTask implements Runnable {
+  public static class Task implements Runnable {
 
-    private final AtomicBoolean savingScheduled = new AtomicBoolean(false);
     private final Object object;
     private final String target;
+    private final AtomicBoolean isDirty = new AtomicBoolean(false);
+    private int taskId;
 
-    public FileSaveTask(Object object, String target) {
+    private Task(Object object, String target) {
       this.object = object;
       this.target = target;
     }
 
     @Override
     public synchronized void run() {
-      if(savingScheduled.get()) {
+      if (isDirty.get()) {
         SerializationUtils.serialize(object, target);
         Logger.info("Saved file " + target);
-        savingScheduled.set(false);
+        isDirty.set(false);
       }
+    }
+
+    public void setDirty() {
+      isDirty.set(true);
     }
 
   }
@@ -62,7 +70,7 @@ public final class FileSaver {
     @EventHandler
     public void onDisable(PluginDisableEvent event) {
       if (event.getPlugin().equals(plugin)) {
-        tasks.forEach(FileSaveTask::run);
+        tasks.forEach(Task::run);
       }
     }
 
