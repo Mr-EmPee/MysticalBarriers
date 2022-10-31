@@ -8,7 +8,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 
 import lombok.RequiredArgsConstructor;
@@ -20,7 +19,7 @@ import ml.empee.mysticalBarriers.services.BarriersService;
 import ml.empee.mysticalBarriers.utils.Logger;
 
 @RequiredArgsConstructor
-public class BarrierBlocksSpawner implements Listener {
+public class BarrierBlocksSpawner extends AbstractListener {
 
   private final BarriersService barriersService;
 

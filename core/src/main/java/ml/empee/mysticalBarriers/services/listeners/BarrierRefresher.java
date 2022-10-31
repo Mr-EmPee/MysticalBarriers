@@ -4,14 +4,13 @@ import java.util.HashSet;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 
 import ml.empee.mysticalBarriers.helpers.PlayerContext;
 import ml.empee.mysticalBarriers.model.Barrier;
 import ml.empee.mysticalBarriers.services.BarriersService;
 
-public class BarrierRefresher implements Listener {
+public class BarrierRefresher extends AbstractListener {
 
   private static final PlayerContext<HashSet<String>> playerContext = PlayerContext.get("visibleBarriers");
 

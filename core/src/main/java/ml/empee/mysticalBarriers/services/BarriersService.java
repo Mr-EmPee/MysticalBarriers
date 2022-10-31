@@ -17,9 +17,10 @@ import ml.empee.mysticalBarriers.model.Barrier;
 import ml.empee.mysticalBarriers.model.packets.MultiBlockPacket;
 import ml.empee.mysticalBarriers.utils.ArrayUtils;
 import ml.empee.mysticalBarriers.utils.FileSaver;
+import ml.empee.mysticalBarriers.utils.Logger;
 import ml.empee.mysticalBarriers.utils.serialization.SerializationUtils;
 
-public class BarriersService {
+public class BarriersService extends AbstractService {
 
   private static final String FILE_NAME = "barriers.json";
 
@@ -28,7 +29,24 @@ public class BarriersService {
 
   public BarriersService() {
     barriers.addAll( ArrayUtils.toList(SerializationUtils.deserialize(FILE_NAME, Barrier[].class)) );
+    Logger.info("Loaded " + barriers.size() + " barriers");
+
     savingScheduled = FileSaver.scheduleSaving(barriers, FILE_NAME);
+
+    for(Player player : Bukkit.getOnlinePlayers()) {
+      for (Barrier barrier : barriers) {
+        refreshBarrierFor(player, barrier);
+      }
+    }
+  }
+
+  @Override
+  protected void onDisable() {
+    for(Player player : Bukkit.getOnlinePlayers()) {
+      for (Barrier barrier : barriers) {
+        hideBarrierTo(player, barrier);
+      }
+    }
   }
 
   public boolean saveBarrier(Barrier barrier) {

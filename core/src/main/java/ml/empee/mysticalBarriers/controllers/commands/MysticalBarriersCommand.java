@@ -7,26 +7,35 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 
-import lombok.RequiredArgsConstructor;
 import ml.empee.commandsManager.command.Command;
 import ml.empee.commandsManager.command.CommandContext;
 import ml.empee.commandsManager.command.annotations.CommandNode;
 import ml.empee.commandsManager.command.annotations.CommandRoot;
 import ml.empee.commandsManager.parsers.types.annotations.IntegerParam;
 import ml.empee.commandsManager.parsers.types.annotations.StringParam;
+import ml.empee.mysticalBarriers.MysticalBarriersPlugin;
+import ml.empee.mysticalBarriers.controllers.listeners.BarrierDefiner;
 import ml.empee.mysticalBarriers.helpers.PlayerContext;
 import ml.empee.mysticalBarriers.helpers.Tuple;
 import ml.empee.mysticalBarriers.model.Barrier;
 import ml.empee.mysticalBarriers.services.BarriersService;
 import ml.empee.mysticalBarriers.utils.Logger;
 
-@RequiredArgsConstructor
 @CommandRoot(label = "mysticalbarriers", aliases = { "mb", "mysticalb" })
 public class MysticalBarriersCommand extends Command {
 
   private final PlayerContext<Tuple<String, Location>> barrierCreationContext = PlayerContext.get("barrierCreation");
   private final BarriersService barriersService;
+
+  public MysticalBarriersCommand(BarriersService barriersService) {
+    this.barriersService = barriersService;
+
+    registerListeners(
+        new BarrierDefiner(barriersService)
+    );
+  }
 
   @CommandNode(
       parent = "mysticalbarriers",
@@ -119,7 +128,7 @@ public class MysticalBarriersCommand extends Command {
       label = "debug",
       permission = "mysticalbarriers.command.debug"
   )
-  public void onDebugCommand(CommandContext context) {
+  public void onDebug(CommandContext context) {
     CommandSender sender = context.getSender();
 
     if(Logger.getLevel() != Level.FINE) {
@@ -129,6 +138,18 @@ public class MysticalBarriersCommand extends Command {
       Logger.setLevel(Level.INFO);
       Logger.info(sender, "Debug mode disabled!");
     }
+  }
+
+  @CommandNode(
+      parent = "mysticalbarriers",
+      label = "reload",
+      permission = "mysticalbarriers.command.reload"
+  )
+  public void onReload(CommandContext context) {
+    CommandSender sender = context.getSender();
+
+    JavaPlugin.getPlugin(MysticalBarriersPlugin.class).reload();
+    Logger.info(sender, "The plugin has been reloaded!");
   }
 
 }

@@ -8,7 +8,6 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 import com.comphenix.protocol.PacketType;
@@ -17,6 +16,7 @@ import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.events.PacketListener;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 
 import ml.empee.mysticalBarriers.exceptions.MysticalBarrierException;
@@ -27,27 +27,41 @@ import ml.empee.mysticalBarriers.services.BarriersService;
 import ml.empee.mysticalBarriers.utils.LocationUtils;
 import ml.empee.mysticalBarriers.utils.Logger;
 
-public class BarrierGuard implements Listener {
+public class BarrierGuard extends AbstractListener {
 
   private static final ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
   private final BarriersService barriersService;
 
+  private final PacketListener[] packetListeners;
   public BarrierGuard(EmpeePlugin plugin, BarriersService barriersService) {
     this.barriersService = barriersService;
 
-    protocolManager.addPacketListener(new PacketAdapter(plugin, PacketType.Play.Client.BLOCK_DIG) {
-      @Override
-      public void onPacketReceiving(PacketEvent event) {
-        onPlayerBreak(event);
-      }
-    });
-    protocolManager.addPacketListener(new PacketAdapter(plugin, PacketType.Play.Server.BLOCK_CHANGE) {
-      @Override
-      public void onPacketSending(PacketEvent event) {
-        onBlockChange(event);
-      }
-    });
+    packetListeners = new PacketListener[] {
+        new PacketAdapter(plugin, PacketType.Play.Client.BLOCK_DIG) {
+          @Override
+          public void onPacketReceiving(PacketEvent event) {
+            onPlayerBreak(event);
+          }
+        },
 
+        new PacketAdapter(plugin, PacketType.Play.Server.BLOCK_CHANGE) {
+          @Override
+          public void onPacketSending(PacketEvent event) {
+            onBlockChange(event);
+          }
+        }
+    };
+
+    for(PacketListener packetListener : packetListeners) {
+      protocolManager.addPacketListener(packetListener);
+    }
+  }
+
+  @Override
+  protected void onUnregister() {
+    for(PacketListener packetListener : packetListeners) {
+      protocolManager.removePacketListener(packetListener);
+    }
   }
 
   public void onPlayerBreak(PacketEvent event) {

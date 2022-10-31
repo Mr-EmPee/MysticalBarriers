@@ -1,19 +1,18 @@
 package ml.empee.mysticalBarriers;
 
-import org.bukkit.event.Listener;
-
 import ml.empee.commandsManager.command.Command;
 import ml.empee.commandsManager.parsers.ParserManager;
 import ml.empee.mysticalBarriers.controllers.commands.MysticalBarriersCommand;
 import ml.empee.mysticalBarriers.controllers.commands.parsers.BarrierParser;
-import ml.empee.mysticalBarriers.controllers.components.BarrierDefiner;
 import ml.empee.mysticalBarriers.helpers.EmpeePlugin;
 import ml.empee.mysticalBarriers.helpers.Metrics;
 import ml.empee.mysticalBarriers.model.Barrier;
+import ml.empee.mysticalBarriers.services.AbstractService;
 import ml.empee.mysticalBarriers.services.BarriersService;
-import ml.empee.mysticalBarriers.services.components.BarrierBlocksSpawner;
-import ml.empee.mysticalBarriers.services.components.BarrierGuard;
-import ml.empee.mysticalBarriers.services.components.BarrierRefresher;
+import ml.empee.mysticalBarriers.services.listeners.AbstractListener;
+import ml.empee.mysticalBarriers.services.listeners.BarrierBlocksSpawner;
+import ml.empee.mysticalBarriers.services.listeners.BarrierGuard;
+import ml.empee.mysticalBarriers.services.listeners.BarrierRefresher;
 import ml.empee.notifier.SimpleNotifier;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 
@@ -23,9 +22,9 @@ public final class MysticalBarriersPlugin extends EmpeePlugin {
   public void onEnable() {
     adventure = BukkitAudiences.create(this);
 
-    super.onEnable();
+    registerAll();
 
-    Metrics metrics = new Metrics(this, 16669);
+    new Metrics(this, 16669);
     SimpleNotifier.scheduleNotifier("105671", this, 1L);
   }
 
@@ -37,11 +36,10 @@ public final class MysticalBarriersPlugin extends EmpeePlugin {
   }
 
   @Override
-  protected Listener[] buildListeners() {
+  protected AbstractListener[] buildListeners() {
     BarriersService barriersService = getService(BarriersService.class);
-    return new Listener[] {
+    return new AbstractListener[] {
         new BarrierRefresher(this, barriersService),
-        new BarrierDefiner(barriersService),
         new BarrierBlocksSpawner(barriersService),
         new BarrierGuard(this, barriersService)
     };
@@ -49,12 +47,13 @@ public final class MysticalBarriersPlugin extends EmpeePlugin {
 
   @Override
   protected void registerParsers(ParserManager parserManager) {
-    parserManager.setDefaultParserForType(Barrier.class, new BarrierParser(getService(BarriersService.class), "barrier", ""));
+    parserManager.setDefaultParserForType(Barrier.class,
+        new BarrierParser(getService(BarriersService.class), "barrier", ""));
   }
 
   @Override
-  protected Object[] buildServices() {
-    return new Object[] {
+  protected AbstractService[] buildServices() {
+    return new AbstractService[] {
         new BarriersService()
     };
   }
