@@ -1,4 +1,4 @@
-package ml.empee.mysticalBarriers.controllers.components;
+package ml.empee.mysticalBarriers.controllers.listeners;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;

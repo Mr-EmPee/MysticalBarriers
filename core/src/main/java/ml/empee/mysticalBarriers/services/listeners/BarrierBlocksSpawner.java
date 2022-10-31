@@ -1,4 +1,4 @@
-package ml.empee.mysticalBarriers.services.components;
+package ml.empee.mysticalBarriers.services.listeners;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
