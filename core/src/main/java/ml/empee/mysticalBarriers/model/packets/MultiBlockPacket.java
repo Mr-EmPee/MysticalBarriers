@@ -7,6 +7,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Nullable;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
@@ -82,7 +83,7 @@ public final class MultiBlockPacket {
 
   }
 
-  public void addBlock(Material type, Integer blockSubCategory, Location location) {
+  public void addBlock(Material type, @Nullable Integer blockSubCategory, Location location) {
     addBlock(type, blockSubCategory, null, location);
   }
 
@@ -98,7 +99,7 @@ public final class MultiBlockPacket {
     addBlock(type, new Location(null, x, y, z));
   }
 
-  public void addBlock(Material type, Integer blockSubCategory, int x, int y, int z) {
+  public void addBlock(Material type, @Nullable Integer blockSubCategory, int x, int y, int z) {
     addBlock(type, blockSubCategory, new Location(null, x, y, z));
   }
 
@@ -106,7 +107,7 @@ public final class MultiBlockPacket {
     addBlock(blockData, new Location(null, x, y, z));
   }
 
-  public void addBackwardProofBlock(Material type, Integer blockSubCategory, String blockData, Location location) {
+  public void addBackwardProofBlock(Material type, @Nullable Integer blockSubCategory, @Nullable String blockData, Location location) {
     if (IS_ABOVE_1_13) {
       if (blockData != null) {
         addBlock(type.createBlockData(blockData), location);
@@ -118,7 +119,7 @@ public final class MultiBlockPacket {
     }
   }
 
-  public void addBackwardProofBlock(Material type, Integer blockSubCategory, String blockData, int x, int y, int z) {
+  public void addBackwardProofBlock(Material type, @Nullable Integer blockSubCategory, @Nullable String blockData, int x, int y, int z) {
     addBackwardProofBlock(type, blockSubCategory, blockData, new Location(null, x, y, z));
   }
 
