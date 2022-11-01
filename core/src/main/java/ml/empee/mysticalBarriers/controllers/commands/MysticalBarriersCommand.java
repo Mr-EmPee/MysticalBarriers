@@ -151,6 +151,8 @@ public class MysticalBarriersCommand extends Command {
   @CommandNode(
       parent = "mysticalbarriers",
       label = "debug",
+      description = "Use this command if you're having issues with the plugin\n"
+                    + "and you want to send the plugin's debug information to the developer",
       permission = "mysticalbarriers.command.debug"
   )
   public void onDebug(CommandSender sender) {
@@ -166,6 +168,7 @@ public class MysticalBarriersCommand extends Command {
   @CommandNode(
       parent = "mysticalbarriers",
       label = "reload",
+      description = "Reload the plugin",
       permission = "mysticalbarriers.command.reload"
   )
   public void onReload(CommandSender sender) {
