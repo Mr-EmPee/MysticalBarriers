@@ -9,7 +9,6 @@ import java.util.function.Consumer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.block.data.BlockData;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,7 +29,6 @@ public final class SerializationUtils {
   static {
     gson = new GsonBuilder()
         .registerTypeAdapter(Location.class, new LocationAdapter())
-        .registerTypeAdapter(BlockData.class, new BlockDataAdapter())
         .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
         .excludeFieldsWithoutExposeAnnotation()
         .setPrettyPrinting()
