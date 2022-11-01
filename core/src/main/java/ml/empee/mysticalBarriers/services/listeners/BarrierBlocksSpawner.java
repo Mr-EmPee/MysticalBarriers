@@ -16,24 +16,22 @@ import ml.empee.mysticalBarriers.helpers.Triple;
 import ml.empee.mysticalBarriers.model.Barrier;
 import ml.empee.mysticalBarriers.model.packets.MultiBlockPacket;
 import ml.empee.mysticalBarriers.services.BarriersService;
-import ml.empee.mysticalBarriers.utils.Logger;
 
 @RequiredArgsConstructor
 public class BarrierBlocksSpawner extends AbstractListener {
-
   private final BarriersService barriersService;
 
   @EventHandler
   public void onPlayerMove(PlayerMoveEvent event) {
 
     Location toLoc = event.getTo();
-    if(toLoc == null) {
+    if (toLoc == null) {
       return;
     }
 
     toLoc = toLoc.getBlock().getLocation();
     Location fromLoc = event.getFrom().getBlock().getLocation();
-    if(toLoc.equals(fromLoc)) {
+    if (toLoc.equals(fromLoc)) {
       return;
     }
 
@@ -43,25 +41,25 @@ public class BarrierBlocksSpawner extends AbstractListener {
 
   private void spawnBarrier(Location toLoc, Location fromLoc, Player player) {
     MultiBlockPacket packet = new MultiBlockPacket(toLoc, false);
-    for(Barrier barrier : barriersService.findAllBarriers()) {
-      if(barrier.isHiddenFor(player) || !barrier.getWorld().equals(player.getWorld())) {
+    for (Barrier barrier : barriersService.findAllBarriers()) {
+      if (barrier.isHiddenFor(player) || !barrier.getWorld().equals(player.getWorld())) {
         continue;
       }
 
-      List<Triple<Integer, Integer, Integer>> sentBlocks = new ArrayList<>();
+      List<Triple<Integer, Integer, Integer>> blockPayload = new ArrayList<>();
       barrier.forEachVisibleBarrierBlock(toLoc, (x, y, z) -> {
-        Logger.debug("Player %s is near barrier block at %s %s %s", player.getName(), x, y, z);
-        packet.addBlock(barrier.getMaterial(), x, y, z);
-        sentBlocks.add(new Triple<>(x, y, z));
+        blockPayload.add(new Triple<>(x, y, z));
       });
 
       barrier.forEachVisibleBarrierBlock(fromLoc, (x, y, z) -> {
-        if(!sentBlocks.contains(new Triple<>(x, y, z))) {
-          Logger.debug("Player %s was near barrier block at %s %s %s", player.getName(), x, y, z);
+        if (!blockPayload.remove(new Triple<>(x, y, z))) {
           packet.addBlock(Material.AIR, x, y, z);
         }
       });
 
+      for (Triple<Integer, Integer, Integer> triple : blockPayload) {
+        packet.addBackwardProofBlock(barrier.getMaterial(), null, barrier.getBlockData(), triple.getFirst(), triple.getSecond(), triple.getThird());
+      }
     }
 
     try {

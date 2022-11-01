@@ -129,7 +129,9 @@ public class BarriersService extends AbstractService {
 
   public void showBarrierTo(Player player, Barrier barrier) {
     MultiBlockPacket packet = new MultiBlockPacket(player.getLocation(), false);
-    barrier.forEachVisibleBarrierBlock(player.getLocation(), (x, y, z) -> packet.addBlock(barrier.getMaterial(), x, y, z));
+    barrier.forEachVisibleBarrierBlock(player.getLocation(), (x, y, z) -> {
+      packet.addBackwardProofBlock(barrier.getMaterial(), null, barrier.getBlockData(), x, y, z);
+    });
     try {
       packet.send(player);
     } catch (InvocationTargetException e) {

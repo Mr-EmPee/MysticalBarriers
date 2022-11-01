@@ -1,5 +1,7 @@
 package ml.empee.mysticalBarriers.utils;
 
+import java.util.function.Consumer;
+
 import org.bukkit.Location;
 
 import lombok.AccessLevel;
@@ -32,6 +34,22 @@ public final class LocationUtils {
     int z = location1.getBlockZ() - location2.getBlockZ();
 
     return Math.max(Math.max(Math.abs(x), Math.abs(y)), Math.abs(z));
+  }
+
+  public static void aroundBlock(Location location, TriConsumer<Integer, Integer, Integer> consumer) {
+
+    consumer.accept(location.getBlockX(), location.getBlockY(), location.getBlockZ());
+    consumer.accept(location.getBlockX() + 1, location.getBlockY(), location.getBlockZ());
+    consumer.accept(location.getBlockX() - 1, location.getBlockY(), location.getBlockZ());
+    consumer.accept(location.getBlockX(), location.getBlockY() + 1, location.getBlockZ());
+    consumer.accept(location.getBlockX(), location.getBlockY() - 1, location.getBlockZ());
+    consumer.accept(location.getBlockX(), location.getBlockY(), location.getBlockZ() + 1);
+    consumer.accept(location.getBlockX(), location.getBlockY(), location.getBlockZ() - 1);
+
+  }
+
+  public static void aroundBlock(Location location, Consumer<Location> consumer) {
+    aroundBlock(location, (x, y, z) -> consumer.accept(new Location(location.getWorld(), x, y, z)));
   }
 
 }

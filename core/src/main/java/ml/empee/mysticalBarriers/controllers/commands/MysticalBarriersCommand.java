@@ -22,6 +22,7 @@ import ml.empee.mysticalBarriers.helpers.Tuple;
 import ml.empee.mysticalBarriers.model.Barrier;
 import ml.empee.mysticalBarriers.services.BarriersService;
 import ml.empee.mysticalBarriers.utils.Logger;
+import ml.empee.mysticalBarriers.utils.ServerVersion;
 
 @CommandRoot(label = "mysticalbarriers", aliases = { "mb", "mysticalb" })
 public class MysticalBarriersCommand extends Command {
@@ -66,6 +67,7 @@ public class MysticalBarriersCommand extends Command {
   )
   public void onBarrierModifyMaterial(CommandSender sender, Barrier barrier, Material material) {
     barrier.setMaterial(material);
+    barrier.setBlockData(null);
 
     barriersService.updateBarrier(barrier);
     Logger.info(sender, "Barrier material changed to '&e%s&r'", material.name());
@@ -93,8 +95,23 @@ public class MysticalBarriersCommand extends Command {
       description = "Specify the connection direction of the barrier's blocks",
       permission = "mysticalbarriers.command.modify"
   )
-  public void onBarrierModifyConnectionDirection(CommandSender sender, BarrierDirection barrierDirection) {
-    Logger.info(sender, "Barrier connection direction changed to '&e%s&r'", barrierDirection.name());
+  public void onBarrierModifyConnectionDirection(CommandSender sender, Barrier barrier, BarrierDirection barrierDirection) {
+    if(ServerVersion.isLowerThan(1, 13)) {
+      Logger.error(sender, "This feature is available on 1.13+ servers only");
+      return;
+    }
+
+    try {
+      barrier.getMaterial().createBlockData(barrierDirection.getData());
+    } catch (IllegalArgumentException e) {
+      Logger.error(sender, "The barrier material doesn't support the direction '&e%s&r'", barrierDirection.name());
+      return;
+    }
+
+    barrier.setBlockData(barrierDirection.getData());
+    barriersService.updateBarrier(barrier);
+
+    Logger.info(sender, "Barrier direction changed to '&e%s&r'", barrierDirection.name());
   }
 
   @CommandNode(

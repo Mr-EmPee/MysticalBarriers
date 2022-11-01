@@ -35,6 +35,9 @@ public class Barrier {
   @Expose @Getter @Setter
   private int activationRange;
 
+  @Expose @Getter @Setter
+  private String blockData;
+
   private Set<Tuple<Integer, Integer>> chunks;
 
   @Builder
@@ -44,8 +47,8 @@ public class Barrier {
     this.activationRange = 3;
 
     Tuple<Location, Location> corners = sortCorners(firstCorner, secondCorner);
-    this.firstCorner = corners.getFirstValue();
-    this.secondCorner = corners.getSecondValue();
+    this.firstCorner = corners.getFirst();
+    this.secondCorner = corners.getSecond();
 
   }
 

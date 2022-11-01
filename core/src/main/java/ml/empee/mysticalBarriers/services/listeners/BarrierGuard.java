@@ -26,9 +26,11 @@ import ml.empee.mysticalBarriers.model.packets.MultiBlockPacket;
 import ml.empee.mysticalBarriers.services.BarriersService;
 import ml.empee.mysticalBarriers.utils.LocationUtils;
 import ml.empee.mysticalBarriers.utils.Logger;
+import ml.empee.mysticalBarriers.utils.ServerVersion;
 
 public class BarrierGuard extends AbstractListener {
 
+  private static final boolean IS_AFTER_1_13 = ServerVersion.isGreaterThan(1, 13);
   private static final ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
   private final BarriersService barriersService;
 
@@ -81,13 +83,23 @@ public class BarrierGuard extends AbstractListener {
       Logger.debug("Player %s tried to break a barrier block", player.getName());
       event.setCancelled(true);
 
-      Material block = blockLocation.getBlock().getType();
-      if (Material.AIR == block) {
-        block = barrier.getMaterial();
-      }
-
       MultiBlockPacket blockPacket = new MultiBlockPacket(blockLocation, true);
-      blockPacket.addBlock(block, blockLocation);
+      LocationUtils.aroundBlock(blockLocation, (location) -> {
+        if (barrier.isBarrierBlock(location)) {
+          Block block = location.getBlock();
+          if(Material.AIR == block.getType()) {
+            blockPacket.addBackwardProofBlock(barrier.getMaterial(), null, barrier.getBlockData(), location);
+          } else {
+            if(IS_AFTER_1_13) {
+              blockPacket.addBlock(block.getBlockData(), location);
+            } else {
+              blockPacket.addBlock(block.getType(), location);
+            }
+          }
+        }
+
+      });
+
       try {
         blockPacket.send(player);
         Logger.debug("Refreshed barrier block for player %s", player.getName());
