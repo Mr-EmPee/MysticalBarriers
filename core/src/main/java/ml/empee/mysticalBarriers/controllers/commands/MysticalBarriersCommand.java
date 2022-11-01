@@ -154,7 +154,7 @@ public class MysticalBarriersCommand extends Command {
       permission = "mysticalbarriers.command.debug"
   )
   public void onDebug(CommandSender sender) {
-    if (Logger.isDebugEnabled()) {
+    if (!Logger.isDebugEnabled()) {
       Logger.setDebugMode(true);
       Logger.info(sender, "Debug mode enabled!");
     } else {
