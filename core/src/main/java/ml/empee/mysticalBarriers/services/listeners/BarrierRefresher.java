@@ -5,6 +5,7 @@ import java.util.HashSet;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitTask;
 
 import ml.empee.mysticalBarriers.helpers.PlayerContext;
 import ml.empee.mysticalBarriers.model.Barrier;
@@ -15,11 +16,12 @@ public class BarrierRefresher extends AbstractListener {
   private static final PlayerContext<HashSet<String>> playerContext = PlayerContext.get("visibleBarriers");
 
   private final BarriersService barriersService;
+  private final BukkitTask bukkitTask;
 
   public BarrierRefresher(Plugin plugin, BarriersService barriersService) {
     this.barriersService = barriersService;
 
-    Bukkit.getScheduler().runTaskTimer(plugin, () -> {
+    bukkitTask = Bukkit.getScheduler().runTaskTimer(plugin, () -> {
 
       for(Player player : Bukkit.getOnlinePlayers()) {
         for(Barrier barrier : barriersService.findAllBarriers()) {
@@ -47,4 +49,8 @@ public class BarrierRefresher extends AbstractListener {
     }
   }
 
+  @Override
+  protected void onUnregister() {
+    bukkitTask.cancel();
+  }
 }
