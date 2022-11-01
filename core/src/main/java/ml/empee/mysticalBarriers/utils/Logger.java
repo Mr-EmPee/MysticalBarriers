@@ -19,16 +19,18 @@ public final class Logger {
   private static final java.util.logging.Logger consoleLogger = JavaPlugin.getProvidingPlugin(
       MysticalBarriersPlugin.class).getLogger();
 
+  private static boolean isDebugEnabled;
+
   static {
     Command.setPrefix(PREFIX + "&c");
   }
 
-  public static Level getLevel() {
-    return consoleLogger.getLevel();
+  public static boolean isDebugEnabled() {
+    return isDebugEnabled;
   }
 
-  public static void setLevel(Level level) {
-    consoleLogger.setLevel(level);
+  public static void setDebugMode(boolean isDebugEnabled) {
+    Logger.isDebugEnabled = isDebugEnabled;
   }
 
   public static void info(String message, Object... args) {
@@ -50,7 +52,7 @@ public final class Logger {
   }
 
   public static void debug(String message, Object... args) {
-    if (consoleLogger.isLoggable(Level.FINE)) {
+    if (isDebugEnabled) {
       consoleLogger.info(String.format(Locale.ROOT, message, args));
     }
   }
@@ -84,7 +86,7 @@ public final class Logger {
   }
 
   public static void debug(CommandSender player, String message, Object... args) {
-    if(consoleLogger.isLoggable(Level.FINE)) {
+    if(isDebugEnabled) {
       log(player, message, ChatColor.DARK_GRAY, args);
     }
   }

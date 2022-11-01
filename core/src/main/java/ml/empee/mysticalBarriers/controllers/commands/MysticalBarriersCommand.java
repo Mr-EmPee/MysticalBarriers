@@ -1,7 +1,6 @@
 package ml.empee.mysticalBarriers.controllers.commands;
 
 import java.util.Set;
-import java.util.logging.Level;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -155,11 +154,11 @@ public class MysticalBarriersCommand extends Command {
       permission = "mysticalbarriers.command.debug"
   )
   public void onDebug(CommandSender sender) {
-    if (Logger.getLevel() != Level.FINE) {
-      Logger.setLevel(Level.FINE);
+    if (Logger.isDebugEnabled()) {
+      Logger.setDebugMode(true);
       Logger.info(sender, "Debug mode enabled!");
     } else {
-      Logger.setLevel(Level.INFO);
+      Logger.setDebugMode(false);
       Logger.info(sender, "Debug mode disabled!");
     }
   }
