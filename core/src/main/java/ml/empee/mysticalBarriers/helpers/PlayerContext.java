@@ -55,7 +55,7 @@ public final class PlayerContext<T> {
     PlayerIterator<T> iterator = new PlayerIterator<>(data.entrySet().iterator());
     while(iterator.hasNext()) {
       Tuple<Player, T> entry = iterator.next();
-      consumer.accept(iterator, entry.getFirstValue(), entry.getSecondValue());
+      consumer.accept(iterator, entry.getFirst(), entry.getSecond());
     }
   }
 

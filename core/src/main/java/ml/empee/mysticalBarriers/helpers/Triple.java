@@ -9,8 +9,8 @@ import lombok.EqualsAndHashCode;
 @AllArgsConstructor
 public final class Triple<T, K, J> {
 
-  private T firstValue;
-  private K secondValue;
-  private J thirdValue;
+  private T first;
+  private K second;
+  private J third;
 
 }

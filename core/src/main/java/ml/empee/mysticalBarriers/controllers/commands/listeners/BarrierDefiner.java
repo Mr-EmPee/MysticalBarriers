@@ -61,8 +61,8 @@ public class BarrierDefiner implements Listener {
       Player player, Tuple<String, Location> tuple, Block clickedBlock
   ) {
 
-    if (tuple.getSecondValue() == null) {
-      tuple.setSecondValue(clickedBlock.getLocation());
+    if (tuple.getSecond() == null) {
+      tuple.setSecond(clickedBlock.getLocation());
       Logger.info(player, "You selected the first corner");
     } else {
       iterator.remove();
@@ -70,15 +70,15 @@ public class BarrierDefiner implements Listener {
       if (
           barriersService.saveBarrier(
               Barrier.builder()
-                  .id(tuple.getFirstValue())
-                  .firstCorner(tuple.getSecondValue())
+                  .id(tuple.getFirst())
+                  .firstCorner(tuple.getSecond())
                   .secondCorner(clickedBlock.getLocation())
                   .build()
           )
       ) {
-        Logger.info(player, "The barrier '&e%s&r' has been created!", tuple.getFirstValue());
+        Logger.info(player, "The barrier '&e%s&r' has been created!", tuple.getFirst());
       } else {
-        Logger.error(player, "A barrier named '&e%s&r' already exists!", tuple.getFirstValue());
+        Logger.error(player, "A barrier named '&e%s&r' already exists!", tuple.getFirst());
       }
     }
 

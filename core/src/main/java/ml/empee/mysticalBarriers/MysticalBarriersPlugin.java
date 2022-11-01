@@ -3,7 +3,7 @@ package ml.empee.mysticalBarriers;
 import ml.empee.commandsManager.command.Command;
 import ml.empee.commandsManager.parsers.ParserManager;
 import ml.empee.mysticalBarriers.controllers.commands.MysticalBarriersCommand;
-import ml.empee.mysticalBarriers.controllers.commands.parsers.BarrierParser;
+import ml.empee.mysticalBarriers.controllers.commands.components.BarrierParser;
 import ml.empee.mysticalBarriers.helpers.EmpeePlugin;
 import ml.empee.mysticalBarriers.helpers.Metrics;
 import ml.empee.mysticalBarriers.model.Barrier;

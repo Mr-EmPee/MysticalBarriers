@@ -9,7 +9,7 @@ import lombok.EqualsAndHashCode;
 @AllArgsConstructor
 public final class Tuple<T, K> {
 
-  private T firstValue;
-  private K secondValue;
+  private T first;
+  private K second;
 
 }
