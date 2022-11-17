@@ -22,10 +22,14 @@
 
         <plugin.spigot.version>1.18.2-R0.1-SNAPSHOT</plugin.spigot.version>
         <plugin.api>1.13</plugin.api>
-        <plugin.output-dir>${env.MINECRAFT_PLUGIN_OUTPUT_DIR}\1.18.2</plugin.output-dir>
+        <plugin.output-dir>${env.MINECRAFT_PLUGIN_OUTPUT_DIR}\1.19.2</plugin.output-dir>
     </properties>
 
     <repositories>
+        <repository>
+            <id>spigot-repo</id>
+            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+        </repository>
     </repositories>
 
     <dependencies>
