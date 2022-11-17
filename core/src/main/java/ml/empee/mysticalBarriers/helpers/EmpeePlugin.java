@@ -36,7 +36,7 @@ public abstract class EmpeePlugin extends JavaPlugin {
   }
 
   protected void unregisterAll() {
-    if(commandManager != null) {
+    if (commandManager != null) {
       commandManager.unregisterCommands();
     }
 

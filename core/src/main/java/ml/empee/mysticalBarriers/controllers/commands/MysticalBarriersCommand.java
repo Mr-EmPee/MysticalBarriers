@@ -94,23 +94,23 @@ public class MysticalBarriersCommand extends Command {
       description = "Specify the connection direction of the barrier's blocks",
       permission = "mysticalbarriers.command.modify"
   )
-  public void onBarrierModifyConnectionDirection(CommandSender sender, Barrier barrier, BarrierDirection barrierDirection) {
+  public void onBarrierModifyConnectionDirection(CommandSender sender, Barrier barrier, BarrierDirection direction) {
     if(ServerVersion.isLowerThan(1, 13)) {
       Logger.error(sender, "This feature is available on 1.13+ servers only");
       return;
     }
 
     try {
-      barrier.getMaterial().createBlockData(barrierDirection.getData());
+      barrier.getMaterial().createBlockData(direction.getData());
     } catch (IllegalArgumentException e) {
-      Logger.error(sender, "The barrier material doesn't support the direction '&e%s&r'", barrierDirection.name());
+      Logger.error(sender, "The barrier material doesn't support the direction '&e%s&r'", direction.name());
       return;
     }
 
-    barrier.setBlockData(barrierDirection.getData());
+    barrier.setBlockData(direction.getData());
     barriersService.updateBarrier(barrier);
 
-    Logger.info(sender, "Barrier direction changed to '&e%s&r'", barrierDirection.name());
+    Logger.info(sender, "Barrier direction changed to '&e%s&r'", direction.name());
   }
 
   @CommandNode(
