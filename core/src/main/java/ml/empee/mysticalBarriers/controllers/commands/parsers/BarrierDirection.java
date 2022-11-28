@@ -1,4 +1,4 @@
-package ml.empee.mysticalBarriers.controllers.commands.components;
+package ml.empee.mysticalBarriers.controllers.commands.parsers;
 
 public enum BarrierDirection {
 

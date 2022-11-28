@@ -25,10 +25,10 @@ public class BarriersService extends AbstractService {
   private final Set<Barrier> barriers = ConcurrentHashMap.newKeySet();
 
   public BarriersService() {
-    barriers.addAll( ArrayUtils.toList(SerializationUtils.deserialize(FILE_NAME, Barrier[].class)) );
+    barriers.addAll(ArrayUtils.toList(SerializationUtils.deserialize(FILE_NAME, Barrier[].class)));
     Logger.info("Loaded " + barriers.size() + " barriers");
 
-    for(Player player : Bukkit.getOnlinePlayers()) {
+    for (Player player : Bukkit.getOnlinePlayers()) {
       for (Barrier barrier : barriers) {
         refreshBarrierFor(player, barrier);
       }
@@ -37,7 +37,7 @@ public class BarriersService extends AbstractService {
 
   @Override
   protected void onDisable() {
-    for(Player player : Bukkit.getOnlinePlayers()) {
+    for (Player player : Bukkit.getOnlinePlayers()) {
       for (Barrier barrier : barriers) {
         hideBarrierTo(player, barrier);
       }
@@ -49,19 +49,20 @@ public class BarriersService extends AbstractService {
   }
 
   public boolean saveBarrier(Barrier barrier) {
-    if(barriers.add(barrier)) {
+    if (barriers.add(barrier)) {
       saveFile();
       return true;
     }
 
     return false;
   }
+
   public boolean updateBarrier(Barrier barrier) {
-    if(barriers.remove(barrier)) {
+    if (barriers.remove(barrier)) {
       barriers.add(barrier);
 
-      for(Player player : Bukkit.getOnlinePlayers()) {
-        if(player.getWorld().equals(barrier.getWorld())) {
+      for (Player player : Bukkit.getOnlinePlayers()) {
+        if (player.getWorld().equals(barrier.getWorld())) {
           refreshBarrierFor(player, barrier);
         }
       }
@@ -72,32 +73,36 @@ public class BarriersService extends AbstractService {
 
     return false;
   }
+
   public Set<Barrier> findAllBarriers() {
     return Collections.unmodifiableSet(barriers);
   }
+
   public Barrier findBarrierAt(Location location) {
-    for(Barrier barrier : barriers) {
-      if(barrier.isBarrierBlock(location)) {
+    for (Barrier barrier : barriers) {
+      if (barrier.isBarrierBlock(location)) {
         return barrier;
       }
     }
 
     return null;
   }
+
   @Nullable
   public Barrier findBarrierByID(String id) {
-    for(Barrier barrier : barriers) {
-      if(barrier.getId().equals(id)) {
+    for (Barrier barrier : barriers) {
+      if (barrier.getId().equals(id)) {
         return barrier;
       }
     }
 
     return null;
   }
+
   public boolean removeBarrier(Barrier barrier) {
-    if(barriers.remove(barrier)) {
-      for(Player player : Bukkit.getOnlinePlayers()) {
-        if(player.getWorld().equals(barrier.getWorld()) && !barrier.isHiddenFor(player)) {
+    if (barriers.remove(barrier)) {
+      for (Player player : Bukkit.getOnlinePlayers()) {
+        if (player.getWorld().equals(barrier.getWorld()) && !barrier.isHiddenFor(player)) {
           hideBarrierTo(player, barrier);
         }
       }
@@ -110,7 +115,7 @@ public class BarriersService extends AbstractService {
   }
 
   public void refreshBarrierFor(Player player, Barrier barrier) {
-    if(barrier.isHiddenFor(player)) {
+    if (barrier.isHiddenFor(player)) {
       hideBarrierTo(player, barrier);
     } else {
       showBarrierTo(player, barrier);
@@ -123,7 +128,8 @@ public class BarriersService extends AbstractService {
     try {
       packet.send(player);
     } catch (InvocationTargetException e) {
-      throw new MysticalBarrierException("Error while refreshing the barrier " + barrier.getId() + " for " + player.getName(), e);
+      throw new MysticalBarrierException(
+          "Error while refreshing the barrier " + barrier.getId() + " for " + player.getName(), e);
     }
   }
 
@@ -135,7 +141,8 @@ public class BarriersService extends AbstractService {
     try {
       packet.send(player);
     } catch (InvocationTargetException e) {
-      throw new MysticalBarrierException("Error while refreshing the barrier " + barrier.getId() + " for " + player.getName(), e);
+      throw new MysticalBarrierException(
+          "Error while refreshing the barrier " + barrier.getId() + " for " + player.getName(), e);
     }
   }
 

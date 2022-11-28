@@ -3,7 +3,7 @@ package ml.empee.mysticalBarriers;
 import ml.empee.commandsManager.command.Command;
 import ml.empee.commandsManager.parsers.ParserManager;
 import ml.empee.mysticalBarriers.controllers.commands.MysticalBarriersCommand;
-import ml.empee.mysticalBarriers.controllers.commands.components.BarrierParser;
+import ml.empee.mysticalBarriers.controllers.commands.parsers.BarrierParser;
 import ml.empee.mysticalBarriers.helpers.EmpeePlugin;
 import ml.empee.mysticalBarriers.helpers.Metrics;
 import ml.empee.mysticalBarriers.model.Barrier;
@@ -14,14 +14,11 @@ import ml.empee.mysticalBarriers.services.listeners.BarrierBlocksSpawner;
 import ml.empee.mysticalBarriers.services.listeners.BarrierGuard;
 import ml.empee.mysticalBarriers.services.listeners.BarrierRefresher;
 import ml.empee.notifier.SimpleNotifier;
-import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 
 public final class MysticalBarriersPlugin extends EmpeePlugin {
 
   @Override
   public void onEnable() {
-    adventure = BukkitAudiences.create(this);
-
     registerAll();
 
     new Metrics(this, 16669);

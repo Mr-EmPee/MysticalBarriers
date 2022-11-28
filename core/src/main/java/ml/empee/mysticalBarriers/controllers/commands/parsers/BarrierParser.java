@@ -1,4 +1,4 @@
-package ml.empee.mysticalBarriers.controllers.commands.components;
+package ml.empee.mysticalBarriers.controllers.commands.parsers;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -7,8 +7,8 @@ import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandSender;
 
 import lombok.EqualsAndHashCode;
+import ml.empee.commandsManager.parsers.DescriptionBuilder;
 import ml.empee.commandsManager.parsers.ParameterParser;
-import ml.empee.commandsManager.parsers.ParserDescription;
 import ml.empee.mysticalBarriers.model.Barrier;
 import ml.empee.mysticalBarriers.services.BarriersService;
 
@@ -19,7 +19,7 @@ public class BarrierParser extends ParameterParser<Barrier> {
 
   public BarrierParser(BarriersService barriersService, String label, String defaultValue) {
     super(label, defaultValue);
-    this.descriptor = new ParserDescription("barrier", "Thia parameter identify a barrier by it's name", null);
+    this.descriptionBuilder = new DescriptionBuilder("barrier", "This parameter identify a barrier by it's name", null);
     this.barriersService = barriersService;
   }
 
@@ -31,7 +31,7 @@ public class BarrierParser extends ParameterParser<Barrier> {
   @Override
   public Barrier parse(int i, String... args) {
     Barrier result = barriersService.findBarrierByID(args[i]);
-    if(result == null) {
+    if (result == null) {
       throw new CommandException("Can't find the barrier '&e" + args[i] + "&c'");
     }
 

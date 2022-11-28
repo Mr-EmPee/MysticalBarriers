@@ -14,8 +14,8 @@ import ml.empee.commandsManager.command.annotations.CommandRoot;
 import ml.empee.commandsManager.parsers.types.annotations.IntegerParam;
 import ml.empee.commandsManager.parsers.types.annotations.StringParam;
 import ml.empee.mysticalBarriers.MysticalBarriersPlugin;
-import ml.empee.mysticalBarriers.controllers.commands.components.BarrierDirection;
 import ml.empee.mysticalBarriers.controllers.commands.listeners.BarrierDefiner;
+import ml.empee.mysticalBarriers.controllers.commands.parsers.BarrierDirection;
 import ml.empee.mysticalBarriers.helpers.PlayerContext;
 import ml.empee.mysticalBarriers.helpers.Tuple;
 import ml.empee.mysticalBarriers.model.Barrier;
@@ -23,7 +23,7 @@ import ml.empee.mysticalBarriers.services.BarriersService;
 import ml.empee.mysticalBarriers.utils.Logger;
 import ml.empee.mysticalBarriers.utils.ServerVersion;
 
-@CommandRoot(label = "mysticalbarriers", aliases = { "mb", "mysticalb" })
+@CommandRoot(label = "mb", aliases = { "mysticalbarriers", "mysticalb" })
 public class MysticalBarriersCommand extends Command {
 
   private final PlayerContext<Tuple<String, Location>> barrierCreationContext = PlayerContext.get("barrierCreation");
@@ -38,7 +38,7 @@ public class MysticalBarriersCommand extends Command {
   }
 
   @CommandNode(
-      parent = "mysticalbarriers",
+      parent = "mb",
       label = "create",
       description = "Select the barrier corners by right-clicking on a block \n"
                     + "or cancel the operation with a left click",
@@ -59,7 +59,7 @@ public class MysticalBarriersCommand extends Command {
   }
 
   @CommandNode(
-      parent = "mysticalbarriers",
+      parent = "mb",
       label = "modify material",
       description = "Change the material of a barrier",
       permission = "mysticalbarriers.command.modify"
@@ -73,7 +73,7 @@ public class MysticalBarriersCommand extends Command {
   }
 
   @CommandNode(
-      parent = "mysticalbarriers",
+      parent = "mb",
       label = "modify range",
       description = "Change the activation range of a barrier",
       permission = "mysticalbarriers.command.modify"
@@ -89,7 +89,7 @@ public class MysticalBarriersCommand extends Command {
   }
 
   @CommandNode(
-      parent = "mysticalbarriers",
+      parent = "mb",
       label = "modify direction",
       description = "Specify the connection direction of the barrier's blocks",
       permission = "mysticalbarriers.command.modify"
@@ -114,7 +114,7 @@ public class MysticalBarriersCommand extends Command {
   }
 
   @CommandNode(
-      parent = "mysticalbarriers",
+      parent = "mb",
       label = "list",
       description = "List all the barriers created",
       permission = "mysticalbarriers.command.list"
@@ -137,7 +137,7 @@ public class MysticalBarriersCommand extends Command {
   }
 
   @CommandNode(
-      parent = "mysticalbarriers",
+      parent = "mb",
       label = "remove",
       description = "Remove a barrier",
       permission = "mysticalbarriers.command.remove"
@@ -149,7 +149,7 @@ public class MysticalBarriersCommand extends Command {
   }
 
   @CommandNode(
-      parent = "mysticalbarriers",
+      parent = "mb",
       label = "debug",
       description = "Use this command if you're having issues with the plugin\n"
                     + "and you want to send the plugin's debug information to the developer",
@@ -166,7 +166,7 @@ public class MysticalBarriersCommand extends Command {
   }
 
   @CommandNode(
-      parent = "mysticalbarriers",
+      parent = "mb",
       label = "reload",
       description = "Reload the plugin",
       permission = "mysticalbarriers.command.reload"

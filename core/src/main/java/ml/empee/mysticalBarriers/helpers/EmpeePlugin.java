@@ -10,7 +10,6 @@ import ml.empee.commandsManager.parsers.ParserManager;
 import ml.empee.mysticalBarriers.services.AbstractService;
 import ml.empee.mysticalBarriers.services.listeners.AbstractListener;
 import ml.empee.mysticalBarriers.utils.Logger;
-import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 
 public abstract class EmpeePlugin extends JavaPlugin {
 
@@ -18,7 +17,6 @@ public abstract class EmpeePlugin extends JavaPlugin {
   private AbstractListener[] listeners = new AbstractListener[0];
 
   protected CommandManager commandManager;
-  protected BukkitAudiences adventure;
 
   @Override
   public void onEnable() {
@@ -58,7 +56,7 @@ public abstract class EmpeePlugin extends JavaPlugin {
   }
 
   private void registerCommands() {
-    commandManager = new CommandManager(this, adventure);
+    commandManager = new CommandManager(this);
     Logger.info("Baking commands...");
     registerParsers(commandManager.getParserManager());
     Command[] commands = buildCommands();
