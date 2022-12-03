@@ -20,22 +20,31 @@ import ml.empee.mysticalBarriers.utils.LocationUtils;
 
 public class Barrier {
 
-  @Expose @Getter
+  @Expose
+  @Getter
   private final String id;
 
-  @Expose @Getter
+  @Expose
+  @Getter
   private final Location firstCorner;
 
-  @Expose @Getter
+  @Expose
+  @Getter
   private final Location secondCorner;
 
-  @Expose @Getter @Setter
+  @Expose
+  @Getter
+  @Setter
   private Material material;
 
-  @Expose @Getter @Setter
+  @Expose
+  @Getter
+  @Setter
   private int activationRange;
 
-  @Expose @Getter @Setter
+  @Expose
+  @Getter
+  @Setter
   private String blockData;
 
   private Set<Tuple<Integer, Integer>> chunks;
@@ -76,7 +85,7 @@ public class Barrier {
   }
 
   public boolean isBarrierBlock(Location location) {
-    if(!getWorld().equals(location.getWorld())) {
+    if (!getWorld().equals(location.getWorld())) {
       return false;
     }
 
@@ -84,7 +93,7 @@ public class Barrier {
   }
 
   public boolean isBarrierChunk(int chunkX, int chunkZ) {
-    if(chunks == null) {
+    if (chunks == null) {
       calculateChunks();
     }
 
@@ -97,14 +106,14 @@ public class Barrier {
 
   public void forEachVisibleBarrierBlock(Location location, TriConsumer<Integer, Integer, Integer> consumer) {
     Objects.requireNonNull(location.getWorld());
-    if(!location.getWorld().equals(getWorld())) {
+    if (!location.getWorld().equals(getWorld())) {
       return;
     }
 
     LocationUtils.radiusSearch(location, activationRange, (x, y, z) -> {
-      if(isBarrierChunk(x >> 4, z >> 4)) {
-        if(location.getWorld().getBlockAt(x, y, z).getType() == Material.AIR) {
-          if(isBarrierBlock(x, y, z)) {
+      if (isBarrierChunk(x >> 4, z >> 4)) {
+        if (location.getWorld().getBlockAt(x, y, z).getType() == Material.AIR) {
+          if (isBarrierBlock(x, y, z)) {
             consumer.accept(x, y, z);
           }
         }
@@ -119,9 +128,9 @@ public class Barrier {
   private void calculateChunks() {
     chunks = new HashSet<>();
 
-    for (int x = firstCorner.getBlockX(); x <= secondCorner.getBlockX(); x += 16) {
-      for (int z = firstCorner.getBlockZ(); z <= secondCorner.getBlockZ(); z += 16) {
-        chunks.add(new Tuple<>(x >> 4, z >> 4));
+    for (int chunkX = firstCorner.getBlockX() >> 4; chunkX <= secondCorner.getBlockX() >> 4; chunkX++) {
+      for (int chunkZ = firstCorner.getBlockZ() >> 4; chunkZ <= secondCorner.getBlockZ() >> 4; chunkZ++) {
+        chunks.add(new Tuple<>(chunkX, chunkZ));
       }
     }
   }
