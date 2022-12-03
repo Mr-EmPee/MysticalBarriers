@@ -26,14 +26,14 @@ import ml.empee.mysticalBarriers.services.BarriersService;
 import ml.empee.mysticalBarriers.utils.LocationUtils;
 import ml.empee.mysticalBarriers.utils.Logger;
 
-public class BarrierGuard extends AbstractListener {
+public class BarrierGuarder extends AbstractListener {
 
   private static final ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
   private final BarriersService barriersService;
 
   private final PacketListener[] packetListeners;
 
-  public BarrierGuard(EmpeePlugin plugin, BarriersService barriersService) {
+  public BarrierGuarder(EmpeePlugin plugin, BarriersService barriersService) {
     this.barriersService = barriersService;
 
     packetListeners = new PacketListener[] {
@@ -118,7 +118,7 @@ public class BarrierGuard extends AbstractListener {
   private static boolean isWithinBarrierRange(
       Player player, Location targetLoc, Barrier barrier
   ) {
-    return LocationUtils.fastBlockDistance(
+    return LocationUtils.getGreatestAxisDistance(
         player.getLocation().getBlock().getLocation(),
         targetLoc
     ) <= barrier.getActivationRange();

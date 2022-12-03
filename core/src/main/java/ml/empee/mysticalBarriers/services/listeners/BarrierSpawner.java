@@ -18,7 +18,7 @@ import ml.empee.mysticalBarriers.model.packets.MultiBlockPacket;
 import ml.empee.mysticalBarriers.services.BarriersService;
 
 @RequiredArgsConstructor
-public class BarrierBlocksSpawner extends AbstractListener {
+public class BarrierSpawner extends AbstractListener {
   private final BarriersService barriersService;
 
   @EventHandler

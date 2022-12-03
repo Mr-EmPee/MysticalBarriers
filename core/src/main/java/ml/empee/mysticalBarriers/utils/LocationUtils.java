@@ -28,7 +28,17 @@ public final class LocationUtils {
     }
   }
 
-  public static int fastBlockDistance(Location location1, Location location2) {
+  /**
+   * Get the major distance between the the x,y,z axis of the two locations.
+   * <br><br>
+   * <b>Example:</b> <br>
+   * <ul>
+   * <li>Location 1: 0, -20, 0</li>
+   * <li>Location 2: 10, 0, -13</li>
+   * </ul>
+   * this method will return 20
+   */
+  public static int getGreatestAxisDistance(Location location1, Location location2) {
     int x = location1.getBlockX() - location2.getBlockX();
     int y = location1.getBlockY() - location2.getBlockY();
     int z = location1.getBlockZ() - location2.getBlockZ();
@@ -36,7 +46,7 @@ public final class LocationUtils {
     return Math.max(Math.max(Math.abs(x), Math.abs(y)), Math.abs(z));
   }
 
-  public static void aroundBlock(Location location, TriConsumer<Integer, Integer, Integer> consumer) {
+  public static void forEachAdjacentBlock(Location location, TriConsumer<Integer, Integer, Integer> consumer) {
 
     consumer.accept(location.getBlockX(), location.getBlockY(), location.getBlockZ());
     consumer.accept(location.getBlockX() + 1, location.getBlockY(), location.getBlockZ());
@@ -48,8 +58,8 @@ public final class LocationUtils {
 
   }
 
-  public static void aroundBlock(Location location, Consumer<Location> consumer) {
-    aroundBlock(location, (x, y, z) -> consumer.accept(new Location(location.getWorld(), x, y, z)));
+  public static void forEachAdjacentBlock(Location location, Consumer<Location> consumer) {
+    forEachAdjacentBlock(location, (x, y, z) -> consumer.accept(new Location(location.getWorld(), x, y, z)));
   }
 
 }

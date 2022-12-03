@@ -10,9 +10,9 @@ import ml.empee.mysticalBarriers.model.Barrier;
 import ml.empee.mysticalBarriers.services.AbstractService;
 import ml.empee.mysticalBarriers.services.BarriersService;
 import ml.empee.mysticalBarriers.services.listeners.AbstractListener;
-import ml.empee.mysticalBarriers.services.listeners.BarrierBlocksSpawner;
-import ml.empee.mysticalBarriers.services.listeners.BarrierGuard;
+import ml.empee.mysticalBarriers.services.listeners.BarrierGuarder;
 import ml.empee.mysticalBarriers.services.listeners.BarrierRefresher;
+import ml.empee.mysticalBarriers.services.listeners.BarrierSpawner;
 import ml.empee.notifier.SimpleNotifier;
 
 public final class MysticalBarriersPlugin extends EmpeePlugin {
@@ -37,8 +37,8 @@ public final class MysticalBarriersPlugin extends EmpeePlugin {
     BarriersService barriersService = getService(BarriersService.class);
     return new AbstractListener[] {
         new BarrierRefresher(this, barriersService),
-        new BarrierBlocksSpawner(barriersService),
-        new BarrierGuard(this, barriersService)
+        new BarrierSpawner(barriersService),
+        new BarrierGuarder(this, barriersService)
     };
   }
 

@@ -20,31 +20,22 @@ import ml.empee.mysticalBarriers.utils.LocationUtils;
 
 public class Barrier {
 
-  @Expose
-  @Getter
+  @Expose @Getter
   private final String id;
 
-  @Expose
-  @Getter
+  @Expose @Getter
   private final Location firstCorner;
 
-  @Expose
-  @Getter
+  @Expose @Getter
   private final Location secondCorner;
 
-  @Expose
-  @Getter
-  @Setter
+  @Expose @Getter @Setter
   private Material material;
 
-  @Expose
-  @Getter
-  @Setter
+  @Expose @Getter @Setter
   private int activationRange;
 
-  @Expose
-  @Getter
-  @Setter
+  @Expose @Getter @Setter
   private String blockData;
 
   private Set<Tuple<Integer, Integer>> chunks;
@@ -58,7 +49,6 @@ public class Barrier {
     Tuple<Location, Location> corners = sortCorners(firstCorner, secondCorner);
     this.firstCorner = corners.getFirst();
     this.secondCorner = corners.getSecond();
-
   }
 
   private Tuple<Location, Location> sortCorners(Location firstCorner, Location secondCorner) {
