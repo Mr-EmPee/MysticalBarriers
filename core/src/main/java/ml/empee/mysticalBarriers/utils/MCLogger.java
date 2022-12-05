@@ -2,36 +2,26 @@ package ml.empee.mysticalBarriers.utils;
 
 import java.util.Locale;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
-import ml.empee.commandsManager.command.Command;
-import ml.empee.mysticalBarriers.MysticalBarriersPlugin;
+import lombok.Setter;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class Logger {
+public final class MCLogger {
 
-  public static final String PREFIX = "  &5MyB &8»&r ";
-  private static final java.util.logging.Logger consoleLogger = JavaPlugin.getProvidingPlugin(
-      MysticalBarriersPlugin.class).getLogger();
+  private static final Logger consoleLogger = JavaPlugin.getProvidingPlugin(MCLogger.class).getLogger();
 
+  @Getter @Setter
+  private static String prefix = "";
+  @Getter @Setter
   private static boolean isDebugEnabled;
-
-  static {
-    Command.setPrefix(PREFIX + "&c");
-  }
-
-  public static boolean isDebugEnabled() {
-    return isDebugEnabled;
-  }
-
-  public static void setDebugMode(boolean isDebugEnabled) {
-    Logger.isDebugEnabled = isDebugEnabled;
-  }
 
   public static void info(String message, Object... args) {
     if (consoleLogger.isLoggable(Level.INFO)) {
@@ -61,7 +51,7 @@ public final class Logger {
     message = String.format(message, args);
 
     message = message.replace("\n", "\n&r");
-    message = (PREFIX + message).replace("&r", color.toString());
+    message = (prefix + message).replace("&r", color.toString());
     if (message.endsWith("\n")) {
       message += " ";
     }
@@ -86,7 +76,7 @@ public final class Logger {
   }
 
   public static void debug(CommandSender player, String message, Object... args) {
-    if(isDebugEnabled) {
+    if (isDebugEnabled) {
       log(player, message, ChatColor.DARK_GRAY, args);
     }
   }

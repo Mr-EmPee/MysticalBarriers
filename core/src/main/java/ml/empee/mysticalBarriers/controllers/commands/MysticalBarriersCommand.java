@@ -20,7 +20,7 @@ import ml.empee.mysticalBarriers.helpers.PlayerContext;
 import ml.empee.mysticalBarriers.helpers.Tuple;
 import ml.empee.mysticalBarriers.model.Barrier;
 import ml.empee.mysticalBarriers.services.BarriersService;
-import ml.empee.mysticalBarriers.utils.Logger;
+import ml.empee.mysticalBarriers.utils.MCLogger;
 import ml.empee.mysticalBarriers.utils.ServerVersion;
 
 @CommandRoot(label = "mb", aliases = { "mysticalbarriers", "mysticalb" })
@@ -46,12 +46,12 @@ public class MysticalBarriersCommand extends Command {
   )
   public void onBarrierCreate(Player sender, @StringParam(label = "name") String barrier) {
     if (barriersService.findBarrierByID(barrier) != null) {
-      Logger.error(sender, "A barrier named '&e%s&r' already exists!", barrier);
+      MCLogger.error(sender, "A barrier named '&e%s&r' already exists!", barrier);
       return;
     }
 
     barrierCreationContext.put(sender, new Tuple<>(barrier, null));
-    Logger.info(sender,
+    MCLogger.info(sender,
         "Barrier creation mode enabled! \n\n"
         + "\tSelect the barrier corners by right-clicking on a block \n"
         + "\tor cancel the operation with a left click \n"
@@ -69,7 +69,7 @@ public class MysticalBarriersCommand extends Command {
     barrier.setBlockData(null);
 
     barriersService.updateBarrier(barrier);
-    Logger.info(sender, "Barrier material changed to '&e%s&r'", material.name());
+    MCLogger.info(sender, "Barrier material changed to '&e%s&r'", material.name());
   }
 
   @CommandNode(
@@ -85,7 +85,7 @@ public class MysticalBarriersCommand extends Command {
     barrier.setActivationRange(range);
 
     barriersService.updateBarrier(barrier);
-    Logger.info(sender, "Barrier activation range changed to &e%d&r", range);
+    MCLogger.info(sender, "Barrier activation range changed to &e%d&r", range);
   }
 
   @CommandNode(
@@ -96,21 +96,21 @@ public class MysticalBarriersCommand extends Command {
   )
   public void onBarrierModifyConnectionDirection(CommandSender sender, Barrier barrier, BarrierDirection direction) {
     if(ServerVersion.isLowerThan(1, 13)) {
-      Logger.error(sender, "This feature is available on 1.13+ servers only");
+      MCLogger.error(sender, "This feature is available on 1.13+ servers only");
       return;
     }
 
     try {
       barrier.getMaterial().createBlockData(direction.getData());
     } catch (IllegalArgumentException e) {
-      Logger.error(sender, "The barrier material doesn't support the direction '&e%s&r'", direction.name());
+      MCLogger.error(sender, "The barrier material doesn't support the direction '&e%s&r'", direction.name());
       return;
     }
 
     barrier.setBlockData(direction.getData());
     barriersService.updateBarrier(barrier);
 
-    Logger.info(sender, "Barrier direction changed to '&e%s&r'", direction.name());
+    MCLogger.info(sender, "Barrier direction changed to '&e%s&r'", direction.name());
   }
 
   @CommandNode(
@@ -133,7 +133,7 @@ public class MysticalBarriersCommand extends Command {
       }
     }
 
-    Logger.info(sender, message.toString());
+    MCLogger.info(sender, message.toString());
   }
 
   @CommandNode(
@@ -144,7 +144,7 @@ public class MysticalBarriersCommand extends Command {
   )
   public void onBarrierRemove(CommandSender sender, Barrier barrier) {
     if (barriersService.removeBarrier(barrier)) {
-      Logger.info(sender, "The barrier '&e%s&r' has been removed!", barrier.getId());
+      MCLogger.info(sender, "The barrier '&e%s&r' has been removed!", barrier.getId());
     }
   }
 
@@ -156,12 +156,12 @@ public class MysticalBarriersCommand extends Command {
       permission = "mysticalbarriers.command.debug"
   )
   public void onDebug(CommandSender sender) {
-    if (!Logger.isDebugEnabled()) {
-      Logger.setDebugMode(true);
-      Logger.info(sender, "Debug mode enabled!");
+    if (!MCLogger.isDebugEnabled()) {
+      MCLogger.setDebugEnabled(true);
+      MCLogger.info(sender, "Debug mode enabled!");
     } else {
-      Logger.setDebugMode(false);
-      Logger.info(sender, "Debug mode disabled!");
+      MCLogger.setDebugEnabled(false);
+      MCLogger.info(sender, "Debug mode disabled!");
     }
   }
 
@@ -173,7 +173,7 @@ public class MysticalBarriersCommand extends Command {
   )
   public void onReload(CommandSender sender) {
     JavaPlugin.getPlugin(MysticalBarriersPlugin.class).reload();
-    Logger.info(sender, "The plugin has been reloaded!");
+    MCLogger.info(sender, "The plugin has been reloaded!");
   }
 
 }

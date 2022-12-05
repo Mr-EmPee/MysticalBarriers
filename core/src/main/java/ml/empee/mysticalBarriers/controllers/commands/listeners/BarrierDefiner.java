@@ -14,7 +14,7 @@ import ml.empee.mysticalBarriers.helpers.PlayerContext;
 import ml.empee.mysticalBarriers.helpers.Tuple;
 import ml.empee.mysticalBarriers.model.Barrier;
 import ml.empee.mysticalBarriers.services.BarriersService;
-import ml.empee.mysticalBarriers.utils.Logger;
+import ml.empee.mysticalBarriers.utils.MCLogger;
 import ml.empee.mysticalBarriers.utils.ServerVersion;
 
 @RequiredArgsConstructor
@@ -47,7 +47,7 @@ public class BarrierDefiner implements Listener {
 
     if (event.getAction().name().contains("LEFT")) {
       iterator.remove();
-      Logger.info(player, "Barrier creation mode disabled!");
+      MCLogger.info(player, "Barrier creation mode disabled!");
     } else {
       if (event.getClickedBlock() != null) {
         defineBarrier(iterator, player, tuple, event.getClickedBlock());
@@ -63,7 +63,7 @@ public class BarrierDefiner implements Listener {
 
     if (tuple.getSecond() == null) {
       tuple.setSecond(clickedBlock.getLocation());
-      Logger.info(player, "You selected the first corner");
+      MCLogger.info(player, "You selected the first corner");
     } else {
       iterator.remove();
 
@@ -76,9 +76,9 @@ public class BarrierDefiner implements Listener {
                   .build()
           )
       ) {
-        Logger.info(player, "The barrier '&e%s&r' has been created!", tuple.getFirst());
+        MCLogger.info(player, "The barrier '&e%s&r' has been created!", tuple.getFirst());
       } else {
-        Logger.error(player, "A barrier named '&e%s&r' already exists!", tuple.getFirst());
+        MCLogger.error(player, "A barrier named '&e%s&r' already exists!", tuple.getFirst());
       }
     }
 

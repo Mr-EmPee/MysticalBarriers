@@ -1,4 +1,4 @@
-package ml.empee.mysticalBarriers.helpers;
+package ml.empee.mysticalBarriers;
 
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
@@ -7,11 +7,11 @@ import org.bukkit.plugin.java.JavaPlugin;
 import ml.empee.commandsManager.CommandManager;
 import ml.empee.commandsManager.command.Command;
 import ml.empee.commandsManager.parsers.ParserManager;
+import ml.empee.mysticalBarriers.listeners.AbstractListener;
 import ml.empee.mysticalBarriers.services.AbstractService;
-import ml.empee.mysticalBarriers.services.listeners.AbstractListener;
-import ml.empee.mysticalBarriers.utils.Logger;
+import ml.empee.mysticalBarriers.utils.MCLogger;
 
-public abstract class EmpeePlugin extends JavaPlugin {
+public abstract class AbstractPlugin extends JavaPlugin {
 
   private AbstractService[] services = new AbstractService[0];
   private AbstractListener[] listeners = new AbstractListener[0];
@@ -57,34 +57,34 @@ public abstract class EmpeePlugin extends JavaPlugin {
 
   private void registerCommands() {
     commandManager = new CommandManager(this);
-    Logger.info("Baking commands...");
+    MCLogger.info("Baking commands...");
     registerParsers(commandManager.getParserManager());
     Command[] commands = buildCommands();
 
-    Logger.info("Started commands registration process");
+    MCLogger.info("Started commands registration process");
     int i = 1;
     for (Command command : commands) {
-      Logger.info(" - (" + i + "/" + commands.length + ") Registering " + command.getClass().getSimpleName());
+      MCLogger.info(" - (" + i + "/" + commands.length + ") Registering " + command.getClass().getSimpleName());
       commandManager.registerCommand(command);
       i++;
     }
 
-    Logger.info("All commands have been registered");
+    MCLogger.info("All commands have been registered");
   }
 
   private void registerListeners() {
-    Logger.info("Baking listeners...");
+    MCLogger.info("Baking listeners...");
     listeners = buildListeners();
 
-    Logger.info("Started listener registration process");
+    MCLogger.info("Started listener registration process");
     int i = 1;
     for (Listener listener : listeners) {
-      Logger.info(" - (" + i + "/" + listeners.length + ") Registering " + listener.getClass().getSimpleName());
+      MCLogger.info(" - (" + i + "/" + listeners.length + ") Registering " + listener.getClass().getSimpleName());
       getServer().getPluginManager().registerEvents(listener, this);
       i++;
     }
 
-    Logger.info("All listeners have been registered");
+    MCLogger.info("All listeners have been registered");
   }
 
   protected void registerParsers(ParserManager parserManager) {

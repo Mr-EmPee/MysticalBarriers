@@ -18,7 +18,6 @@ import com.google.gson.GsonBuilder;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import ml.empee.mysticalBarriers.exceptions.MysticalBarrierException;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SerializationUtils {
@@ -40,17 +39,17 @@ public final class SerializationUtils {
         plugin, () -> serialize(object, target)
     );
   }
+
   public static void serialize(Object object, String target) {
     File file = new File(plugin.getDataFolder(), target);
     file.getParentFile().mkdirs();
 
-    try(BufferedWriter w = Files.newBufferedWriter(file.toPath())) {
+    try (BufferedWriter w = Files.newBufferedWriter(file.toPath())) {
       w.append(gson.toJson(object));
     } catch (IOException e) {
-      throw new MysticalBarrierException("Error while serializing " + target, e);
+      throw new RuntimeException("Error while serializing " + target, e);
     }
   }
-
 
   @Nullable
   public static <T> T deserialize(String source, Class<T> clazz) {
@@ -59,13 +58,13 @@ public final class SerializationUtils {
     } catch (NoSuchFileException e) {
       return null;
     } catch (IOException e) {
-      throw new MysticalBarrierException("Error while deserializing the source " + source, e);
+      throw new RuntimeException("Error while deserializing the source " + source, e);
     }
   }
 
   public static <T> void deserializeAsync(String source, Class<T> type, Consumer<T> consumer) {
     Bukkit.getScheduler().runTaskAsynchronously(
-        plugin, () -> consumer.accept( deserialize(source, type) )
+        plugin, () -> consumer.accept(deserialize(source, type))
     );
   }
 

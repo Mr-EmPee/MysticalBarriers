@@ -1,22 +1,22 @@
 package ml.empee.mysticalBarriers.services;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-
+import ml.empee.mysticalBarriers.exceptions.MysticalBarrierException;
+import ml.empee.mysticalBarriers.model.Barrier;
+import ml.empee.mysticalBarriers.model.packets.MultiBlockPacket;
+import ml.empee.mysticalBarriers.utils.ArrayUtils;
+import ml.empee.mysticalBarriers.utils.MCLogger;
+import ml.empee.mysticalBarriers.utils.serialization.SerializationUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
-
-import ml.empee.mysticalBarriers.exceptions.MysticalBarrierException;
-import ml.empee.mysticalBarriers.model.Barrier;
-import ml.empee.mysticalBarriers.model.packets.MultiBlockPacket;
-import ml.empee.mysticalBarriers.utils.ArrayUtils;
-import ml.empee.mysticalBarriers.utils.Logger;
-import ml.empee.mysticalBarriers.utils.serialization.SerializationUtils;
 
 public class BarriersService extends AbstractService {
 
@@ -26,7 +26,7 @@ public class BarriersService extends AbstractService {
 
   public BarriersService() {
     barriers.addAll(ArrayUtils.toList(SerializationUtils.deserialize(FILE_NAME, Barrier[].class)));
-    Logger.info("Loaded " + barriers.size() + " barriers");
+    MCLogger.info("Loaded " + barriers.size() + " barriers");
 
     for (Player player : Bukkit.getOnlinePlayers()) {
       for (Barrier barrier : barriers) {
@@ -80,12 +80,24 @@ public class BarriersService extends AbstractService {
 
   public Barrier findBarrierAt(Location location) {
     for (Barrier barrier : barriers) {
-      if (barrier.isBarrierBlock(location)) {
+      if (barrier.existsBarrierAt(location)) {
         return barrier;
       }
     }
 
     return null;
+  }
+
+  public List<Barrier> findBarriersWithinRangeAt(Location location) {
+    ArrayList<Barrier> barriers = new ArrayList<>();
+
+    for (Barrier barrier : this.barriers) {
+      if (barrier.isWithinBarrierRange(location)) {
+        barriers.add(barrier);
+      }
+    }
+
+    return barriers;
   }
 
   @Nullable
@@ -122,9 +134,10 @@ public class BarriersService extends AbstractService {
     }
   }
 
-  public void hideBarrierTo(Player player, Barrier barrier) {
-    MultiBlockPacket packet = new MultiBlockPacket(player.getLocation(), false);
-    barrier.forEachVisibleBarrierBlock(player.getLocation(), (x, y, z) -> packet.addBlock(Material.AIR, x, y, z));
+  public void despawnBarrierAt(Location location, Barrier barrier, Player player) {
+    MultiBlockPacket packet = new MultiBlockPacket(location, false);
+    barrier.forEachVisibleBarrierBlock(location,
+        (x, y, z) -> packet.addBlock(Material.AIR, x, y, z));
     try {
       packet.send(player);
     } catch (InvocationTargetException e) {
@@ -133,9 +146,17 @@ public class BarriersService extends AbstractService {
     }
   }
 
+  public void hideBarrierTo(Player player, Barrier barrier) {
+    despawnBarrierAt(player.getLocation(), barrier, player);
+  }
+
   public void showBarrierTo(Player player, Barrier barrier) {
-    MultiBlockPacket packet = new MultiBlockPacket(player.getLocation(), false);
-    barrier.forEachVisibleBarrierBlock(player.getLocation(), (x, y, z) -> {
+    spawnBarrierAt(player.getLocation(), barrier, player);
+  }
+
+  public void spawnBarrierAt(Location location, Barrier barrier, Player player) {
+    MultiBlockPacket packet = new MultiBlockPacket(location, false);
+    barrier.forEachVisibleBarrierBlock(location, (x, y, z) -> {
       packet.addBackwardProofBlock(barrier.getMaterial(), null, barrier.getBlockData(), x, y, z);
     });
     try {

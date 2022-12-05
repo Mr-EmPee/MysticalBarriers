@@ -1,4 +1,4 @@
-package ml.empee.mysticalBarriers.services.listeners;
+package ml.empee.mysticalBarriers.services;
 
 import java.util.HashSet;
 
@@ -9,9 +9,8 @@ import org.bukkit.scheduler.BukkitTask;
 
 import ml.empee.mysticalBarriers.helpers.PlayerContext;
 import ml.empee.mysticalBarriers.model.Barrier;
-import ml.empee.mysticalBarriers.services.BarriersService;
 
-public class BarrierRefresher extends AbstractListener {
+public class BarrierRefresher extends AbstractService {
 
   private static final PlayerContext<HashSet<String>> playerContext = PlayerContext.get("visibleBarriers");
 
@@ -50,7 +49,7 @@ public class BarrierRefresher extends AbstractListener {
   }
 
   @Override
-  protected void onUnregister() {
+  protected void onDisable() {
     bukkitTask.cancel();
   }
 }

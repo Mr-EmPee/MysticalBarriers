@@ -1,15 +1,27 @@
 package ml.empee.mysticalBarriers.utils;
 
 import java.util.function.Consumer;
-
-import org.bukkit.Location;
-
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import ml.empee.mysticalBarriers.helpers.TriConsumer;
+import org.bukkit.Location;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class LocationUtils {
+
+  public static boolean hasChangedBlock(Location fromLoc, Location toLoc) {
+    if (toLoc == null) {
+      return false;
+    }
+
+    toLoc = toLoc.getBlock().getLocation();
+    fromLoc = fromLoc.getBlock().getLocation();
+    if (toLoc.equals(fromLoc)) {
+      return false;
+    }
+
+    return true;
+  }
 
   public static void radiusSearch(Location location, int radius, TriConsumer<Integer, Integer, Integer> consumer) {
     int maxX = location.getBlockX() + radius;
