@@ -6,10 +6,11 @@ import ml.empee.mysticalBarriers.controllers.commands.MysticalBarriersCommand;
 import ml.empee.mysticalBarriers.controllers.commands.parsers.BarrierParser;
 import ml.empee.mysticalBarriers.listeners.AbstractListener;
 import ml.empee.mysticalBarriers.listeners.BarrierGuarder;
+import ml.empee.mysticalBarriers.listeners.BarrierRefresher;
 import ml.empee.mysticalBarriers.listeners.BarrierSpawner;
+import ml.empee.mysticalBarriers.listeners.PlayerBlocker;
 import ml.empee.mysticalBarriers.model.Barrier;
 import ml.empee.mysticalBarriers.services.AbstractService;
-import ml.empee.mysticalBarriers.services.BarrierRefresher;
 import ml.empee.mysticalBarriers.services.BarriersService;
 import ml.empee.mysticalBarriers.utils.MCLogger;
 import ml.empee.notifier.SimpleNotifier;
@@ -39,7 +40,9 @@ public final class MysticalBarriersPlugin extends AbstractPlugin {
     BarriersService barriersService = getService(BarriersService.class);
     return new AbstractListener[] {
         new BarrierSpawner(barriersService),
-        new BarrierGuarder(this, barriersService)
+        new BarrierGuarder(barriersService),
+        new PlayerBlocker(barriersService),
+        new BarrierRefresher(this, barriersService)
     };
   }
 
@@ -55,8 +58,7 @@ public final class MysticalBarriersPlugin extends AbstractPlugin {
     BarriersService barriersService = new BarriersService();
 
     return new AbstractService[] {
-        barriersService,
-        new BarrierRefresher(this, barriersService)
+        barriersService
     };
   }
 }
