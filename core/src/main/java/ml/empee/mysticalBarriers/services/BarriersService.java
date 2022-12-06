@@ -88,11 +88,14 @@ public class BarriersService extends AbstractService {
     return null;
   }
 
-  public List<Barrier> findBarriersWithinRangeAt(Location location) {
+  /**
+   * @param range if not specified will use the barrier range
+   */
+  public List<Barrier> findBarriersWithinRangeAt(Location location, @Nullable Integer range) {
     ArrayList<Barrier> barriers = new ArrayList<>();
 
     for (Barrier barrier : this.barriers) {
-      if (barrier.isWithinBarrierRange(location)) {
+      if (barrier.isWithinRange(location, range)) {
         barriers.add(barrier);
       }
     }

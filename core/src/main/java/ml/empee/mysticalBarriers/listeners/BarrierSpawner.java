@@ -21,7 +21,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 public class BarrierSpawner extends AbstractListener {
   private final BarriersService barriersService;
 
-  @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
+  @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
   public void sendBarriersBlocksOnPlayerMove(PlayerMoveEvent event) {
     if(!LocationUtils.hasChangedBlock(event.getFrom(), event.getTo())) {
       return;
@@ -32,7 +32,7 @@ public class BarrierSpawner extends AbstractListener {
 
   private void sendBarriersBlocks(Location toLoc, Location fromLoc, Player player) {
     for (Barrier barrier : barriersService.findAllBarriers()) {
-      if (barrier.isHiddenFor(player) || (!barrier.isWithinBarrierRange(toLoc) && !barrier.isWithinBarrierRange(fromLoc))) {
+      if (barrier.isHiddenFor(player) || (!barrier.isWithinRange(toLoc, null) && !barrier.isWithinRange(fromLoc, null))) {
         continue;
       }
 

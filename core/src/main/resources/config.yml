@@ -1,0 +1,3 @@
+protections:
+  block-chorus-teleportation: true #Prevent teleportation due to eating a chorus fruit within 8 blocks of a barrier
+  block-enderpearl: true #Prevent enderpearls from getting through barriers

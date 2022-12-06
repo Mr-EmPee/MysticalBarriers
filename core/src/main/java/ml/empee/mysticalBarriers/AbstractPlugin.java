@@ -1,18 +1,20 @@
 package ml.empee.mysticalBarriers;
 
+import ml.empee.commandsManager.CommandManager;
+import ml.empee.commandsManager.command.Command;
+import ml.empee.commandsManager.parsers.ParserManager;
+import ml.empee.configurator.ConfigFile;
+import ml.empee.configurator.ConfigurationManager;
+import ml.empee.mysticalBarriers.listeners.AbstractListener;
+import ml.empee.mysticalBarriers.services.AbstractService;
+import ml.empee.mysticalBarriers.utils.MCLogger;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import ml.empee.commandsManager.CommandManager;
-import ml.empee.commandsManager.command.Command;
-import ml.empee.commandsManager.parsers.ParserManager;
-import ml.empee.mysticalBarriers.listeners.AbstractListener;
-import ml.empee.mysticalBarriers.services.AbstractService;
-import ml.empee.mysticalBarriers.utils.MCLogger;
-
 public abstract class AbstractPlugin extends JavaPlugin {
 
+  private ConfigFile[] configFiles = new ConfigFile[0];
   private AbstractService[] services = new AbstractService[0];
   private AbstractListener[] listeners = new AbstractListener[0];
 
@@ -50,9 +52,17 @@ public abstract class AbstractPlugin extends JavaPlugin {
   }
 
   protected void registerAll() {
+    loadConfigurations();
     services = buildServices();
     registerListeners();
     registerCommands();
+  }
+
+  private void loadConfigurations() {
+    configFiles = buildConfigurations();
+    for (ConfigFile configFile : configFiles) {
+      ConfigurationManager.loadConfiguration(configFile);
+    }
   }
 
   private void registerCommands() {
@@ -101,6 +111,19 @@ public abstract class AbstractPlugin extends JavaPlugin {
 
   protected AbstractService[] buildServices() {
     return new AbstractService[0];
+  }
+
+  protected ConfigFile[] buildConfigurations() {
+    return new ConfigFile[0];
+  }
+
+  public <T> T getConfig(Class<T> clazz) {
+    for (ConfigFile configFile : configFiles) {
+      if (configFile.getClass().equals(clazz)) {
+        return (T) configFile;
+      }
+    }
+    return null;
   }
 
   public <T> T getListener(Class<T> clazz) {

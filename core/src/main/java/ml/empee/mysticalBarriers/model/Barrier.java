@@ -96,26 +96,37 @@ public class Barrier {
     return chunks.contains(new Tuple<>(chunkX, chunkZ));
   }
 
-  public boolean isWithinBarrierRange(@Nullable World world, int x, int y, int z) {
+  /**
+   * @param world if not null checks even the world
+   * @param range if null use the barrier activation range
+   */
+  public boolean isWithinRange(@Nullable World world, @Nullable Integer range, int x, int y, int z) {
     if (world != null && !getWorld().equals(world)) {
       return false;
     }
 
-    boolean isWithinFirstCornerX = firstCorner.getBlockX() - activationRange<= x;
-    boolean isWithinFirstCornerY = firstCorner.getBlockY() - activationRange <= y;
-    boolean isWithinFirstCornerZ = firstCorner.getBlockZ() - activationRange <= z;
+    if (range == null) {
+      range = activationRange;
+    }
 
-    boolean isWithinSecondCornerX = secondCorner.getBlockX() + activationRange >= x;
-    boolean isWithinSecondCornerY = secondCorner.getBlockY() + activationRange >= y;
-    boolean isWithinSecondCornerZ = secondCorner.getBlockZ() + activationRange >= z;
+    boolean isWithinFirstCornerX = firstCorner.getBlockX() - range <= x;
+    boolean isWithinFirstCornerY = firstCorner.getBlockY() - range <= y;
+    boolean isWithinFirstCornerZ = firstCorner.getBlockZ() - range <= z;
+
+    boolean isWithinSecondCornerX = secondCorner.getBlockX() + range >= x;
+    boolean isWithinSecondCornerY = secondCorner.getBlockY() + range >= y;
+    boolean isWithinSecondCornerZ = secondCorner.getBlockZ() + range >= z;
 
     return isWithinSecondCornerX && isWithinFirstCornerX
            && isWithinFirstCornerY && isWithinSecondCornerY
            && isWithinFirstCornerZ && isWithinSecondCornerZ;
   }
 
-  public boolean isWithinBarrierRange(Location location) {
-    return isWithinBarrierRange(location.getWorld(), location.getBlockX(), location.getBlockY(), location.getBlockZ());
+  public boolean isWithinRange(Location location, @Nullable Integer range) {
+    return isWithinRange(
+        location.getWorld(), range,
+        location.getBlockX(), location.getBlockY(), location.getBlockZ()
+    );
   }
 
   public boolean isHiddenFor(Player player) {

@@ -2,13 +2,15 @@ package ml.empee.mysticalBarriers;
 
 import ml.empee.commandsManager.command.Command;
 import ml.empee.commandsManager.parsers.ParserManager;
+import ml.empee.configurator.ConfigFile;
+import ml.empee.mysticalBarriers.config.Config;
 import ml.empee.mysticalBarriers.controllers.commands.MysticalBarriersCommand;
 import ml.empee.mysticalBarriers.controllers.commands.parsers.BarrierParser;
 import ml.empee.mysticalBarriers.listeners.AbstractListener;
-import ml.empee.mysticalBarriers.listeners.BarrierGuarder;
-import ml.empee.mysticalBarriers.listeners.BarrierRefresher;
+import ml.empee.mysticalBarriers.listeners.BarrierBlocksUpdater;
+import ml.empee.mysticalBarriers.listeners.BarrierProtections;
 import ml.empee.mysticalBarriers.listeners.BarrierSpawner;
-import ml.empee.mysticalBarriers.listeners.PlayerBlocker;
+import ml.empee.mysticalBarriers.listeners.PlayerMovementBlocker;
 import ml.empee.mysticalBarriers.model.Barrier;
 import ml.empee.mysticalBarriers.services.AbstractService;
 import ml.empee.mysticalBarriers.services.BarriersService;
@@ -36,13 +38,20 @@ public final class MysticalBarriersPlugin extends AbstractPlugin {
   }
 
   @Override
+  protected ConfigFile[] buildConfigurations() {
+    return new ConfigFile[] {
+        new Config(this)
+    };
+  }
+
+  @Override
   protected AbstractListener[] buildListeners() {
     BarriersService barriersService = getService(BarriersService.class);
     return new AbstractListener[] {
         new BarrierSpawner(barriersService),
-        new BarrierGuarder(barriersService),
-        new PlayerBlocker(barriersService),
-        new BarrierRefresher(this, barriersService)
+        new BarrierProtections(barriersService),
+        new PlayerMovementBlocker(barriersService, getConfig(Config.class)),
+        new BarrierBlocksUpdater(barriersService)
     };
   }
 

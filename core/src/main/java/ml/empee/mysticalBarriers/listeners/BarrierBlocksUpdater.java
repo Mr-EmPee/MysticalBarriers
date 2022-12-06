@@ -11,14 +11,14 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.scheduler.BukkitTask;
 
-public class BarrierRefresher extends AbstractListener {
+public class BarrierBlocksUpdater extends AbstractListener {
 
   private static final PlayerContext<HashSet<String>> playerContext = PlayerContext.get("visibleBarriers");
 
   private final BarriersService barriersService;
   private final BukkitTask bukkitTask;
 
-  public BarrierRefresher(BarriersService barriersService) {
+  public BarrierBlocksUpdater(BarriersService barriersService) {
     this.barriersService = barriersService;
 
     bukkitTask = Bukkit.getScheduler().runTaskTimer(plugin, refreshOnPermissionChange(), 0, 20);
@@ -32,11 +32,11 @@ public class BarrierRefresher extends AbstractListener {
       return;
     }
 
-    for(Barrier barrier : barriersService.findBarriersWithinRangeAt(fromLoc)) {
+    for(Barrier barrier : barriersService.findBarriersWithinRangeAt(fromLoc, null)) {
       barriersService.despawnBarrierAt(fromLoc, barrier, event.getPlayer());
     }
 
-    for(Barrier barrier : barriersService.findBarriersWithinRangeAt(toLoc)) {
+    for(Barrier barrier : barriersService.findBarriersWithinRangeAt(toLoc, null)) {
       barriersService.spawnBarrierAt(toLoc, barrier, event.getPlayer());
     }
   }

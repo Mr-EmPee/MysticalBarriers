@@ -22,14 +22,14 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 
-public class BarrierGuarder extends AbstractListener {
+public class BarrierProtections extends AbstractListener {
 
   private static final ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
   private final PacketListener[] packetListeners;
 
   private final BarriersService barriersService;
 
-  public BarrierGuarder(BarriersService barriersService) {
+  public BarrierProtections(BarriersService barriersService) {
     this.barriersService = barriersService;
 
     packetListeners = new PacketListener[] {
@@ -109,6 +109,8 @@ public class BarrierGuarder extends AbstractListener {
     }
 
   }
+
+  //TODO: Piston protection
 
   /**
    * This method is used to check if the server is trying to edit a barrier block
