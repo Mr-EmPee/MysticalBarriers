@@ -32,8 +32,6 @@ public class BarrierRefresher extends AbstractListener {
       return;
     }
 
-    event.getPlayer().sendMessage("Refresh triggered by " + event.hashCode());
-
     for(Barrier barrier : barriersService.findBarriersWithinRangeAt(fromLoc)) {
       barriersService.despawnBarrierAt(fromLoc, barrier, event.getPlayer());
     }

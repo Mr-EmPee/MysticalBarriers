@@ -29,7 +29,6 @@ public class PlayerBlocker extends AbstractListener {
   public void onPlayerTeleport(PlayerTeleportEvent event) {
     Barrier barrier = barriersService.findBarrierAt(event.getTo());
     if (barrier != null && !barrier.isHiddenFor(event.getPlayer())) {
-      event.getPlayer().sendMessage("Teleport triggered by " + event.hashCode());
       event.setCancelled(true);
     }
   }
