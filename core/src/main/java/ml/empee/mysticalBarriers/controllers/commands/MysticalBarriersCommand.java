@@ -1,13 +1,7 @@
 package ml.empee.mysticalBarriers.controllers.commands;
 
 import java.util.Set;
-
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
-
+import java.util.concurrent.atomic.AtomicInteger;
 import ml.empee.commandsManager.command.Command;
 import ml.empee.commandsManager.command.annotations.CommandNode;
 import ml.empee.commandsManager.command.annotations.CommandRoot;
@@ -20,8 +14,14 @@ import ml.empee.mysticalBarriers.helpers.PlayerContext;
 import ml.empee.mysticalBarriers.helpers.Tuple;
 import ml.empee.mysticalBarriers.model.Barrier;
 import ml.empee.mysticalBarriers.services.BarriersService;
+import ml.empee.mysticalBarriers.utils.LocationUtils;
 import ml.empee.mysticalBarriers.utils.MCLogger;
 import ml.empee.mysticalBarriers.utils.ServerVersion;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 
 @CommandRoot(label = "mb", aliases = { "mysticalbarriers", "mysticalb" })
 public class MysticalBarriersCommand extends Command {
@@ -146,6 +146,39 @@ public class MysticalBarriersCommand extends Command {
     if (barriersService.removeBarrier(barrier)) {
       MCLogger.info(sender, "The barrier '&e%s&r' has been removed!", barrier.getId());
     }
+  }
+
+  @CommandNode(
+      parent = "mb",
+      label = "performance",
+      description = "Use this command to check the performance of the plugin\n" +
+      "&c&lPS. &cHigh range number could crash the server!",
+      permission = "mysticalbarriers.command.debug"
+  )
+  public void onPerformanceTest(Player sender, Barrier barrier, Integer range) {
+    AtomicInteger blocks = new AtomicInteger(0);
+    Location location = sender.getLocation();
+    long time = System.currentTimeMillis();
+
+    LocationUtils.radiusSearch(location, range, (x, y, z) -> {
+      if (barrier.isBarrierChunk(x >> 4, z >> 4)) {
+        if (location.getWorld().getBlockAt(x, y, z).getType() == Material.AIR) {
+          if (barrier.existsBarrierAt(null, x, y, z)) {
+            blocks.incrementAndGet();
+          }
+        }
+      }
+    });
+
+    time = (System.currentTimeMillis() - time) * 2;
+    MCLogger.info(sender,
+        "More then &c1 tick is LAG&r! Remember that this is a test, not a real scenario " +
+            "in a real scenario everything would be &cmultiplied&r by the number of player inside " +
+            "a barrier range and the number of barriers with overlapping ranges\n\n"
+            + "  Blocks to send: &e%d\n"
+            + "  Time: &e%dms\n"
+            + "  Ticks: &e%.2f\n", blocks.get(), time, ((double) time/50)
+    );
   }
 
   @CommandNode(
