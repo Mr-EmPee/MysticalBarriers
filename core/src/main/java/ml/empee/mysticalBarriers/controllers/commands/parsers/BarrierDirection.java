@@ -1,5 +1,12 @@
 package ml.empee.mysticalBarriers.controllers.commands.parsers;
 
+import lombok.RequiredArgsConstructor;
+import org.bukkit.Material;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.MultipleFacing;
+import org.bukkit.block.data.type.Wall;
+
+@RequiredArgsConstructor
 public enum BarrierDirection {
 
   EAST_WEST("[east=true,west=true,north=false,south=false]"),
@@ -9,12 +16,17 @@ public enum BarrierDirection {
 
   private final String data;
 
-  BarrierDirection(String data) {
-    this.data = data;
-  }
+  public String buildFacesData(Material material) {
+    BlockData data = material.createBlockData();
+    if(!(data instanceof MultipleFacing) && !(data instanceof Wall)) {
+      return null;
+    }
 
-  public String getData() {
-    return data;
+    if(data instanceof MultipleFacing) {
+      return this.data;
+    } else {
+      return this.data.replace("true", "tall").replace("false", "none");
+    }
   }
 
 }

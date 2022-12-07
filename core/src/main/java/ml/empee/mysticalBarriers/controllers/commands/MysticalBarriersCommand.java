@@ -100,14 +100,16 @@ public class MysticalBarriersCommand extends Command {
       return;
     }
 
-    try {
-      barrier.getMaterial().createBlockData(direction.getData());
-    } catch (IllegalArgumentException e) {
-      MCLogger.error(sender, "The barrier material doesn't support the direction '&e%s&r'", direction.name());
+    String blockData = direction.buildFacesData(barrier.getMaterial());
+    if(blockData == null) {
+      MCLogger.error(
+          sender, "The direction '&e%s&r' isn't supported by '&e%s&r'",
+          direction.name(), barrier.getMaterial()
+      );
       return;
     }
 
-    barrier.setBlockData(direction.getData());
+    barrier.setBlockData(blockData);
     barriersService.updateBarrier(barrier);
 
     MCLogger.info(sender, "Barrier direction changed to '&e%s&r'", direction.name());
