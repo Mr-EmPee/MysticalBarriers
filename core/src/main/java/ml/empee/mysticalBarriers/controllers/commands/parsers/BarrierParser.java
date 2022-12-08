@@ -2,15 +2,13 @@ package ml.empee.mysticalBarriers.controllers.commands.parsers;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
-import org.bukkit.command.CommandException;
-import org.bukkit.command.CommandSender;
-
 import lombok.EqualsAndHashCode;
 import ml.empee.commandsManager.parsers.DescriptionBuilder;
 import ml.empee.commandsManager.parsers.ParameterParser;
 import ml.empee.mysticalBarriers.model.Barrier;
 import ml.empee.mysticalBarriers.services.BarriersService;
+import org.bukkit.command.CommandException;
+import org.bukkit.command.CommandSender;
 
 @EqualsAndHashCode(callSuper = true)
 public class BarrierParser extends ParameterParser<Barrier> {
@@ -19,13 +17,17 @@ public class BarrierParser extends ParameterParser<Barrier> {
 
   public BarrierParser(BarriersService barriersService, String label, String defaultValue) {
     super(label, defaultValue);
-    this.descriptionBuilder = new DescriptionBuilder("barrier", "This parameter identify a barrier by it's name", null);
     this.barriersService = barriersService;
   }
 
   protected BarrierParser(BarrierParser parser) {
     super(parser);
     this.barriersService = parser.barriersService;
+  }
+
+  @Override
+  public DescriptionBuilder getDescriptionBuilder() {
+    return new DescriptionBuilder("barrier", "This parameter identify a barrier by it's name");
   }
 
   @Override
@@ -39,7 +41,7 @@ public class BarrierParser extends ParameterParser<Barrier> {
   }
 
   @Override
-  public List<String> getSuggestions(CommandSender source, String arg) {
+  public List<String> buildSuggestions(CommandSender source, String arg) {
     return barriersService.findAllBarriers().stream()
         .map(Barrier::getId)
         .collect(Collectors.toList());
