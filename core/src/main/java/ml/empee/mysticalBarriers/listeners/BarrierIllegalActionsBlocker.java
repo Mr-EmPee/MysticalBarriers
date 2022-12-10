@@ -24,6 +24,9 @@ public class BarrierIllegalActionsBlocker extends AbstractListener {
     Barrier barrier = barriersService.findBarrierAt(event.getTo());
     if (barrier != null && !barrier.isHiddenFor(player)) {
       event.setCancelled(true);
+      if(player.getVehicle() != null) {
+        player.getVehicle().eject();
+      }
     }
   }
 
