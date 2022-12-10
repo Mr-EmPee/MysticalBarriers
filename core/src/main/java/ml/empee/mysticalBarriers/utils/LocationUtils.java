@@ -1,6 +1,6 @@
 package ml.empee.mysticalBarriers.utils;
 
-import java.util.function.Consumer;
+import java.util.stream.Stream;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import ml.empee.mysticalBarriers.helpers.TriConsumer;
@@ -58,20 +58,18 @@ public final class LocationUtils {
     return Math.max(Math.max(Math.abs(x), Math.abs(y)), Math.abs(z));
   }
 
-  public static void forEachAdjacentBlock(Location location, TriConsumer<Integer, Integer, Integer> consumer) {
+  public static Stream<Location> forEachAdjacentBlock(Location center) {
+    center = center.getBlock().getLocation();
 
-    consumer.accept(location.getBlockX(), location.getBlockY(), location.getBlockZ());
-    consumer.accept(location.getBlockX() + 1, location.getBlockY(), location.getBlockZ());
-    consumer.accept(location.getBlockX() - 1, location.getBlockY(), location.getBlockZ());
-    consumer.accept(location.getBlockX(), location.getBlockY() + 1, location.getBlockZ());
-    consumer.accept(location.getBlockX(), location.getBlockY() - 1, location.getBlockZ());
-    consumer.accept(location.getBlockX(), location.getBlockY(), location.getBlockZ() + 1);
-    consumer.accept(location.getBlockX(), location.getBlockY(), location.getBlockZ() - 1);
-
-  }
-
-  public static void forEachAdjacentBlock(Location location, Consumer<Location> consumer) {
-    forEachAdjacentBlock(location, (x, y, z) -> consumer.accept(new Location(location.getWorld(), x, y, z)));
+    return Stream.of(
+        center,
+        center.clone().add(1, 0, 0),
+        center.clone().add(0, 1, 0),
+        center.clone().add(0, 0, 1),
+        center.clone().add(-1, 0, 0),
+        center.clone().add(0, -1, 0),
+        center.clone().add(0, 0, -1)
+    );
   }
 
 }
