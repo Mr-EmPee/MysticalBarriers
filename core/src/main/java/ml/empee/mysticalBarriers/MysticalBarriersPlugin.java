@@ -7,10 +7,10 @@ import ml.empee.mysticalBarriers.config.Config;
 import ml.empee.mysticalBarriers.controllers.commands.MysticalBarriersCommand;
 import ml.empee.mysticalBarriers.controllers.commands.parsers.BarrierParser;
 import ml.empee.mysticalBarriers.listeners.AbstractListener;
+import ml.empee.mysticalBarriers.listeners.BarrierBlocksProtections;
 import ml.empee.mysticalBarriers.listeners.BarrierBlocksUpdater;
-import ml.empee.mysticalBarriers.listeners.BarrierProtections;
+import ml.empee.mysticalBarriers.listeners.BarrierIllegalActionsBlocker;
 import ml.empee.mysticalBarriers.listeners.BarrierSpawner;
-import ml.empee.mysticalBarriers.listeners.PlayerMovementBlocker;
 import ml.empee.mysticalBarriers.model.Barrier;
 import ml.empee.mysticalBarriers.services.AbstractService;
 import ml.empee.mysticalBarriers.services.BarriersService;
@@ -49,8 +49,8 @@ public final class MysticalBarriersPlugin extends AbstractPlugin {
     BarriersService barriersService = getService(BarriersService.class);
     return new AbstractListener[] {
         new BarrierSpawner(barriersService),
-        new BarrierProtections(barriersService),
-        new PlayerMovementBlocker(barriersService, getConfig(Config.class)),
+        new BarrierBlocksProtections(barriersService),
+        new BarrierIllegalActionsBlocker(barriersService, getConfig(Config.class)),
         new BarrierBlocksUpdater(barriersService)
     };
   }

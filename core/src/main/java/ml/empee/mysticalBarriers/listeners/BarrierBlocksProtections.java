@@ -22,14 +22,14 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 
-public class BarrierProtections extends AbstractListener {
+public class BarrierBlocksProtections extends AbstractListener {
 
   private static final ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
   private final PacketListener[] packetListeners;
 
   private final BarriersService barriersService;
 
-  public BarrierProtections(BarriersService barriersService) {
+  public BarrierBlocksProtections(BarriersService barriersService) {
     this.barriersService = barriersService;
 
     packetListeners = new PacketListener[] {

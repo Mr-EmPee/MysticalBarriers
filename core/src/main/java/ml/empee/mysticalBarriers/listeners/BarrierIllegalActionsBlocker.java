@@ -10,9 +10,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.spigotmc.event.entity.EntityMountEvent;
 
 @RequiredArgsConstructor
-public class PlayerMovementBlocker extends AbstractListener {
+public class BarrierIllegalActionsBlocker extends AbstractListener {
 
   private final BarriersService barriersService;
   private final Config config;
