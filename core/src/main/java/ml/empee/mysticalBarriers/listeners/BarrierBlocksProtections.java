@@ -20,6 +20,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 public class BarrierBlocksProtections extends AbstractListener {
@@ -73,6 +74,13 @@ public class BarrierBlocksProtections extends AbstractListener {
     }
   }
 
+  @EventHandler
+  public void cancelPistonMoveEvent(BlockPistonExtendEvent event) {
+    if(event.getBlocks().stream().anyMatch(block -> barriersService.findBarrierAt(block.getLocation()) != null)) {
+      event.setCancelled(true);
+    }
+  }
+
   /**
    * Fired because when you cancel a block place/break event on spigot the server
    * will send the updated block and its adjacent blocks to the client.
@@ -109,8 +117,6 @@ public class BarrierBlocksProtections extends AbstractListener {
     }
 
   }
-
-  //TODO: Piston protection
 
   /**
    * This method is used to check if the server is trying to edit a barrier block
