@@ -47,6 +47,18 @@ public class BarrierIllegalActionsBlocker extends AbstractListener {
     }
   }
 
-  //TODO Prevent endepearl from getting through barriers (Configurable)
+  @EventHandler
+  public void cancelOnEntityMountInsideBarrier(EntityMountEvent event) {
+    if(!(event.getEntity() instanceof Player)) {
+      return;
+    }
+
+    Barrier barrier = barriersService.findBarrierAt(event.getMount().getLocation());
+    if(barrier != null && !barrier.isHiddenFor((Player) event.getEntity())) {
+      event.setCancelled(true);
+    }
+  }
+
+  //TODO Prevent projectiles from getting through barriers (Configurable)
 
 }
