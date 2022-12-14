@@ -1,5 +1,6 @@
 package ml.empee.mysticalBarriers.model;
 
+import com.google.gson.JsonParseException;
 import com.google.gson.annotations.Expose;
 import java.util.HashSet;
 import java.util.Set;
@@ -9,39 +10,35 @@ import lombok.Setter;
 import ml.empee.mysticalBarriers.helpers.TriConsumer;
 import ml.empee.mysticalBarriers.helpers.Tuple;
 import ml.empee.mysticalBarriers.utils.LocationUtils;
+import ml.empee.mysticalBarriers.utils.serialization.annotations.Required;
+import ml.empee.mysticalBarriers.utils.serialization.annotations.Validated;
+import ml.empee.mysticalBarriers.utils.serialization.annotations.Validator;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
+@Validated
 public class Barrier {
 
-  @Expose
-  @Getter
+  @Expose @Required @Getter
   private final String id;
 
-  @Expose
-  @Getter
-  private final Location firstCorner;
+  @Expose @Required @Getter
+  private Location firstCorner;
 
-  @Expose
-  @Getter
-  private final Location secondCorner;
+  @Expose @Required @Getter
+  private Location secondCorner;
 
-  @Expose
-  @Getter
-  @Setter
+  @Expose @Required
+  @Getter @Setter
   private Material material;
 
-  @Expose
-  @Getter
-  @Setter
-  private int activationRange;
+  @Expose @Required @Getter @Setter
+  private Integer activationRange;
 
-  @Expose
-  @Getter
-  @Setter
+  @Expose @Getter @Setter
   private String blockData;
 
   private Set<Tuple<Integer, Integer>> chunks;
@@ -51,13 +48,14 @@ public class Barrier {
     this.id = id;
     this.material = Material.BARRIER;
     this.activationRange = 3;
+    this.firstCorner = firstCorner;
+    this.secondCorner = secondCorner;
 
-    Tuple<Location, Location> corners = sortCorners(firstCorner, secondCorner);
-    this.firstCorner = corners.getFirst();
-    this.secondCorner = corners.getSecond();
+    validateCorners();
   }
 
-  private Tuple<Location, Location> sortCorners(Location firstCorner, Location secondCorner) {
+  @Validator
+  private void validateCorners() {
     int minX = Math.min(firstCorner.getBlockX(), secondCorner.getBlockX());
     int maxX = Math.max(firstCorner.getBlockX(), secondCorner.getBlockX());
     int minY = Math.min(firstCorner.getBlockY(), secondCorner.getBlockY());
@@ -65,10 +63,32 @@ public class Barrier {
     int minZ = Math.min(firstCorner.getBlockZ(), secondCorner.getBlockZ());
     int maxZ = Math.max(firstCorner.getBlockZ(), secondCorner.getBlockZ());
 
-    return new Tuple<>(
-        new Location(firstCorner.getWorld(), minX, minY, minZ),
-        new Location(secondCorner.getWorld(), maxX, maxY, maxZ)
-    );
+    this.firstCorner = new Location(firstCorner.getWorld(), minX, minY, minZ);
+    this.secondCorner = new Location(secondCorner.getWorld(), maxX, maxY, maxZ);
+
+    if (firstCorner.getWorld() == null || secondCorner.getWorld() == null) {
+      throw new JsonParseException("A corner world of the barrier " + id + " is null or doesn't exist");
+    } else if(!firstCorner.getWorld().equals(secondCorner.getWorld())) {
+      throw new JsonParseException("The two corners of the barrier " + id + " must be in the same world");
+    }
+  }
+
+  @Validator
+  private void validateBlockData() {
+    if (blockData != null) {
+      try {
+        material.createBlockData(blockData);
+      } catch (IllegalArgumentException e) {
+        throw new JsonParseException("Invalid block data of the barrier " + id);
+      }
+    }
+  }
+
+  @Validator
+  private void validateActivationRange() {
+    if (activationRange <= 0) {
+      throw new JsonParseException("Activation range of the barrier " + id + " cannot be lower then 1");
+    }
   }
 
   public boolean existsBarrierAt(@Nullable World world, int x, int y, int z) {
