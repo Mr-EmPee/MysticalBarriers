@@ -1,14 +1,11 @@
 package ml.empee.mysticalBarriers.listeners;
 
 import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.ProtocolManager;
-import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
-import com.comphenix.protocol.events.PacketListener;
 import java.lang.reflect.InvocationTargetException;
 import ml.empee.mysticalBarriers.exceptions.MysticalBarrierException;
+import ml.empee.mysticalBarriers.helpers.ProtocolLibHelper;
 import ml.empee.mysticalBarriers.model.Barrier;
 import ml.empee.mysticalBarriers.model.packets.MultiBlockPacket;
 import ml.empee.mysticalBarriers.services.BarriersService;
@@ -25,33 +22,19 @@ import org.bukkit.event.block.BlockPlaceEvent;
 
 public class BarrierBlocksProtections extends AbstractListener {
 
-  private static final ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
-  private final PacketListener[] packetListeners;
+  private final ProtocolLibHelper protocolLib = new ProtocolLibHelper();
 
   private final BarriersService barriersService;
 
   public BarrierBlocksProtections(BarriersService barriersService) {
     this.barriersService = barriersService;
 
-    packetListeners = new PacketListener[] {
-        new PacketAdapter(plugin, PacketType.Play.Server.BLOCK_CHANGE) {
-          @Override
-          public void onPacketSending(PacketEvent event) {
-            refreshBarrierBlocksOnServerChangePacket(event);
-          }
-        }
-    };
-
-    for (PacketListener packetListener : packetListeners) {
-      protocolManager.addPacketListener(packetListener);
-    }
+    protocolLib.registerListener(PacketType.Play.Server.BLOCK_CHANGE, this::refreshBarrierBlocksOnServerChangePacket);
   }
 
   @Override
   protected void onUnregister() {
-    for (PacketListener packetListener : packetListeners) {
-      protocolManager.removePacketListener(packetListener);
-    }
+    protocolLib.unregisterAll();
   }
 
   @EventHandler
@@ -76,7 +59,7 @@ public class BarrierBlocksProtections extends AbstractListener {
 
   @EventHandler
   public void cancelPistonMoveEvent(BlockPistonExtendEvent event) {
-    if(event.getBlocks().stream().anyMatch(block -> barriersService.findBarrierAt(block.getLocation()) != null)) {
+    if (event.getBlocks().stream().anyMatch(block -> barriersService.findBarrierAt(block.getLocation()) != null)) {
       event.setCancelled(true);
     }
   }
