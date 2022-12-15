@@ -51,6 +51,13 @@ public class BarriersService extends AbstractService {
   public boolean saveBarrier(Barrier barrier) {
     if (barriers.add(barrier)) {
       saveFile();
+
+      for (Player player : Bukkit.getOnlinePlayers()) {
+        if (player.getWorld().equals(barrier.getWorld())) {
+          refreshBarrierFor(player, barrier);
+        }
+      }
+
       return true;
     }
 
@@ -60,6 +67,7 @@ public class BarriersService extends AbstractService {
   public boolean updateBarrier(Barrier barrier) {
     if (barriers.remove(barrier)) {
       barriers.add(barrier);
+      saveFile();
 
       for (Player player : Bukkit.getOnlinePlayers()) {
         if (player.getWorld().equals(barrier.getWorld())) {
@@ -67,7 +75,6 @@ public class BarriersService extends AbstractService {
         }
       }
 
-      saveFile();
       return true;
     }
 
