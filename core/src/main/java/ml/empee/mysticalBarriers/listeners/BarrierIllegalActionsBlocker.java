@@ -1,31 +1,100 @@
 package ml.empee.mysticalBarriers.listeners;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
-import lombok.RequiredArgsConstructor;
 import ml.empee.mysticalBarriers.config.Config;
 import ml.empee.mysticalBarriers.model.Barrier;
 import ml.empee.mysticalBarriers.services.BarriersService;
 import ml.empee.mysticalBarriers.utils.LocationUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.LingeringPotionSplashEvent;
 import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.entity.ProjectileLaunchEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.projectiles.ProjectileSource;
+import org.bukkit.util.Vector;
 import org.spigotmc.event.entity.EntityMountEvent;
 
-@RequiredArgsConstructor
 public class BarrierIllegalActionsBlocker extends AbstractListener {
 
+  private final HashMap<Entity, Player> followedEntities = new HashMap<>();
   private final BarriersService barriersService;
   private final Config config;
 
+  public BarrierIllegalActionsBlocker(BarriersService barriersService, Config config) {
+    this.barriersService = barriersService;
+    this.config = config;
+
+    Bukkit.getScheduler().runTaskTimer(plugin, () -> {
+      followedEntities.entrySet().removeIf(entry -> checkFollowedEntity(entry.getKey(), entry.getValue()));
+    }, 0, 1);
+  }
+
+  private boolean checkFollowedEntity(Entity entity, Player shooter) {
+    if (!entity.isValid()) {
+      return true;
+    } else if (!entity.isOnGround()) {
+      Barrier barrier = barriersService.findBarrierAt(entity.getLocation());
+      if (barrier != null) {
+        if (shooter != null && barrier.isHiddenFor(shooter)) {
+          return false;
+        }
+
+        if (entity instanceof Projectile) {
+          if (shooter != null) {
+            shooter.spawnParticle(Particle.CLOUD, entity.getLocation(), 3);
+            shooter.playSound(entity.getLocation(), Sound.BLOCK_END_PORTAL_FRAME_FILL, 1, 1);
+          }
+
+          entity.remove();
+        } else {
+          entity.setVelocity(new Vector(0, -0.1, 0));
+        }
+
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  @EventHandler
+  public void removeProjectileOnMoveInsideBarrier(ProjectileLaunchEvent event) {
+    if (!config.getBlockProjectilesMovement()) {
+      return;
+    }
+
+    ProjectileSource shooter = event.getEntity().getShooter();
+    if (!(shooter instanceof Player)) {
+      if (config.getBlockProjectilesMovementOnlyFromPlayers()) {
+        return;
+      }
+
+      shooter = null;
+    }
+
+    followedEntities.put(event.getEntity(), (Player) shooter);
+  }
+
+  @EventHandler
+  public void blockOnDropInsideBarrier(PlayerDropItemEvent event) {
+    followedEntities.put(event.getItemDrop(), event.getPlayer());
+  }
+
   @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-  public void cancelOnMovementWhenInsideBarrier(PlayerMoveEvent event) {
+  public void cancelOnPlayerMoveInsideBarrier(PlayerMoveEvent event) {
     Player player = event.getPlayer();
     Barrier barrier = barriersService.findBarrierAt(event.getTo());
     if (barrier != null && !barrier.isHiddenFor(player)) {
@@ -114,8 +183,10 @@ public class BarrierIllegalActionsBlocker extends AbstractListener {
       return;
     }
 
-    Barrier barrier = barriersService.findBarrierAt(lingeringPotionSplashEvent.getEntity().getLocation());
-    if (barrier != null && !barrier.isHiddenFor((Player) lingeringPotionSplashEvent.getEntity().getShooter())) {
+    Barrier barrier =
+        barriersService.findBarrierAt(lingeringPotionSplashEvent.getEntity().getLocation());
+    if (barrier != null &&
+        !barrier.isHiddenFor((Player) lingeringPotionSplashEvent.getEntity().getShooter())) {
       lingeringPotionSplashEvent.getAreaEffectCloud().remove();
     }
   }

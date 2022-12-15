@@ -1,3 +1,8 @@
-protections:
-  block-chorus-teleportation: true #Prevent teleportation due to eating a chorus fruit within 8 blocks of a barrier
-  block-enderpearl: true #Prevent enderpearls from getting through barriers
+# Prevent chorus fruit teleportation within 8 blocks of a barrier
+block-chorus-teleportation: true
+
+# Prevent entities from getting through barriers
+block-movement:
+  projectiles:
+    enabled: true
+    only-from-player: false # Enabled only for projectiles shot by a player

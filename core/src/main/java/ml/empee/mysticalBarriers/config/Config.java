@@ -10,10 +10,12 @@ import org.bukkit.plugin.java.JavaPlugin;
 @Getter @Setter(AccessLevel.PRIVATE)
 public class Config extends ConfigFile {
 
-  @Path("protections.block-chorus-teleportation")
+  @Path("block-chorus-teleportation")
   private Boolean blockChorusFruitTeleportation = true;
-  @Path("protections.enderpearl")
-  private Boolean blockEnderPearl = true;
+  @Path("block-movement.projectiles.enabled")
+  private Boolean blockProjectilesMovement = true;
+  @Path("block-movement.projectiles.only-from-player")
+  private Boolean blockProjectilesMovementOnlyFromPlayers = false;
 
   public Config(JavaPlugin plugin) {
     super(plugin, "config.yml");
