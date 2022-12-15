@@ -6,7 +6,6 @@ import ml.empee.commandsManager.command.Command;
 import ml.empee.commandsManager.command.annotations.CommandNode;
 import ml.empee.commandsManager.command.annotations.CommandRoot;
 import ml.empee.commandsManager.parsers.types.annotations.IntegerParam;
-import ml.empee.commandsManager.parsers.types.annotations.StringParam;
 import ml.empee.mysticalBarriers.MysticalBarriersPlugin;
 import ml.empee.mysticalBarriers.controllers.commands.listeners.BarrierDefiner;
 import ml.empee.mysticalBarriers.controllers.commands.parsers.BarrierDirection;
@@ -44,13 +43,13 @@ public class MysticalBarriersCommand extends Command {
                     + "or cancel the operation with a left click",
       permission = "mysticalbarriers.command.create"
   )
-  public void onBarrierCreate(Player sender, @StringParam(label = "name") String barrier) {
-    if (barriersService.findBarrierByID(barrier) != null) {
-      MCLogger.error(sender, "A barrier named '&e%s&r' already exists!", barrier);
+  public void onBarrierCreate(Player sender, String name) {
+    if (barriersService.findBarrierByID(name) != null) {
+      MCLogger.error(sender, "A barrier named '&e%s&r' already exists!", name);
       return;
     }
 
-    barrierCreationContext.put(sender, new Tuple<>(barrier, null));
+    barrierCreationContext.put(sender, new Tuple<>(name, null));
     MCLogger.info(sender,
         "Barrier creation mode enabled! \n\n"
         + "\tSelect the barrier corners by right-clicking on a block \n"
