@@ -4,6 +4,7 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 import ml.empee.mysticalBarriers.exceptions.MysticalBarrierException;
 import ml.empee.mysticalBarriers.helpers.ProtocolLibHelper;
 import ml.empee.mysticalBarriers.model.Barrier;
@@ -59,7 +60,17 @@ public class BarrierBlocksProtections extends AbstractListener {
 
   @EventHandler
   public void cancelPistonMoveEvent(BlockPistonExtendEvent event) {
-    if (event.getBlocks().stream().anyMatch(block -> barriersService.findBarrierAt(block.getLocation()) != null)) {
+    List<Block> affectedBlocks = event.getBlocks();
+    Barrier barrier;
+    if(affectedBlocks.isEmpty()) {
+       barrier = barriersService.findBarrierAt(event.getBlock().getLocation().add(event.getDirection().getDirection()));
+    } else {
+      barrier = barriersService.findBarrierAt(
+          affectedBlocks.get(affectedBlocks.size()-1).getLocation().add(event.getDirection().getDirection())
+      );
+    }
+
+    if(barrier != null) {
       event.setCancelled(true);
     }
   }
