@@ -27,9 +27,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SerializationUtils {
+public final class PersistenceUtils {
 
-  private static final JavaPlugin plugin = JavaPlugin.getProvidingPlugin(SerializationUtils.class);
+  private static final JavaPlugin plugin = JavaPlugin.getProvidingPlugin(PersistenceUtils.class);
   private static final Gson gson;
 
   static {

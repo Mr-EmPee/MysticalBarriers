@@ -11,7 +11,7 @@ import ml.empee.mysticalBarriers.model.Barrier;
 import ml.empee.mysticalBarriers.model.packets.MultiBlockPacket;
 import ml.empee.mysticalBarriers.utils.ArrayUtils;
 import ml.empee.mysticalBarriers.utils.MCLogger;
-import ml.empee.mysticalBarriers.utils.serialization.SerializationUtils;
+import ml.empee.mysticalBarriers.utils.serialization.PersistenceUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -25,7 +25,7 @@ public class BarriersService extends AbstractService {
   private final Set<Barrier> barriers = ConcurrentHashMap.newKeySet();
 
   public BarriersService() {
-    barriers.addAll(ArrayUtils.toList(SerializationUtils.deserialize(FILE_NAME, Barrier[].class)));
+    barriers.addAll(ArrayUtils.toList(PersistenceUtils.deserialize(FILE_NAME, Barrier[].class)));
     MCLogger.info("Loaded " + barriers.size() + " barriers");
 
     for (Player player : Bukkit.getOnlinePlayers()) {
@@ -45,7 +45,7 @@ public class BarriersService extends AbstractService {
   }
 
   private void saveFile() {
-    SerializationUtils.serializeAsync(barriers, FILE_NAME);
+    PersistenceUtils.serializeAsync(barriers, FILE_NAME);
   }
 
   public boolean saveBarrier(Barrier barrier) {
