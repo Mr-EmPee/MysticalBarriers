@@ -2,5 +2,6 @@ main: ${plugin.main}
 version: ${project.version}
 api-version: ${plugin.api}
 name: ${project.name}
+load: POSTWORLD
 depend:
   - ProtocolLib
