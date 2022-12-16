@@ -3,5 +3,5 @@ version: ${project.version}
 api-version: ${plugin.api}
 name: ${project.name}
 load: POSTWORLD
-depend:
-  - ProtocolLib
+softdepend: [Multiverse-Core, MultiWorld, LuckPerms]
+depend: [ProtocolLib]
