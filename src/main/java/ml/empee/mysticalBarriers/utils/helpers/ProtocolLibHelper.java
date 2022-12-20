@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.function.Consumer;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class ProtocolLibHelper {
+public final class ProtocolLibHelper {
 
   private static final ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
   private final JavaPlugin plugin = JavaPlugin.getProvidingPlugin(ProtocolLibHelper.class);

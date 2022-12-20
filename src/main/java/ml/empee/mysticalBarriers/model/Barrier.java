@@ -4,10 +4,11 @@ import com.google.gson.JsonParseException;
 import com.google.gson.annotations.Expose;
 import java.util.HashSet;
 import java.util.Set;
-import lombok.Builder;
+import java.util.function.Consumer;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import ml.empee.mysticalBarriers.utils.helpers.TriConsumer;
 import ml.empee.mysticalBarriers.utils.helpers.Tuple;
 import ml.empee.mysticalBarriers.utils.LocationUtils;
 import ml.empee.mysticalBarriers.utils.serialization.annotations.Required;
@@ -20,6 +21,8 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
 @Validated
+@EqualsAndHashCode
+@RequiredArgsConstructor
 public class Barrier {
 
   @Expose @Required @Getter
@@ -33,26 +36,15 @@ public class Barrier {
 
   @Expose @Required
   @Getter @Setter
-  private Material material;
+  private Material material = Material.BARRIER;
 
   @Expose @Required @Getter @Setter
-  private Integer activationRange;
+  private Integer activationRange = 3;
 
   @Expose @Getter @Setter
   private String blockData;
 
   private Set<Tuple<Integer, Integer>> chunks;
-
-  @Builder
-  public Barrier(String id, Location firstCorner, Location secondCorner) {
-    this.id = id;
-    this.material = Material.BARRIER;
-    this.activationRange = 3;
-    this.firstCorner = firstCorner;
-    this.secondCorner = secondCorner;
-
-    validateCorners();
-  }
 
   @Validator
   private void validateCorners() {
@@ -91,7 +83,21 @@ public class Barrier {
     }
   }
 
-  public boolean existsBarrierAt(@Nullable World world, int x, int y, int z) {
+  public void setFirstCorner(Location firstCorner) {
+    this.firstCorner = firstCorner;
+    if(secondCorner != null) {
+      validateCorners();
+    }
+  }
+
+  public void setSecondCorner(Location secondCorner) {
+    this.secondCorner = secondCorner;
+    if(firstCorner != null) {
+      validateCorners();
+    }
+  }
+  
+  public boolean isBarrierAt(@Nullable World world, int x, int y, int z) {
     if (world != null && !getWorld().equals(world)) {
       return false;
     }
@@ -104,8 +110,8 @@ public class Barrier {
         z >= firstCorner.getBlockZ() && z <= secondCorner.getBlockZ();
   }
 
-  public boolean existsBarrierAt(Location location) {
-    return existsBarrierAt(location.getWorld(), location.getBlockX(), location.getBlockY(), location.getBlockZ());
+  public boolean isBarrierAt(Location location) {
+    return isBarrierAt(location.getWorld(), location.getBlockX(), location.getBlockY(), location.getBlockZ());
   }
 
   public boolean isBarrierChunk(int chunkX, int chunkZ) {
@@ -153,16 +159,19 @@ public class Barrier {
     return player.hasPermission("mysticalbarriers.bypass." + id);
   }
 
-  public void forEachVisibleBarrierBlock(Location location, TriConsumer<Integer, Integer, Integer> consumer) {
+  public void forEachVisibleBarrierBlock(Location location, Consumer<Location> consumer) {
     if (!getWorld().equals(location.getWorld())) {
       return;
     }
 
-    LocationUtils.radiusSearch(location, activationRange, (x, y, z) -> {
+    World world = location.getWorld();
+    LocationUtils.radiusSearch(location, activationRange, loc -> {
+      int x = loc.getBlockX(); int y = loc.getBlockY(); int z = loc.getBlockZ();
+
       if (isBarrierChunk(x >> 4, z >> 4)) {
-        if (location.getWorld().getBlockAt(x, y, z).getType() == Material.AIR) {
-          if (existsBarrierAt(null, x, y, z)) {
-            consumer.accept(x, y, z);
+        if (world.getBlockAt(x, y, z).getType() == Material.AIR) {
+          if (isBarrierAt(null, x, y, z)) {
+            consumer.accept(loc);
           }
         }
       }
@@ -182,22 +191,4 @@ public class Barrier {
       }
     }
   }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o)
-      return true;
-    if (o == null || getClass() != o.getClass())
-      return false;
-
-    Barrier barrier = (Barrier) o;
-
-    return id.equals(barrier.id);
-  }
-
-  @Override
-  public int hashCode() {
-    return id.hashCode();
-  }
-
 }

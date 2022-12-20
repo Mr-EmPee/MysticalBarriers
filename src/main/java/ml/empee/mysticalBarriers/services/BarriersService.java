@@ -87,7 +87,7 @@ public class BarriersService extends AbstractService {
 
   public Barrier findBarrierAt(Location location) {
     for (Barrier barrier : barriers) {
-      if (barrier.existsBarrierAt(location)) {
+      if (barrier.isBarrierAt(location)) {
         return barrier;
       }
     }
@@ -146,8 +146,7 @@ public class BarriersService extends AbstractService {
 
   public void despawnBarrierAt(Location location, Barrier barrier, Player player) {
     MultiBlockPacket packet = new MultiBlockPacket(location, false);
-    barrier.forEachVisibleBarrierBlock(location,
-        (x, y, z) -> packet.addBlock(Material.AIR, x, y, z));
+    barrier.forEachVisibleBarrierBlock(location, loc -> packet.addBlock(Material.AIR, loc));
     try {
       packet.send(player);
     } catch (InvocationTargetException e) {
@@ -166,9 +165,10 @@ public class BarriersService extends AbstractService {
 
   public void spawnBarrierAt(Location location, Barrier barrier, Player player) {
     MultiBlockPacket packet = new MultiBlockPacket(location, false);
-    barrier.forEachVisibleBarrierBlock(location, (x, y, z) -> {
-      packet.addBackwardProofBlock(barrier.getMaterial(), null, barrier.getBlockData(), x, y, z);
-    });
+    barrier.forEachVisibleBarrierBlock(location, loc ->
+        packet.addBackwardProofBlock(barrier.getMaterial(), null, barrier.getBlockData(), loc)
+    );
+
     try {
       packet.send(player);
     } catch (InvocationTargetException e) {

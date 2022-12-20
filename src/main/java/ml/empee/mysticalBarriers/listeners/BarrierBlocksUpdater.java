@@ -1,9 +1,10 @@
 package ml.empee.mysticalBarriers.listeners;
 
 import java.util.HashSet;
-import ml.empee.mysticalBarriers.utils.helpers.PlayerContext;
 import ml.empee.mysticalBarriers.model.Barrier;
 import ml.empee.mysticalBarriers.services.BarriersService;
+import ml.empee.mysticalBarriers.utils.helpers.cache.PlayerContext;
+import ml.empee.mysticalBarriers.utils.helpers.cache.PlayerData;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
@@ -13,7 +14,7 @@ import org.bukkit.scheduler.BukkitTask;
 
 public class BarrierBlocksUpdater extends AbstractListener {
 
-  private static final PlayerContext<HashSet<String>> playerContext = PlayerContext.get("visibleBarriers");
+  private final PlayerContext<HashSet<String>> playerVisibleBarriers = PlayerContext.get("playerVisibleBarriers");
 
   private final BarriersService barriersService;
   private final BukkitTask bukkitTask;
@@ -47,7 +48,7 @@ public class BarrierBlocksUpdater extends AbstractListener {
         return;
       }
 
-      HashSet<String> visibleBarriers = playerContext.getOrPut(player, new HashSet<>());
+      HashSet<String> visibleBarriers = playerVisibleBarriers.getOrPut(PlayerData.of(player, new HashSet<>())).get();
       if(barrier.isHiddenFor(player)) {
         if(visibleBarriers.remove(barrier.getId())) {
           barriersService.refreshBarrierFor(player, barrier);

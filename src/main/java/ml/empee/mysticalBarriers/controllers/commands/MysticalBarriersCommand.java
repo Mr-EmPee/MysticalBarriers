@@ -9,12 +9,12 @@ import ml.empee.commandsManager.parsers.types.annotations.IntegerParam;
 import ml.empee.mysticalBarriers.MysticalBarriersPlugin;
 import ml.empee.mysticalBarriers.controllers.commands.listeners.BarrierDefiner;
 import ml.empee.mysticalBarriers.controllers.commands.parsers.BarrierDirection;
-import ml.empee.mysticalBarriers.utils.helpers.PlayerContext;
-import ml.empee.mysticalBarriers.utils.helpers.Tuple;
+import ml.empee.mysticalBarriers.utils.helpers.cache.PlayerContext;
 import ml.empee.mysticalBarriers.model.Barrier;
 import ml.empee.mysticalBarriers.services.BarriersService;
 import ml.empee.mysticalBarriers.utils.LocationUtils;
 import ml.empee.mysticalBarriers.utils.Logger;
+import ml.empee.mysticalBarriers.utils.helpers.cache.PlayerData;
 import ml.empee.mysticalBarriers.utils.nms.ServerVersion;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -25,7 +25,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 @CommandRoot(label = "mb", aliases = { "mysticalbarriers", "mysticalb" })
 public class MysticalBarriersCommand extends Command {
 
-  private final PlayerContext<Tuple<String, Location>> barrierCreationContext = PlayerContext.get("barrierCreation");
+  private final PlayerContext<Barrier> barrierCreationContext = PlayerContext.get("barrierCreationContext");
   private final BarriersService barriersService;
 
   public MysticalBarriersCommand(BarriersService barriersService) {
@@ -49,7 +49,7 @@ public class MysticalBarriersCommand extends Command {
       return;
     }
 
-    barrierCreationContext.put(sender, new Tuple<>(name, null));
+    barrierCreationContext.put(PlayerData.of(sender, new Barrier(name)));
     Logger.info(sender,
         "Barrier creation mode enabled! \n\n"
         + "\tSelect the barrier corners by right-clicking on a block \n"
@@ -156,22 +156,19 @@ public class MysticalBarriersCommand extends Command {
       "&c&lPS. &cHigh range number could crash the server!",
       permission = "mysticalbarriers.command.debug"
   )
-  public void onPerformanceTest(Player sender, Barrier barrier, Integer range) {
+  public void onPerformanceTest(Player sender, Integer barrierSize, Integer range) {
     AtomicInteger blocks = new AtomicInteger(0);
     Location location = sender.getLocation();
+
+    Barrier barrier = new Barrier("performanceTest");
+    barrier.setActivationRange(range);
+    barrier.setFirstCorner(new Location(location.getWorld(), 0, 0, 0));
+    barrier.setSecondCorner(new Location(location.getWorld(), barrierSize, barrierSize, barrierSize));
+
     long time = System.currentTimeMillis();
-
-    LocationUtils.radiusSearch(location, range, (x, y, z) -> {
-      if (barrier.isBarrierChunk(x >> 4, z >> 4)) {
-        if (location.getWorld().getBlockAt(x, y, z).getType() == Material.AIR) {
-          if (barrier.existsBarrierAt(null, x, y, z)) {
-            blocks.incrementAndGet();
-          }
-        }
-      }
-    });
-
+    barrier.forEachVisibleBarrierBlock(location, block -> blocks.incrementAndGet());
     time = (System.currentTimeMillis() - time) * 2;
+
     Logger.info(sender,
         "More then &c1 tick is LAG&r! Remember that this is a test, not a real scenario " +
             "in a real scenario everything would be &cmultiplied&r by the number of player inside " +

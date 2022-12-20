@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import ml.empee.mysticalBarriers.exceptions.MysticalBarrierException;
-import ml.empee.mysticalBarriers.utils.helpers.Triple;
 import ml.empee.mysticalBarriers.model.Barrier;
 import ml.empee.mysticalBarriers.model.packets.MultiBlockPacket;
 import ml.empee.mysticalBarriers.services.BarriersService;
@@ -43,22 +42,17 @@ public class BarrierSpawner extends AbstractListener {
   private void sendBarrierBlocks(Player player, Barrier barrier, Location fromLoc, Location toLoc) {
     MultiBlockPacket packet = new MultiBlockPacket(toLoc, false);
 
-    List<Triple<Integer, Integer, Integer>> blockPayload = new ArrayList<>();
-    barrier.forEachVisibleBarrierBlock(toLoc, (x, y, z) -> {
-      blockPayload.add(new Triple<>(x, y, z));
-    });
+    List<Location> visibleBarrierBlocks = new ArrayList<>();
+    barrier.forEachVisibleBarrierBlock(toLoc, visibleBarrierBlocks::add);
 
-    barrier.forEachVisibleBarrierBlock(fromLoc, (x, y, z) -> {
-      if (!blockPayload.remove(new Triple<>(x, y, z))) {
-        packet.addBlock(Material.AIR, x, y, z);
+    barrier.forEachVisibleBarrierBlock(fromLoc, (loc) -> {
+      if(!visibleBarrierBlocks.remove(loc)) {
+        packet.addBlock(Material.AIR, loc);
       }
     });
 
-    for (Triple<Integer, Integer, Integer> triple : blockPayload) {
-      packet.addBackwardProofBlock(
-          barrier.getMaterial(), null, barrier.getBlockData(),
-          triple.getFirst(), triple.getSecond(), triple.getThird()
-      );
+    for(Location loc : visibleBarrierBlocks) {
+      packet.addBackwardProofBlock(barrier.getMaterial(), null, barrier.getBlockData(), loc);
     }
 
     try {

@@ -1,9 +1,9 @@
 package ml.empee.mysticalBarriers.utils;
 
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import ml.empee.mysticalBarriers.utils.helpers.TriConsumer;
 import org.bukkit.Location;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -23,7 +23,7 @@ public final class LocationUtils {
     return true;
   }
 
-  public static void radiusSearch(Location location, int radius, TriConsumer<Integer, Integer, Integer> consumer) {
+  public static void radiusSearch(Location location, int radius, Consumer<Location> consumer) {
     int maxX = location.getBlockX() + radius;
     int maxY = location.getBlockY() + radius;
     int maxZ = location.getBlockZ() + radius;
@@ -34,7 +34,7 @@ public final class LocationUtils {
     for(int y = minY; y<=maxY; y++) {
       for(int x = minX; x <= maxX; x++) {
         for (int z = minZ; z <= maxZ; z++) {
-          consumer.accept(x, y, z);
+          consumer.accept(new Location(location.getWorld(), x, y, z));
         }
       }
     }
