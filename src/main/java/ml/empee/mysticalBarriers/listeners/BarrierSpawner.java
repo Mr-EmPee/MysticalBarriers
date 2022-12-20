@@ -29,7 +29,7 @@ public class BarrierSpawner extends AbstractListener {
     sendBarriersBlocks(event.getTo(), event.getFrom(), event.getPlayer());
   }
 
-  private void sendBarriersBlocks(Location toLoc, Location fromLoc, Player player) {
+  public void sendBarriersBlocks(Location toLoc, Location fromLoc, Player player) {
     for (Barrier barrier : barriersService.findAllBarriers()) {
       if (barrier.isHiddenFor(player) || (!barrier.isWithinRange(toLoc, null) && !barrier.isWithinRange(fromLoc, null))) {
         continue;
@@ -39,7 +39,7 @@ public class BarrierSpawner extends AbstractListener {
     }
   }
 
-  private void sendBarrierBlocks(Player player, Barrier barrier, Location fromLoc, Location toLoc) {
+  public void sendBarrierBlocks(Player player, Barrier barrier, Location fromLoc, Location toLoc) {
     MultiBlockPacket packet = new MultiBlockPacket(toLoc, false);
 
     List<Location> visibleBarrierBlocks = new ArrayList<>();

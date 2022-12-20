@@ -38,7 +38,7 @@ public final class MysticalBarriersPlugin extends AbstractPlugin {
   @Override
   protected Command[] buildCommands() {
     return new Command[] {
-        new MysticalBarriersCommand(getService(BarriersService.class))
+        new MysticalBarriersCommand(getService(BarriersService.class), getListener(BarrierSpawner.class))
     };
   }
 

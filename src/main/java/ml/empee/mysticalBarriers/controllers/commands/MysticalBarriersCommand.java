@@ -9,6 +9,7 @@ import ml.empee.commandsManager.parsers.types.annotations.IntegerParam;
 import ml.empee.mysticalBarriers.MysticalBarriersPlugin;
 import ml.empee.mysticalBarriers.controllers.commands.listeners.BarrierDefiner;
 import ml.empee.mysticalBarriers.controllers.commands.parsers.BarrierDirection;
+import ml.empee.mysticalBarriers.listeners.BarrierSpawner;
 import ml.empee.mysticalBarriers.utils.helpers.cache.PlayerContext;
 import ml.empee.mysticalBarriers.model.Barrier;
 import ml.empee.mysticalBarriers.services.BarriersService;
@@ -27,9 +28,11 @@ public class MysticalBarriersCommand extends Command {
 
   private final PlayerContext<Barrier> barrierCreationContext = PlayerContext.get("barrierCreationContext");
   private final BarriersService barriersService;
+  private final BarrierSpawner barrierSpawner;
 
-  public MysticalBarriersCommand(BarriersService barriersService) {
+  public MysticalBarriersCommand(BarriersService barriersService, BarrierSpawner barrierSpawner) {
     this.barriersService = barriersService;
+    this.barrierSpawner = barrierSpawner;
 
     registerListeners(
         new BarrierDefiner(barriersService)
@@ -156,17 +159,20 @@ public class MysticalBarriersCommand extends Command {
       "&c&lPS. &cHigh range number could crash the server!",
       permission = "mysticalbarriers.command.debug"
   )
-  public void onPerformanceTest(Player sender, Integer barrierSize, Integer range) {
+  public void onPerformanceTest(Player sender, @IntegerParam(max = 50, min = 1) Integer range) {
     AtomicInteger blocks = new AtomicInteger(0);
     Location location = sender.getLocation();
 
     Barrier barrier = new Barrier("performanceTest");
     barrier.setActivationRange(range);
     barrier.setFirstCorner(new Location(location.getWorld(), 0, 0, 0));
-    barrier.setSecondCorner(new Location(location.getWorld(), barrierSize, barrierSize, barrierSize));
+    barrier.setSecondCorner(new Location(location.getWorld(), 100, 200, 100));
 
     long time = System.currentTimeMillis();
-    barrier.forEachVisibleBarrierBlock(location, block -> blocks.incrementAndGet());
+    barrierSpawner.sendBarrierBlocks(sender, barrier,
+        new Location(location.getWorld(), 50, 50, 50),
+        new Location(location.getWorld(), 50, 150, 50)
+    );
     time = (System.currentTimeMillis() - time) * 2;
 
     Logger.info(sender,
@@ -175,7 +181,7 @@ public class MysticalBarriersCommand extends Command {
             "a barrier range and the number of barriers with overlapping ranges\n\n"
             + "  Blocks to send: &e%d\n"
             + "  Time: &e%dms\n"
-            + "  Ticks: &e%.2f\n", blocks.get(), time, ((double) time/50)
+            + "  Ticks: &e%.2f\n", blocks.get(), time, ((double) time/100)
     );
   }
 
