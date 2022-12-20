@@ -10,7 +10,7 @@
         <version>1.0</version>
     </parent>
 
-    <artifactId>NysticalBarriers</artifactId>
+    <artifactId>MysticalBarriers</artifactId>
     <version>1.7.2</version>
 
     <properties>
