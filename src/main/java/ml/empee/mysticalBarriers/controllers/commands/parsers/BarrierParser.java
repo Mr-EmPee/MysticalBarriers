@@ -15,14 +15,9 @@ public class BarrierParser extends ParameterParser<Barrier> {
 
   private final BarriersService barriersService;
 
-  public BarrierParser(BarriersService barriersService, String label, String defaultValue) {
-    super(label, defaultValue);
+  public BarrierParser(BarriersService barriersService) {
     this.barriersService = barriersService;
-  }
-
-  protected BarrierParser(BarrierParser parser) {
-    super(parser);
-    this.barriersService = parser.barriersService;
+    this.label = "barrier";
   }
 
   @Override
@@ -49,7 +44,7 @@ public class BarrierParser extends ParameterParser<Barrier> {
 
   @Override
   public ParameterParser<Barrier> copyParser() {
-    return new BarrierParser(this);
+    return new BarrierParser(barriersService);
   }
 
 }

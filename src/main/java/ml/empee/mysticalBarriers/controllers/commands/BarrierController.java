@@ -13,7 +13,6 @@ import ml.empee.mysticalBarriers.listeners.BarrierSpawner;
 import ml.empee.mysticalBarriers.utils.helpers.cache.PlayerContext;
 import ml.empee.mysticalBarriers.model.Barrier;
 import ml.empee.mysticalBarriers.services.BarriersService;
-import ml.empee.mysticalBarriers.utils.LocationUtils;
 import ml.empee.mysticalBarriers.utils.Logger;
 import ml.empee.mysticalBarriers.utils.helpers.cache.PlayerData;
 import ml.empee.mysticalBarriers.utils.nms.ServerVersion;
@@ -24,19 +23,29 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 @CommandRoot(label = "mb", aliases = { "mysticalbarriers", "mysticalb" })
-public class MysticalBarriersCommand extends Command {
+public class BarrierController extends Command {
 
   private final PlayerContext<Barrier> barrierCreationContext = PlayerContext.get("barrierCreationContext");
   private final BarriersService barriersService;
   private final BarrierSpawner barrierSpawner;
 
-  public MysticalBarriersCommand(BarriersService barriersService, BarrierSpawner barrierSpawner) {
+  public BarrierController(BarriersService barriersService, BarrierSpawner barrierSpawner) {
     this.barriersService = barriersService;
     this.barrierSpawner = barrierSpawner;
 
     registerListeners(
         new BarrierDefiner(barriersService)
     );
+  }
+
+  @CommandNode(
+      parent = "mb",
+      label = "help",
+      description = "Send the help menu",
+      permission = "mysticalbarriers.command.help"
+  )
+  public void sendHelpMenu(CommandSender sender, @IntegerParam(min = 1, defaultValue = "1") Integer page) {
+    getHelpMenu().sendHelpMenu(sender, page);
   }
 
   @CommandNode(

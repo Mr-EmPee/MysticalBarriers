@@ -4,7 +4,7 @@ import ml.empee.commandsManager.command.Command;
 import ml.empee.commandsManager.parsers.ParserManager;
 import ml.empee.configurator.ConfigFile;
 import ml.empee.mysticalBarriers.config.Config;
-import ml.empee.mysticalBarriers.controllers.commands.MysticalBarriersCommand;
+import ml.empee.mysticalBarriers.controllers.commands.BarrierController;
 import ml.empee.mysticalBarriers.controllers.commands.parsers.BarrierParser;
 import ml.empee.mysticalBarriers.listeners.AbstractListener;
 import ml.empee.mysticalBarriers.listeners.BarrierBlocksProtections;
@@ -38,7 +38,7 @@ public final class MysticalBarriersPlugin extends AbstractPlugin {
   @Override
   protected Command[] buildCommands() {
     return new Command[] {
-        new MysticalBarriersCommand(getService(BarriersService.class), getListener(BarrierSpawner.class))
+        new BarrierController(getService(BarriersService.class), getListener(BarrierSpawner.class))
     };
   }
 
@@ -62,8 +62,8 @@ public final class MysticalBarriersPlugin extends AbstractPlugin {
 
   @Override
   protected void registerParsers(ParserManager parserManager) {
-    parserManager.setDefaultParserForType(
-        Barrier.class, new BarrierParser(getService(BarriersService.class), "barrier", "")
+    parserManager.registerParser(
+        new BarrierParser(getService(BarriersService.class)), null, Barrier.class
     );
   }
 
