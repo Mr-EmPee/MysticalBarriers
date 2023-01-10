@@ -9,7 +9,9 @@ import ml.empee.mysticalBarriers.config.Config;
 import ml.empee.mysticalBarriers.model.Barrier;
 import ml.empee.mysticalBarriers.services.BarriersService;
 import ml.empee.mysticalBarriers.utils.LocationUtils;
+import ml.empee.mysticalBarriers.utils.MCLogger;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
@@ -50,7 +52,16 @@ public class BarrierIllegalActionsBlocker implements Listener {
     if (!entity.isValid()) {
       return true;
     } else if (!entity.isOnGround()) {
-      Barrier barrier = barriersService.findBarrierAt(entity.getLocation());
+      List<Location> traveledBlocks = LocationUtils.getBlocksBetween(entity.getLocation(), entity.getVelocity());
+
+      Barrier barrier = null;
+      for(Location location : traveledBlocks) {
+        barrier = barriersService.findBarrierAt(location);
+        if (barrier != null) {
+          break;
+        }
+      }
+
       if (barrier != null) {
         if (shooter != null && barrier.isHiddenFor(shooter)) {
           return false;
@@ -58,7 +69,6 @@ public class BarrierIllegalActionsBlocker implements Listener {
 
         if (entity instanceof Projectile) {
           if (shooter != null) {
-            shooter.spawnParticle(Particle.CLOUD, entity.getLocation(), 3);
             shooter.playSound(entity.getLocation(), Sound.BLOCK_END_PORTAL_FRAME_FILL, 1, 1);
           }
 
@@ -206,7 +216,4 @@ public class BarrierIllegalActionsBlocker implements Listener {
       event.setCancelled(true);
     }
   }
-
-  //TODO Prevent projectiles from getting through barriers (Configurable)
-
 }
