@@ -1,9 +1,10 @@
-package ml.empee.mysticalBarriers.controllers.commands.listeners;
+package ml.empee.mysticalBarriers.listeners;
 
 import lombok.RequiredArgsConstructor;
+import ml.empee.ioc.annotations.Bean;
 import ml.empee.mysticalBarriers.model.Barrier;
 import ml.empee.mysticalBarriers.services.BarriersService;
-import ml.empee.mysticalBarriers.utils.Logger;
+import ml.empee.mysticalBarriers.utils.MCLogger;
 import ml.empee.mysticalBarriers.utils.helpers.cache.PlayerContext;
 import ml.empee.mysticalBarriers.utils.helpers.cache.PlayerData;
 import ml.empee.mysticalBarriers.utils.nms.ServerVersion;
@@ -15,16 +16,16 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 
+@Bean
 @RequiredArgsConstructor
 public class BarrierDefiner implements Listener {
 
   private final PlayerContext<Barrier> barrierCreationContext = PlayerContext.get("barrierCreationContext");
-
   private final BarriersService barriersService;
 
   @EventHandler(priority = EventPriority.HIGH)
   public void onPlayerInteract(PlayerInteractEvent event) {
-    if(event.getClickedBlock() == null) {
+    if (event.getClickedBlock() == null) {
       return;
     }
 
@@ -45,7 +46,7 @@ public class BarrierDefiner implements Listener {
     Player player = event.getPlayer();
     if (event.getAction().name().contains("LEFT")) {
       barrierCreationContext.remove(player);
-      Logger.info(player, "Barrier creation mode disabled!");
+      MCLogger.info(player, "Barrier creation mode disabled!");
     } else {
       if (event.getClickedBlock() != null) {
         defineBarrier(event, barrier);
@@ -59,15 +60,15 @@ public class BarrierDefiner implements Listener {
 
     if (barrier.getFirstCorner() == null) {
       barrier.setFirstCorner(clickedBlock.getLocation());
-      Logger.info(player, "You selected the first corner");
+      MCLogger.info(player, "You selected the first corner");
     } else {
       barrierCreationContext.remove(player);
       barrier.setSecondCorner(clickedBlock.getLocation());
 
-      if(barriersService.saveBarrier(barrier)) {
-        Logger.info(player, "The barrier '&e%s&r' has been created!", barrier.getId());
+      if (barriersService.saveBarrier(barrier)) {
+        MCLogger.info(player, "The barrier '&e%s&r' has been created!", barrier.getId());
       } else {
-        Logger.error(player, "A barrier named '&e%s&r' already exists!", barrier.getId());
+        MCLogger.error(player, "A barrier named '&e%s&r' already exists!", barrier.getId());
       }
     }
 

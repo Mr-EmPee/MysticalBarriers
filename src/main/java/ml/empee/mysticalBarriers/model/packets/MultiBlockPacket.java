@@ -1,14 +1,5 @@
 package ml.empee.mysticalBarriers.model.packets;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.block.data.BlockData;
-import org.bukkit.entity.Player;
-import org.jetbrains.annotations.Nullable;
-
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
@@ -17,8 +8,14 @@ import com.comphenix.protocol.wrappers.BlockPosition;
 import com.comphenix.protocol.wrappers.ChunkCoordIntPair;
 import com.comphenix.protocol.wrappers.MultiBlockChangeInfo;
 import com.comphenix.protocol.wrappers.WrappedBlockData;
-
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import ml.empee.mysticalBarriers.utils.nms.ServerVersion;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Nullable;
 
 public final class MultiBlockPacket {
 
@@ -107,7 +104,8 @@ public final class MultiBlockPacket {
     addBlock(blockData, new Location(null, x, y, z));
   }
 
-  public void addBackwardProofBlock(Material type, @Nullable Integer blockSubCategory, @Nullable String blockData, Location location) {
+  public void addBackwardProofBlock(Material type, @Nullable Integer blockSubCategory, @Nullable String blockData,
+                                    Location location) {
     if (IS_ABOVE_1_13) {
       if (blockData != null) {
         addBlock(type.createBlockData(blockData), location);
@@ -119,7 +117,8 @@ public final class MultiBlockPacket {
     }
   }
 
-  public void addBackwardProofBlock(Material type, @Nullable Integer blockSubCategory, @Nullable String blockData, int x, int y, int z) {
+  public void addBackwardProofBlock(Material type, @Nullable Integer blockSubCategory, @Nullable String blockData, int x,
+                                    int y, int z) {
     addBackwardProofBlock(type, blockSubCategory, blockData, new Location(null, x, y, z));
   }
 

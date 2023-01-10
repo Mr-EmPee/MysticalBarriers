@@ -1,139 +1,87 @@
 package ml.empee.mysticalBarriers.services;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+import ml.empee.ioc.Stoppable;
+import ml.empee.ioc.annotations.Bean;
+import ml.empee.json.JsonRepository;
 import ml.empee.mysticalBarriers.exceptions.MysticalBarrierException;
 import ml.empee.mysticalBarriers.model.Barrier;
 import ml.empee.mysticalBarriers.model.packets.MultiBlockPacket;
-import ml.empee.mysticalBarriers.utils.ArrayUtils;
-import ml.empee.mysticalBarriers.utils.Logger;
-import ml.empee.mysticalBarriers.utils.serialization.PersistenceUtils;
+import ml.empee.mysticalBarriers.utils.MCLogger;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
-public class BarriersService extends AbstractService {
-
-  private static final String FILE_NAME = "barriers.json";
-
-  private final Set<Barrier> barriers = ConcurrentHashMap.newKeySet();
+@Bean
+public class BarriersService implements Stoppable {
+  private final JsonRepository<Barrier> repo;
 
   public BarriersService() {
-    barriers.addAll(ArrayUtils.toList(PersistenceUtils.deserialize(FILE_NAME, Barrier[].class)));
-    Logger.info("Loaded " + barriers.size() + " barriers");
-
-    for (Player player : Bukkit.getOnlinePlayers()) {
-      for (Barrier barrier : barriers) {
-        refreshBarrierFor(player, barrier);
-      }
-    }
+    repo = new JsonRepository<>("barriers.json", Barrier[].class);
+    MCLogger.info("Loaded " + repo.size() + " barriers");
+    refreshAllBarriers();
   }
 
   @Override
-  protected void onDisable() {
-    for (Player player : Bukkit.getOnlinePlayers()) {
-      for (Barrier barrier : barriers) {
-        hideBarrierTo(player, barrier);
-      }
-    }
-  }
-
-  private void saveFile() {
-    PersistenceUtils.serializeAsync(barriers, FILE_NAME);
+  public void stop() {
+    hideAllBarriers();
   }
 
   public boolean saveBarrier(Barrier barrier) {
-    if (barriers.add(barrier)) {
-      saveFile();
-
-      for (Player player : Bukkit.getOnlinePlayers()) {
-        if (player.getWorld().equals(barrier.getWorld())) {
-          refreshBarrierFor(player, barrier);
-        }
-      }
-
+    if (!repo.contains(barrier)) {
+      repo.save(barrier);
+      refreshBarrier(barrier);
       return true;
     }
 
     return false;
   }
-
   public boolean updateBarrier(Barrier barrier) {
-    if (barriers.remove(barrier)) {
-      barriers.add(barrier);
-      saveFile();
+    if (repo.contains(barrier)) {
+      repo.update(barrier);
+      return true;
+    }
 
-      for (Player player : Bukkit.getOnlinePlayers()) {
-        if (player.getWorld().equals(barrier.getWorld())) {
-          refreshBarrierFor(player, barrier);
-        }
-      }
-
+    return false;
+  }
+  public boolean removeBarrier(Barrier barrier) {
+    if (repo.contains(barrier)) {
+      repo.remove(barrier);
+      hideBarrier(barrier);
       return true;
     }
 
     return false;
   }
 
-  public Set<Barrier> findAllBarriers() {
-    return Collections.unmodifiableSet(barriers);
+  public List<Barrier> findAllBarriers() {
+    return repo.findAll();
   }
-
+  @Nullable
   public Barrier findBarrierAt(Location location) {
-    for (Barrier barrier : barriers) {
-      if (barrier.isBarrierAt(location)) {
-        return barrier;
-      }
-    }
-
-    return null;
+    return repo.stream()
+        .filter(barrier -> barrier.isBarrierAt(location))
+        .findFirst()
+        .orElse(null);
   }
-
   /**
    * @param range if not specified will use the barrier range
    */
   public List<Barrier> findBarriersWithinRangeAt(Location location, @Nullable Integer range) {
-    ArrayList<Barrier> barriers = new ArrayList<>();
-
-    for (Barrier barrier : this.barriers) {
-      if (barrier.isWithinRange(location, range)) {
-        barriers.add(barrier);
-      }
-    }
-
-    return barriers;
+    return repo.stream()
+        .filter(barrier -> barrier.isWithinRange(location, range))
+        .collect(Collectors.toList());
   }
-
   @Nullable
   public Barrier findBarrierByID(String id) {
-    for (Barrier barrier : barriers) {
-      if (barrier.getId().equals(id)) {
-        return barrier;
-      }
-    }
-
-    return null;
-  }
-
-  public boolean removeBarrier(Barrier barrier) {
-    if (barriers.remove(barrier)) {
-      for (Player player : Bukkit.getOnlinePlayers()) {
-        if (player.getWorld().equals(barrier.getWorld()) && !barrier.isHiddenFor(player)) {
-          hideBarrierTo(player, barrier);
-        }
-      }
-
-      saveFile();
-      return true;
-    }
-
-    return false;
+    return repo.stream()
+        .filter(barrier -> barrier.getId().equals(id))
+        .findFirst()
+        .orElse(null);
   }
 
   public void refreshBarrierFor(Player player, Barrier barrier) {
@@ -142,6 +90,33 @@ public class BarriersService extends AbstractService {
     } else {
       showBarrierTo(player, barrier);
     }
+  }
+  public void refreshBarrier(Barrier barrier) {
+    Bukkit.getOnlinePlayers().forEach(player -> refreshBarrierFor(player, barrier));
+  }
+  public void refreshAllBarriers() {
+    repo.forEach(this::refreshBarrier);
+  }
+
+  public void hideAllBarriers() {
+    repo.forEach(this::hideBarrier);
+  }
+  public void hideBarrier(Barrier barrier) {
+    Bukkit.getOnlinePlayers().forEach(player -> hideBarrierTo(player, barrier));
+  }
+  public void hideBarrierTo(Player player, Barrier barrier) {
+    if(!player.getWorld().equals(barrier.getWorld())) {
+      return;
+    }
+
+    despawnBarrierAt(player.getLocation(), barrier, player);
+  }
+  public void showBarrierTo(Player player, Barrier barrier) {
+    if(!player.getWorld().equals(barrier.getWorld())) {
+      return;
+    }
+
+    spawnBarrierAt(player.getLocation(), barrier, player);
   }
 
   public void despawnBarrierAt(Location location, Barrier barrier, Player player) {
@@ -154,15 +129,6 @@ public class BarriersService extends AbstractService {
           "Error while refreshing the barrier " + barrier.getId() + " for " + player.getName(), e);
     }
   }
-
-  public void hideBarrierTo(Player player, Barrier barrier) {
-    despawnBarrierAt(player.getLocation(), barrier, player);
-  }
-
-  public void showBarrierTo(Player player, Barrier barrier) {
-    spawnBarrierAt(player.getLocation(), barrier, player);
-  }
-
   public void spawnBarrierAt(Location location, Barrier barrier, Player player) {
     MultiBlockPacket packet = new MultiBlockPacket(location, false);
     barrier.forEachVisibleBarrierBlock(location, loc ->

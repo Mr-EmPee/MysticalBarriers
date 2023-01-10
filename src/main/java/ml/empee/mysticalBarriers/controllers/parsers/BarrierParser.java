@@ -1,4 +1,4 @@
-package ml.empee.mysticalBarriers.controllers.commands.parsers;
+package ml.empee.mysticalBarriers.controllers.parsers;
 
 import java.util.List;
 import java.util.stream.Collectors;

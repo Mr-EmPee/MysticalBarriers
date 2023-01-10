@@ -15,6 +15,14 @@ import org.jetbrains.annotations.Nullable;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PlayerData<T> {
 
+  @Getter
+  private final UUID uuid;
+  @Getter
+  @Nullable
+  private final Player player;
+  @Delegate
+  private final List<T> data = new ArrayList<>();
+
   @SafeVarargs
   public static <T> PlayerData<T> of(@NotNull Player player, T... data) {
     PlayerData<T> playerData = new PlayerData<>(player.getUniqueId(), player);
@@ -29,13 +37,6 @@ public final class PlayerData<T> {
     return playerData;
   }
 
-  @Getter
-  private final UUID uuid;
-  @Getter @Nullable
-  private final Player player;
-  @Delegate
-  private final List<T> data = new ArrayList<>();
-
   public T get() {
     if (data.isEmpty()) {
       return null;
@@ -48,7 +49,7 @@ public final class PlayerData<T> {
   public final void set(T... data) {
     clear();
 
-    if(data != null) {
+    if (data != null) {
       addAll(Arrays.asList(data));
     }
   }

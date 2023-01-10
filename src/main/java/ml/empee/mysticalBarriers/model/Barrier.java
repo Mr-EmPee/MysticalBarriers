@@ -7,44 +7,45 @@ import java.util.Set;
 import java.util.function.Consumer;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import ml.empee.mysticalBarriers.utils.helpers.Tuple;
+import ml.empee.json.validator.annotations.Required;
+import ml.empee.json.validator.annotations.Validator;
 import ml.empee.mysticalBarriers.utils.LocationUtils;
-import ml.empee.mysticalBarriers.utils.serialization.annotations.Required;
-import ml.empee.mysticalBarriers.utils.serialization.annotations.Validated;
-import ml.empee.mysticalBarriers.utils.serialization.annotations.Validator;
+import ml.empee.mysticalBarriers.utils.helpers.Tuple;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
-@Validated
 @EqualsAndHashCode
-@RequiredArgsConstructor
 public class Barrier {
 
-  @Expose @Required @Getter
+  @Expose @Getter @Required
   private final String id;
 
-  @Expose @Required @Getter
+  @Expose @Getter @Required
   private Location firstCorner;
 
-  @Expose @Required @Getter
+  @Expose @Getter @Required
   private Location secondCorner;
 
-  @Expose @Required
-  @Getter @Setter
-  private Material material = Material.BARRIER;
+  @Required @Expose @Getter @Setter
+  private Material material;
 
-  @Expose @Required @Getter @Setter
-  private Integer activationRange = 3;
+  @Required @Expose @Getter @Setter
+  private Integer activationRange;
 
   @Expose @Getter @Setter
   private String blockData;
 
   private Set<Tuple<Integer, Integer>> chunks;
+
+  public Barrier(String id) {
+    this.id = id;
+    this.material = Material.BARRIER;
+    this.activationRange = 3;
+  }
 
   @Validator
   private void validateCorners() {
@@ -60,7 +61,7 @@ public class Barrier {
 
     if (firstCorner.getWorld() == null || secondCorner.getWorld() == null) {
       throw new JsonParseException("A corner world of the barrier " + id + " is null or doesn't exist");
-    } else if(!firstCorner.getWorld().equals(secondCorner.getWorld())) {
+    } else if (!firstCorner.getWorld().equals(secondCorner.getWorld())) {
       throw new JsonParseException("The two corners of the barrier " + id + " must be in the same world");
     }
   }
@@ -85,29 +86,25 @@ public class Barrier {
 
   public void setFirstCorner(Location firstCorner) {
     this.firstCorner = firstCorner;
-    if(secondCorner != null) {
+    if (secondCorner != null) {
       validateCorners();
     }
   }
 
   public void setSecondCorner(Location secondCorner) {
     this.secondCorner = secondCorner;
-    if(firstCorner != null) {
+    if (firstCorner != null) {
       validateCorners();
     }
   }
-  
+
   public boolean isBarrierAt(@Nullable World world, int x, int y, int z) {
     if (world != null && !getWorld().equals(world)) {
       return false;
     }
 
-    return
-        x >= firstCorner.getBlockX() && x <= secondCorner.getBlockX()
-        &&
-        y >= firstCorner.getBlockY() && y <= secondCorner.getBlockY()
-        &&
-        z >= firstCorner.getBlockZ() && z <= secondCorner.getBlockZ();
+    return x >= firstCorner.getBlockX() && x <= secondCorner.getBlockX() && y >= firstCorner.getBlockY() &&
+        y <= secondCorner.getBlockY() && z >= firstCorner.getBlockZ() && z <= secondCorner.getBlockZ();
   }
 
   public boolean isBarrierAt(Location location) {
@@ -143,16 +140,12 @@ public class Barrier {
     boolean isWithinSecondCornerY = secondCorner.getBlockY() + range >= y;
     boolean isWithinSecondCornerZ = secondCorner.getBlockZ() + range >= z;
 
-    return isWithinSecondCornerX && isWithinFirstCornerX
-           && isWithinFirstCornerY && isWithinSecondCornerY
-           && isWithinFirstCornerZ && isWithinSecondCornerZ;
+    return isWithinSecondCornerX && isWithinFirstCornerX && isWithinFirstCornerY && isWithinSecondCornerY &&
+        isWithinFirstCornerZ && isWithinSecondCornerZ;
   }
 
   public boolean isWithinRange(Location location, @Nullable Integer range) {
-    return isWithinRange(
-        location.getWorld(), range,
-        location.getBlockX(), location.getBlockY(), location.getBlockZ()
-    );
+    return isWithinRange(location.getWorld(), range, location.getBlockX(), location.getBlockY(), location.getBlockZ());
   }
 
   public boolean isHiddenFor(Player player) {
@@ -166,7 +159,9 @@ public class Barrier {
 
     World world = location.getWorld();
     LocationUtils.radiusSearch(location, activationRange, loc -> {
-      int x = loc.getBlockX(); int y = loc.getBlockY(); int z = loc.getBlockZ();
+      int x = loc.getBlockX();
+      int y = loc.getBlockY();
+      int z = loc.getBlockZ();
 
       if (isBarrierChunk(x >> 4, z >> 4)) {
         if (world.getBlockAt(x, y, z).getType() == Material.AIR) {

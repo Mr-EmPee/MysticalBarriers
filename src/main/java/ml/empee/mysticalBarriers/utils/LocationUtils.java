@@ -31,8 +31,8 @@ public final class LocationUtils {
     int minY = location.getBlockY() - radius;
     int minZ = location.getBlockZ() - radius;
 
-    for(int y = minY; y<=maxY; y++) {
-      for(int x = minX; x <= maxX; x++) {
+    for (int y = minY; y <= maxY; y++) {
+      for (int x = minX; x <= maxX; x++) {
         for (int z = minZ; z <= maxZ; z++) {
           consumer.accept(new Location(location.getWorld(), x, y, z));
         }

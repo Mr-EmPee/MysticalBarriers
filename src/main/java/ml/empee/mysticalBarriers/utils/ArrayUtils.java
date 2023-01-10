@@ -4,12 +4,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ArrayUtils {
@@ -29,7 +27,7 @@ public final class ArrayUtils {
   public static <T> List<T> toList(@Nullable T[] array) {
     ArrayList<T> result = new ArrayList<>();
 
-    if(array != null) {
+    if (array != null) {
       Collections.addAll(result, array);
     }
 

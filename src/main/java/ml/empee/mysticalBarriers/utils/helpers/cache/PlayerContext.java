@@ -21,25 +21,12 @@ public final class PlayerContext<T> {
 
   private static final HashMap<String, PlayerContext<?>> contexts = new HashMap<>();
 
-  private final HashMap<UUID, PlayerData<T>> data = new HashMap<>();
-
   static {
     JavaPlugin plugin = JavaPlugin.getProvidingPlugin(PlayerDataRemover.class);
     plugin.getServer().getPluginManager().registerEvents(new PlayerDataRemover(), plugin);
   }
 
-  private static class PlayerDataRemover implements Listener {
-    @EventHandler
-    public void onPlayerQuit(PlayerQuitEvent event) {
-      Player player = event.getPlayer();
-      for (PlayerContext<?> container : contexts.values()) {
-        container.data.computeIfPresent(
-            player.getUniqueId(),
-            (uuid, playerData) -> playerData.getPlayer() == null ? playerData : null
-        );
-      }
-    }
-  }
+  private final HashMap<UUID, PlayerData<T>> data = new HashMap<>();
 
   public static <T> PlayerContext<T> get(String name) {
     return (PlayerContext<T>) contexts.computeIfAbsent(name, key -> new PlayerContext<>());
@@ -74,6 +61,19 @@ public final class PlayerContext<T> {
 
   public Stream<PlayerData<T>> stream() {
     return data.values().stream();
+  }
+
+  private static class PlayerDataRemover implements Listener {
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event) {
+      Player player = event.getPlayer();
+      for (PlayerContext<?> container : contexts.values()) {
+        container.data.computeIfPresent(
+            player.getUniqueId(),
+            (uuid, playerData) -> playerData.getPlayer() == null ? playerData : null
+        );
+      }
+    }
   }
 
 }

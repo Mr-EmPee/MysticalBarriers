@@ -1,78 +1,51 @@
 package ml.empee.mysticalBarriers;
 
-import ml.empee.commandsManager.command.Command;
+import ml.empee.commandsManager.CommandManager;
+import ml.empee.commandsManager.command.CommandExecutor;
 import ml.empee.commandsManager.parsers.ParserManager;
-import ml.empee.configurator.ConfigFile;
-import ml.empee.mysticalBarriers.config.Config;
-import ml.empee.mysticalBarriers.controllers.commands.BarrierController;
-import ml.empee.mysticalBarriers.controllers.commands.parsers.BarrierParser;
-import ml.empee.mysticalBarriers.listeners.AbstractListener;
-import ml.empee.mysticalBarriers.listeners.BarrierBlocksProtections;
-import ml.empee.mysticalBarriers.listeners.BarrierBlocksUpdater;
-import ml.empee.mysticalBarriers.listeners.BarrierIllegalActionsBlocker;
-import ml.empee.mysticalBarriers.listeners.BarrierSpawner;
+import ml.empee.ioc.SimpleIoC;
+import ml.empee.mysticalBarriers.controllers.PluginController;
+import ml.empee.mysticalBarriers.controllers.parsers.BarrierParser;
 import ml.empee.mysticalBarriers.model.Barrier;
-import ml.empee.mysticalBarriers.services.AbstractService;
 import ml.empee.mysticalBarriers.services.BarriersService;
-import ml.empee.mysticalBarriers.utils.Logger;
+import ml.empee.mysticalBarriers.utils.MCLogger;
 import ml.empee.mysticalBarriers.utils.Metrics;
-import ml.empee.notifier.SimpleNotifier;
+import ml.empee.notifier.Notifier;
+import org.bukkit.plugin.java.JavaPlugin;
 
-public final class MysticalBarriersPlugin extends AbstractPlugin {
+public final class MysticalBarriersPlugin extends JavaPlugin {
 
   private static final String PREFIX = "  &5MyB &8»&r ";
   private static final String SPIGOT_PLUGIN_ID = "105671";
   private static final Integer METRICS_PLUGIN_ID = 16669;
 
+  private SimpleIoC iocContainer;
+
   @Override
   public void onEnable() {
-    Logger.setPrefix(PREFIX);
-    Command.setPrefix(Logger.getPrefix());
+    MCLogger.setPrefix(PREFIX);
 
-    registerAll();
+    iocContainer = SimpleIoC.initialize(this, "relocations");
+    registerCommands();
 
     Metrics.of(this, METRICS_PLUGIN_ID);
-    SimpleNotifier.scheduleNotifier(SPIGOT_PLUGIN_ID, this, 1L);
+    Notifier.listenForUpdates(this, SPIGOT_PLUGIN_ID);
   }
 
-  @Override
-  protected Command[] buildCommands() {
-    return new Command[] {
-        new BarrierController(getService(BarriersService.class), getListener(BarrierSpawner.class))
-    };
+  public void reload() {
+    iocContainer.removeAllBeans();
+    iocContainer = SimpleIoC.initialize(this, "relocations");
+    registerCommands();
   }
 
-  @Override
-  protected ConfigFile[] buildConfigurations() {
-    return new ConfigFile[] {
-        new Config(this)
-    };
-  }
-
-  @Override
-  protected AbstractListener[] buildListeners() {
-    BarriersService barriersService = getService(BarriersService.class);
-    return new AbstractListener[] {
-        new BarrierSpawner(barriersService),
-        new BarrierBlocksProtections(barriersService),
-        new BarrierIllegalActionsBlocker(barriersService, getConfig(Config.class)),
-        new BarrierBlocksUpdater(barriersService)
-    };
-  }
-
-  @Override
-  protected void registerParsers(ParserManager parserManager) {
+  private void registerCommands() {
+    CommandExecutor.setPrefix(MCLogger.getPrefix());
+    CommandManager commandManager = new CommandManager(this);
+    ParserManager parserManager = commandManager.getParserManager();
     parserManager.registerParser(
-        new BarrierParser(getService(BarriersService.class)), null, Barrier.class
+        new BarrierParser(iocContainer.getBean(BarriersService.class)), null, Barrier.class
     );
-  }
 
-  @Override
-  protected AbstractService[] buildServices() {
-    BarriersService barriersService = new BarriersService();
-
-    return new AbstractService[] {
-        barriersService
-    };
+    commandManager.registerCommand(iocContainer.getBean(PluginController.class));
   }
 }

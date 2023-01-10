@@ -3,6 +3,8 @@ package ml.empee.mysticalBarriers.listeners;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+import ml.empee.ioc.annotations.Bean;
+import ml.empee.mysticalBarriers.MysticalBarriersPlugin;
 import ml.empee.mysticalBarriers.config.Config;
 import ml.empee.mysticalBarriers.model.Barrier;
 import ml.empee.mysticalBarriers.services.BarriersService;
@@ -15,6 +17,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.LingeringPotionSplashEvent;
 import org.bukkit.event.entity.PotionSplashEvent;
@@ -27,13 +30,14 @@ import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.util.Vector;
 import org.spigotmc.event.entity.EntityMountEvent;
 
-public class BarrierIllegalActionsBlocker extends AbstractListener {
+@Bean
+public class BarrierIllegalActionsBlocker implements Listener {
 
   private final HashMap<Entity, Player> followedEntities = new HashMap<>();
   private final BarriersService barriersService;
   private final Config config;
 
-  public BarrierIllegalActionsBlocker(BarriersService barriersService, Config config) {
+  public BarrierIllegalActionsBlocker(MysticalBarriersPlugin plugin, BarriersService barriersService, Config config) {
     this.barriersService = barriersService;
     this.config = config;
 
@@ -72,13 +76,13 @@ public class BarrierIllegalActionsBlocker extends AbstractListener {
 
   @EventHandler
   public void removeProjectileOnMoveInsideBarrier(ProjectileLaunchEvent event) {
-    if (!config.getBlockProjectilesMovement()) {
+    if (!config.isProjectileMovementBlocked()) {
       return;
     }
 
     ProjectileSource shooter = event.getEntity().getShooter();
     if (!(shooter instanceof Player)) {
-      if (config.getBlockProjectilesMovementOnlyFromPlayers()) {
+      if (config.shouldBlockOnlyPlayerProjectiles()) {
         return;
       }
 

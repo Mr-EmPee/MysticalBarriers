@@ -2,25 +2,24 @@ package ml.empee.mysticalBarriers.utils;
 
 import java.util.Locale;
 import java.util.logging.Level;
-
-import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.plugin.java.JavaPlugin;
-
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.plugin.java.JavaPlugin;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class Logger {
+public final class MCLogger {
 
-  private static final java.util.logging.Logger
-      consoleLogger = JavaPlugin.getProvidingPlugin(Logger.class).getLogger();
+  private static final java.util.logging.Logger consoleLogger = JavaPlugin.getProvidingPlugin(MCLogger.class).getLogger();
 
-  @Getter @Setter
+  @Getter
+  @Setter
   private static String prefix = "";
-  @Getter @Setter
+  @Getter
+  @Setter
   private static boolean isDebugEnabled;
 
   public static void info(String message, Object... args) {
