@@ -49,21 +49,15 @@ public class Barrier {
 
   @Validator
   private void validateCorners() {
-    int minX = Math.min(firstCorner.getBlockX(), secondCorner.getBlockX());
-    int maxX = Math.max(firstCorner.getBlockX(), secondCorner.getBlockX());
-    int minY = Math.min(firstCorner.getBlockY(), secondCorner.getBlockY());
-    int maxY = Math.max(firstCorner.getBlockY(), secondCorner.getBlockY());
-    int minZ = Math.min(firstCorner.getBlockZ(), secondCorner.getBlockZ());
-    int maxZ = Math.max(firstCorner.getBlockZ(), secondCorner.getBlockZ());
-
-    this.firstCorner = new Location(firstCorner.getWorld(), minX, minY, minZ);
-    this.secondCorner = new Location(secondCorner.getWorld(), maxX, maxY, maxZ);
-
     if (firstCorner.getWorld() == null || secondCorner.getWorld() == null) {
       throw new JsonParseException("A corner world of the barrier " + id + " is null or doesn't exist");
     } else if (!firstCorner.getWorld().equals(secondCorner.getWorld())) {
       throw new JsonParseException("The two corners of the barrier " + id + " must be in the same world");
     }
+
+    Location[] sortedLocations = LocationUtils.sortLocations(firstCorner, secondCorner);
+    firstCorner = sortedLocations[0];
+    secondCorner = sortedLocations[1];
   }
 
   @Validator
