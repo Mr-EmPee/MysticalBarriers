@@ -72,7 +72,7 @@ public class BarrierIllegalActionsBlocker implements Listener {
             shooter.playSound(entity.getLocation(), Sound.BLOCK_END_PORTAL_FRAME_FILL, 1, 1);
           }
 
-          entity.remove();
+          entity.setVelocity(entity.getVelocity().multiply(-0.25));
         } else {
           entity.setVelocity(new Vector(0, -0.1, 0));
         }
