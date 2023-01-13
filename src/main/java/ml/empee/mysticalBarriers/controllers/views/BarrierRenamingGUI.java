@@ -51,7 +51,7 @@ public class BarrierRenamingGUI {
   }
 
   private ItemStack left() {
-    return ItemBuilder.from(Material.NAME_TAG).name("&e" + barrier.getId()).build();
+    return ItemBuilder.from(Material.NAME_TAG).name(barrier.getId()).build();
   }
 
 }
