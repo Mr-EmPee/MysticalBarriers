@@ -2,19 +2,23 @@ package ml.empee.mysticalBarriers.listeners;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import ml.empee.ioc.annotations.Bean;
 import ml.empee.mysticalBarriers.MysticalBarriersPlugin;
 import ml.empee.mysticalBarriers.config.Config;
 import ml.empee.mysticalBarriers.model.Barrier;
 import ml.empee.mysticalBarriers.services.BarriersService;
 import ml.empee.mysticalBarriers.utils.LocationUtils;
-import ml.empee.mysticalBarriers.utils.nms.ServerVersion;
+import ml.empee.mysticalBarriers.utils.helpers.DynamicListener;
+import ml.empee.mysticalBarriers.utils.reflection.ReflectionUtils;
+import ml.empee.mysticalBarriers.utils.reflection.ServerVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
+import org.bukkit.entity.ThrownPotion;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -40,14 +44,12 @@ public class BarrierIllegalActionsBlocker implements Listener {
     this.barriersService = barriersService;
     this.config = config;
 
-    if(ServerVersion.isGreaterThan(1, 9)) {
-      DynamicListeners wrapper = new DynamicListeners();
-      Bukkit.getPluginManager().registerEvent(
-          LingeringPotionSplashEvent.class,
-          this, EventPriority.NORMAL,
-          (l, e) -> wrapper.cancelOnLingeringSplashInsideBarrier((LingeringPotionSplashEvent) e),
-          plugin, true
-      );
+    if (ServerVersion.isGreaterThan(1, 9)) {
+      cancelOnLingeringSplashInsideBarrier()
+          .eventClass(LingeringPotionSplashEvent.class)
+          .ignoreCancelled(true)
+          .listener(this)
+          .register();
     }
 
     Bukkit.getScheduler().runTaskTimer(plugin, () -> {
@@ -62,7 +64,7 @@ public class BarrierIllegalActionsBlocker implements Listener {
       List<Location> traveledBlocks = LocationUtils.getBlocksBetween(entity.getLocation(), entity.getVelocity());
 
       Barrier barrier = null;
-      for(Location location : traveledBlocks) {
+      for (Location location : traveledBlocks) {
         barrier = barriersService.findBarrierAt(location);
         if (barrier != null) {
           break;
@@ -76,7 +78,7 @@ public class BarrierIllegalActionsBlocker implements Listener {
 
         if (entity instanceof Projectile) {
           if (shooter != null) {
-            if(ServerVersion.isGreaterThan(1, 9)) {
+            if (ServerVersion.isGreaterThan(1, 9)) {
               shooter.playSound(entity.getLocation(), Sound.BLOCK_END_PORTAL_FRAME_FILL, 1, 1);
             } else {
               shooter.playSound(entity.getLocation(), Sound.valueOf("ITEM_BREAK"), 1, 1);
@@ -166,17 +168,17 @@ public class BarrierIllegalActionsBlocker implements Listener {
 
   @EventHandler(ignoreCancelled = true)
   public void cancelOnProjectileDamageInsideBarrier(EntityDamageByEntityEvent event) {
-    if(!(event.getDamager() instanceof Projectile)) {
+    if (!(event.getDamager() instanceof Projectile)) {
       return;
     }
 
     Projectile projectile = (Projectile) event.getDamager();
-    if(!(projectile.getShooter() instanceof Player)) {
+    if (!(projectile.getShooter() instanceof Player)) {
       return;
     }
 
     Barrier barrier = barriersService.findBarrierAt(event.getEntity().getLocation());
-    if(barrier == null || barrier.isHiddenFor((Player) projectile.getShooter())) {
+    if (barrier == null || barrier.isHiddenFor((Player) projectile.getShooter())) {
       return;
     }
 
@@ -210,18 +212,20 @@ public class BarrierIllegalActionsBlocker implements Listener {
     }
   }
 
-  public class DynamicListeners {
-    public void cancelOnLingeringSplashInsideBarrier(
-        LingeringPotionSplashEvent lingeringPotionSplashEvent
-    ) {
-      if (!(lingeringPotionSplashEvent.getEntity().getShooter() instanceof Player)) {
-        return;
-      }
+  public DynamicListener<?> cancelOnLingeringSplashInsideBarrier() {
+    return new DynamicListener<LingeringPotionSplashEvent>() {
+      @Override
+      public void onEvent(LingeringPotionSplashEvent event) {
+        ThrownPotion potion = ReflectionUtils.getThrownPotion(event);
+        if (!(potion.getShooter() instanceof Player)) {
+          return;
+        }
 
-      Barrier barrier = barriersService.findBarrierAt(lingeringPotionSplashEvent.getEntity().getLocation());
-      if (barrier != null && !barrier.isHiddenFor((Player) lingeringPotionSplashEvent.getEntity().getShooter())) {
-        lingeringPotionSplashEvent.getAreaEffectCloud().remove();
+        Barrier barrier = barriersService.findBarrierAt(potion.getLocation());
+        if (barrier != null && !barrier.isHiddenFor((Player) potion.getShooter())) {
+          event.getAreaEffectCloud().remove();
+        }
       }
-    }
+    };
   }
 }
