@@ -10,7 +10,7 @@ import com.comphenix.protocol.wrappers.MultiBlockChangeInfo;
 import com.comphenix.protocol.wrappers.WrappedBlockData;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import ml.empee.mysticalBarriers.utils.nms.ServerVersion;
+import ml.empee.mysticalBarriers.utils.reflection.ServerVersion;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.data.BlockData;

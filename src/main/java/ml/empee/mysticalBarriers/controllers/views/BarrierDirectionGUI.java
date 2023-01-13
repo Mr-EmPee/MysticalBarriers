@@ -10,7 +10,7 @@ import ml.empee.mysticalBarriers.MysticalBarriersPlugin;
 import ml.empee.mysticalBarriers.controllers.BarrierController;
 import ml.empee.mysticalBarriers.controllers.parsers.BarrierDirection;
 import ml.empee.mysticalBarriers.model.Barrier;
-import ml.empee.mysticalBarriers.utils.nms.ServerVersion;
+import ml.empee.mysticalBarriers.utils.reflection.ServerVersion;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;

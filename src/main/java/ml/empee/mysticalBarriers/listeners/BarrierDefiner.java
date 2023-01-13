@@ -7,7 +7,7 @@ import ml.empee.ioc.annotations.Bean;
 import ml.empee.mysticalBarriers.model.Permissions;
 import ml.empee.mysticalBarriers.model.PluginItems;
 import ml.empee.mysticalBarriers.utils.MCLogger;
-import ml.empee.mysticalBarriers.utils.nms.ServerVersion;
+import ml.empee.mysticalBarriers.utils.reflection.ServerVersion;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

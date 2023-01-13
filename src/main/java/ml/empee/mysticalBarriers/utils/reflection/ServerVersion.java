@@ -1,4 +1,4 @@
-package ml.empee.mysticalBarriers.utils.nms;
+package ml.empee.mysticalBarriers.utils.reflection;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

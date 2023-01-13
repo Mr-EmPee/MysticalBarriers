@@ -16,7 +16,7 @@ import ml.empee.mysticalBarriers.model.Barrier;
 import ml.empee.mysticalBarriers.model.PluginItems;
 import ml.empee.mysticalBarriers.services.BarriersService;
 import ml.empee.mysticalBarriers.utils.MCLogger;
-import ml.empee.mysticalBarriers.utils.nms.ServerVersion;
+import ml.empee.mysticalBarriers.utils.reflection.ServerVersion;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
