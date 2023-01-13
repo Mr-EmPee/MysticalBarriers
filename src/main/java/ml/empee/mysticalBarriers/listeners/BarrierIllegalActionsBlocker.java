@@ -218,10 +218,8 @@ public class BarrierIllegalActionsBlocker implements Listener {
         return;
       }
 
-      Barrier barrier =
-          barriersService.findBarrierAt(lingeringPotionSplashEvent.getEntity().getLocation());
-      if (barrier != null &&
-          !barrier.isHiddenFor((Player) lingeringPotionSplashEvent.getEntity().getShooter())) {
+      Barrier barrier = barriersService.findBarrierAt(lingeringPotionSplashEvent.getEntity().getLocation());
+      if (barrier != null && !barrier.isHiddenFor((Player) lingeringPotionSplashEvent.getEntity().getShooter())) {
         lingeringPotionSplashEvent.getAreaEffectCloud().remove();
       }
     }

@@ -2,20 +2,24 @@ package ml.empee.mysticalBarriers.controllers;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import ml.empee.commandsManager.command.CommandExecutor;
-import ml.empee.commandsManager.command.CommandNode;
+import ml.empee.commandsManager.command.annotations.CommandNode;
 import ml.empee.commandsManager.parsers.types.annotations.IntegerParam;
 import ml.empee.ioc.Stoppable;
 import ml.empee.ioc.annotations.Bean;
 import ml.empee.mysticalBarriers.MysticalBarriersPlugin;
 import ml.empee.mysticalBarriers.listeners.BarrierSpawner;
 import ml.empee.mysticalBarriers.model.Barrier;
+import ml.empee.mysticalBarriers.model.Permissions;
 import ml.empee.mysticalBarriers.utils.MCLogger;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+@CommandNode(
+    label = "mb", aliases = {"mysticalbarriers", "mysticalb"}, exitNode = false, permission = Permissions.ADMIN_PERMISSION
+)
+
 @Bean
-@CommandNode(label = "mb", aliases = {"mysticalbarriers", "mysticalb"}, exitNode = false)
 public class PluginController extends CommandExecutor implements Stoppable {
 
   private final MysticalBarriersPlugin plugin;
@@ -33,8 +37,7 @@ public class PluginController extends CommandExecutor implements Stoppable {
   @CommandNode(
       parent = "mb",
       label = "help",
-      description = "Send the help menu",
-      permission = "mysticalbarriers.command.help"
+      description = "Send the help menu"
   )
   public void sendHelpMenu(CommandSender sender, @IntegerParam(min = 1, defaultValue = "1") Integer page) {
     getHelpMenu().sendHelpMenu(sender, page);
@@ -43,9 +46,8 @@ public class PluginController extends CommandExecutor implements Stoppable {
   @CommandNode(
       parent = "mb",
       label = "performance",
-      description = "Use this command to check the performance of the plugin\n" +
-          "&c&lPS. &cHigh range number could crash the server!",
-      permission = "mysticalbarriers.command.debug"
+      description = "Use this command to check the performance of the plugin\n\n"
+                  + "&c&lPS. &cHigh range number could crash the server!"
   )
   public void onPerformanceTest(Player sender, @IntegerParam(max = 50, min = 1) Integer range) {
     AtomicInteger blocks = new AtomicInteger(0);
@@ -77,8 +79,7 @@ public class PluginController extends CommandExecutor implements Stoppable {
       parent = "mb",
       label = "debug",
       description = "Use this command if you're having issues with the plugin\n"
-          + "and you want to send the plugin's debug information to the developer",
-      permission = "mysticalbarriers.command.debug"
+                  + "and you want to send the plugin's debug information to the developer"
   )
   public void onDebug(CommandSender sender) {
     if (!MCLogger.isDebugEnabled()) {
@@ -93,8 +94,7 @@ public class PluginController extends CommandExecutor implements Stoppable {
   @CommandNode(
       parent = "mb",
       label = "reload",
-      description = "Reload the plugin",
-      permission = "mysticalbarriers.command.reload"
+      description = "Reload the plugin"
   )
   public void onReload(CommandSender sender) {
     plugin.reload();

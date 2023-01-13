@@ -42,7 +42,8 @@ public class BarriersService implements Stoppable {
   }
   public boolean updateBarrier(Barrier barrier) {
     if (repo.contains(barrier)) {
-      repo.update(barrier);
+      repo.saveDB();
+      refreshBarrier(barrier);
       return true;
     }
 
@@ -110,6 +111,10 @@ public class BarriersService implements Stoppable {
     }
 
     despawnBarrierAt(player.getLocation(), barrier, player);
+  }
+
+  public void showBarrier(Barrier barrier) {
+    Bukkit.getOnlinePlayers().forEach(player -> showBarrierTo(player, barrier));
   }
   public void showBarrierTo(Player player, Barrier barrier) {
     if(!player.getWorld().equals(barrier.getWorld())) {

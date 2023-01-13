@@ -1,5 +1,7 @@
 package ml.empee.mysticalBarriers;
 
+import io.github.rysefoxx.inventory.plugin.pagination.InventoryManager;
+import lombok.Getter;
 import ml.empee.commandsManager.CommandManager;
 import ml.empee.commandsManager.command.CommandExecutor;
 import ml.empee.commandsManager.parsers.ParserManager;
@@ -19,12 +21,16 @@ public final class MysticalBarriersPlugin extends JavaPlugin {
   private static final String SPIGOT_PLUGIN_ID = "105671";
   private static final Integer METRICS_PLUGIN_ID = 16669;
 
+  @Getter
+  private final InventoryManager manager = new InventoryManager(this);
+  @Getter
   private SimpleIoC iocContainer;
 
   @Override
   public void onEnable() {
     MCLogger.setPrefix(PREFIX);
 
+    manager.invoke();
     iocContainer = SimpleIoC.initialize(this, "relocations");
     registerCommands();
 

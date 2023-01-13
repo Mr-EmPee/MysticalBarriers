@@ -2,8 +2,6 @@ package ml.empee.mysticalBarriers.model;
 
 import com.google.gson.JsonParseException;
 import com.google.gson.annotations.Expose;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.function.Consumer;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -11,7 +9,6 @@ import lombok.Setter;
 import ml.empee.json.validator.annotations.Required;
 import ml.empee.json.validator.annotations.Validator;
 import ml.empee.mysticalBarriers.utils.LocationUtils;
-import ml.empee.mysticalBarriers.utils.helpers.Tuple;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -21,8 +18,8 @@ import org.jetbrains.annotations.Nullable;
 @EqualsAndHashCode
 public class Barrier {
 
-  @Expose @Getter @Required
-  private final String id;
+  @Expose @Setter @Getter @Required
+  private String id;
 
   @Expose @Getter @Required
   private Location firstCorner;
@@ -38,8 +35,6 @@ public class Barrier {
 
   @Expose @Getter @Setter
   private String blockData;
-
-  private Set<Tuple<Integer, Integer>> chunks;
 
   public Barrier(String id) {
     this.id = id;
@@ -61,8 +56,10 @@ public class Barrier {
   }
 
   @Validator
-  private void validateBlockData() {
-    if (blockData != null) {
+  private void validateBarrierMaterial() {
+    if (!material.isBlock()) {
+      throw new JsonParseException("The material of the barrier " + id + " is not a block");
+    } else if (blockData != null) {
       try {
         material.createBlockData(blockData);
       } catch (IllegalArgumentException e) {
@@ -92,6 +89,12 @@ public class Barrier {
     }
   }
 
+  public void setCorners(Location firstCorner, Location secondCorner) {
+    this.firstCorner = firstCorner;
+    this.secondCorner = secondCorner;
+    validateCorners();
+  }
+
   public boolean isBarrierAt(@Nullable World world, int x, int y, int z) {
     if (world != null && !getWorld().equals(world)) {
       return false;
@@ -103,14 +106,6 @@ public class Barrier {
 
   public boolean isBarrierAt(Location location) {
     return isBarrierAt(location.getWorld(), location.getBlockX(), location.getBlockY(), location.getBlockZ());
-  }
-
-  public boolean isBarrierChunk(int chunkX, int chunkZ) {
-    if (chunks == null) {
-      computeBarrierChunks();
-    }
-
-    return chunks.contains(new Tuple<>(chunkX, chunkZ));
   }
 
   /**
@@ -143,7 +138,7 @@ public class Barrier {
   }
 
   public boolean isHiddenFor(Player player) {
-    return player.hasPermission("mysticalbarriers.bypass." + id);
+    return player.hasPermission(Permissions.BYPASS_PERMISSION + id);
   }
 
   public void forEachVisibleBarrierBlock(Location location, Consumer<Location> consumer) {
@@ -157,11 +152,9 @@ public class Barrier {
       int y = loc.getBlockY();
       int z = loc.getBlockZ();
 
-      if (isBarrierChunk(x >> 4, z >> 4)) {
-        if (world.getBlockAt(x, y, z).getType() == Material.AIR) {
-          if (isBarrierAt(null, x, y, z)) {
-            consumer.accept(loc);
-          }
+      if (world.getBlockAt(x, y, z).getType() == Material.AIR) {
+        if (isBarrierAt(null, x, y, z)) {
+          consumer.accept(loc);
         }
       }
     });
@@ -169,15 +162,5 @@ public class Barrier {
 
   public World getWorld() {
     return firstCorner.getWorld();
-  }
-
-  private void computeBarrierChunks() {
-    chunks = new HashSet<>();
-
-    for (int chunkX = firstCorner.getBlockX() >> 4; chunkX <= secondCorner.getBlockX() >> 4; chunkX++) {
-      for (int chunkZ = firstCorner.getBlockZ() >> 4; chunkZ <= secondCorner.getBlockZ() >> 4; chunkZ++) {
-        chunks.add(new Tuple<>(chunkX, chunkZ));
-      }
-    }
   }
 }

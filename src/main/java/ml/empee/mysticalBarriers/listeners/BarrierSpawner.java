@@ -2,6 +2,7 @@ package ml.empee.mysticalBarriers.listeners;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import ml.empee.ioc.Stoppable;
@@ -12,8 +13,6 @@ import ml.empee.mysticalBarriers.model.Barrier;
 import ml.empee.mysticalBarriers.model.packets.MultiBlockPacket;
 import ml.empee.mysticalBarriers.services.BarriersService;
 import ml.empee.mysticalBarriers.utils.LocationUtils;
-import ml.empee.mysticalBarriers.utils.helpers.cache.PlayerContext;
-import ml.empee.mysticalBarriers.utils.helpers.cache.PlayerData;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -22,22 +21,22 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.scheduler.BukkitTask;
 
 @Bean
 public class BarrierSpawner implements Listener, Stoppable {
 
-  private final PlayerContext<HashSet<String>> playerVisibleBarriers = PlayerContext.get("playerVisibleBarriers");
+  private final HashMap<Player, HashSet<String>> visibleBarriers = new HashMap<>();
   private final BukkitTask bukkitTask;
   private final BarriersService barriersService;
 
   public BarrierSpawner(MysticalBarriersPlugin plugin, BarriersService barriersService) {
     this.barriersService = barriersService;
 
-    bukkitTask = Bukkit.getScheduler().runTaskTimer(plugin, refreshOnPermissionChange(), 0, 20);
+    bukkitTask = Bukkit.getScheduler().runTaskTimer(plugin, refreshBarriers(), 0, 20);
   }
-
 
   @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
   public void sendBarriersBlocksOnPlayerMove(PlayerMoveEvent event) {
@@ -47,6 +46,7 @@ public class BarrierSpawner implements Listener, Stoppable {
 
     sendBarriersBlocks(event.getTo(), event.getFrom(), event.getPlayer());
   }
+
   public void sendBarriersBlocks(Location toLoc, Location fromLoc, Player player) {
     for (Barrier barrier : barriersService.findAllBarriers()) {
       if (barrier.isHiddenFor(player) || (!barrier.isWithinRange(toLoc, null) && !barrier.isWithinRange(fromLoc, null))) {
@@ -56,6 +56,7 @@ public class BarrierSpawner implements Listener, Stoppable {
       sendBarrierBlocks(player, barrier, fromLoc, toLoc);
     }
   }
+
   public void sendBarrierBlocks(Player player, Barrier barrier, Location fromLoc, Location toLoc) {
     MultiBlockPacket packet = new MultiBlockPacket(toLoc, false);
 
@@ -88,7 +89,7 @@ public class BarrierSpawner implements Listener, Stoppable {
     }
 
     for (Barrier barrier : barriersService.findBarriersWithinRangeAt(fromLoc, null)) {
-      if(barrier.isHiddenFor(event.getPlayer())) {
+      if (barrier.isHiddenFor(event.getPlayer())) {
         continue;
       }
 
@@ -96,7 +97,7 @@ public class BarrierSpawner implements Listener, Stoppable {
     }
 
     for (Barrier barrier : barriersService.findBarriersWithinRangeAt(toLoc, null)) {
-      if(barrier.isHiddenFor(event.getPlayer())) {
+      if (barrier.isHiddenFor(event.getPlayer())) {
         continue;
       }
 
@@ -104,23 +105,28 @@ public class BarrierSpawner implements Listener, Stoppable {
     }
   }
 
-  public Runnable refreshOnPermissionChange() {
+  private Runnable refreshBarriers() {
     return () -> Bukkit.getOnlinePlayers().forEach(player -> barriersService.findAllBarriers().forEach(barrier -> {
       if (!player.getWorld().equals(barrier.getWorld())) {
         return;
       }
 
-      HashSet<String> visibleBarriers = playerVisibleBarriers.getOrPut(PlayerData.of(player, new HashSet<>())).get();
+      HashSet<String> barriers = visibleBarriers.computeIfAbsent(player, p -> new HashSet<>());
       if (barrier.isHiddenFor(player)) {
-        if (visibleBarriers.remove(barrier.getId())) {
+        if (barriers.remove(barrier.getId())) {
           barriersService.refreshBarrierFor(player, barrier);
         }
       } else {
-        if (visibleBarriers.add(barrier.getId())) {
+        if (barriers.add(barrier.getId())) {
           barriersService.refreshBarrierFor(player, barrier);
         }
       }
     }));
+  }
+
+  @EventHandler
+  public void onPlayerQuit(PlayerQuitEvent event) {
+    visibleBarriers.remove(event.getPlayer());
   }
 
   @Override
