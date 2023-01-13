@@ -11,7 +11,7 @@
     </parent>
 
     <artifactId>MysticalBarriers</artifactId>
-    <version>1.8</version>
+    <version>1.8.1</version>
 
     <properties>
         <plugin.api>1.13</plugin.api>
