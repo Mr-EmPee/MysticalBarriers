@@ -102,7 +102,7 @@ public class PluginController extends CommandExecutor implements Bean {
     description = "Reload the plugin"
   )
   public void onReload(CommandSender sender) {
-    plugin.reload();
+    plugin.initialize();
     logger.info(sender, "The plugin has been reloaded!");
   }
 
