@@ -36,7 +36,6 @@ dependencies {
 
   implementation("com.github.Mr-EmPee:SimpleIoC:1.6.0")
   implementation("com.github.Mr-EmPee:ImperialEdicta:1.0.0")
-  implementation("com.github.Mr-EmPee:JsonPersistence:2.1.0")
   implementation("com.github.Mr-EmPee:SimpleLectorem:1.0.0")
   implementation("com.github.Mr-EmPee:SimpleHeraut:1.0.1")
   implementation("com.github.Mr-EmPee:ItemBuilder:1.0.0")

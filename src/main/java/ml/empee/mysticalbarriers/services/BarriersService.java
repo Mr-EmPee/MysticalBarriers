@@ -1,15 +1,13 @@
 package ml.empee.mysticalbarriers.services;
 
-import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import ml.empee.ioc.Bean;
-import ml.empee.json.JsonPersistence;
-import ml.empee.mysticalbarriers.model.exceptions.MysticalBarrierException;
-import ml.empee.mysticalbarriers.model.entities.Barrier;
 import ml.empee.mysticalbarriers.model.adapters.MultiBlockPacket;
+import ml.empee.mysticalbarriers.model.dto.BarrierDTO;
+import ml.empee.mysticalbarriers.model.entities.Barrier;
+import ml.empee.mysticalbarriers.model.exceptions.MysticalBarrierException;
+import ml.empee.mysticalbarriers.model.mappers.BarrierMapper;
+import ml.empee.mysticalbarriers.utils.helpers.JsonPersistence;
 import ml.empee.mysticalbarriers.utils.helpers.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -18,22 +16,30 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@RequiredArgsConstructor
 public class BarriersService implements Bean {
 
-  private final JsonPersistence jsonPersistence;
-  private final JavaPlugin plugin;
-  private final List<Barrier> barriers;
+  private static final JavaPlugin plugin = JavaPlugin.getProvidingPlugin(BarriersService.class);
+  private final JsonPersistence jsonPersistence = new JsonPersistence(
+    new File(plugin.getDataFolder(), "barriers.json")
+  );
+
   private final Logger logger;
-
-  public BarriersService(Logger logger, JavaPlugin plugin) {
-    this.logger = logger;
-    this.plugin = plugin;
-
-    jsonPersistence = new JsonPersistence(new File(plugin.getDataFolder(), "barriers.json"));
-    barriers = jsonPersistence.deserializeList(Barrier[].class);
-  }
+  private List<Barrier> barriers;
 
   public void onStart() {
+    BarrierMapper.mapToLatest(jsonPersistence.getFile());
+
+    barriers = jsonPersistence.deserializeList(BarrierDTO[].class).stream()
+      .map(Barrier::new)
+      .toList();
+
     logger.info("Loaded " + barriers.size() + " barriers");
     refreshAllBarriers();
   }
@@ -43,6 +49,10 @@ public class BarriersService implements Bean {
   }
 
   private void saveAsyncBarriers() {
+    List<BarrierDTO> barriers = this.barriers.stream()
+      .map(Barrier::toDTO)
+      .toList();
+
     Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
       jsonPersistence.serialize(barriers);
     });

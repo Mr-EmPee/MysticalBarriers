@@ -111,11 +111,11 @@ public final class MultiBlockPacket {
 
   public void addBackwardProofBlock(
     Material type, @Nullable Integer blockSubCategory,
-    @Nullable String blockData, Location location
+    @Nullable BlockData blockData, Location location
   ) {
     if (IS_ABOVE_1_13) {
       if (blockData != null) {
-        addBlock(type.createBlockData(blockData), location);
+        addBlock(blockData, location);
       } else {
         addBlock(type, location);
       }
@@ -126,7 +126,7 @@ public final class MultiBlockPacket {
 
   public void addBackwardProofBlock(
     Material type, @Nullable Integer blockSubCategory,
-    @Nullable String blockData, int x, int y, int z
+    @Nullable BlockData blockData, int x, int y, int z
   ) {
     addBackwardProofBlock(type, blockSubCategory, blockData, new Location(null, x, y, z));
   }

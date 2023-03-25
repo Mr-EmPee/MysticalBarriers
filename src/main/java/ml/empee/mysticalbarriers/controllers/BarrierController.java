@@ -20,6 +20,7 @@ import ml.empee.mysticalbarriers.utils.helpers.Logger;
 import ml.empee.mysticalbarriers.utils.reflection.ServerVersion;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -164,7 +165,7 @@ public class BarrierController extends Controller implements Bean {
       return;
     }
 
-    String blockData = direction.buildFacesData(barrier.getMaterial());
+    BlockData blockData = direction.buildFacesData(barrier.getMaterial());
     if (blockData == null) {
       logger.error(
         sender, "The direction '&e%s&r' isn't supported by '&e%s&r'",
