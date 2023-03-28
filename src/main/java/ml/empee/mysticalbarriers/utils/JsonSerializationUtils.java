@@ -13,13 +13,13 @@ public class JsonSerializationUtils {
 
   public static Location parseLocation(String rawLoc) {
     if (rawLoc == null || !rawLoc.matches(".+:-?\\d+:-?\\d+:-?\\d+")) {
-      throw new RuntimeException("The location '" + rawLoc + "' must match '.+:-?\\d+:-?\\d+:-?\\d+'");
+      throw new IllegalArgumentException("The location '" + rawLoc + "' must match '.+:-?\\d+:-?\\d+:-?\\d+'");
     }
 
     String[] coordinates = rawLoc.split(":");
     World world = Bukkit.getWorld(coordinates[0]);
     if(world == null) {
-      throw new RuntimeException("Unable to find world " + coordinates[0]);
+      throw new IllegalArgumentException("Unable to find world " + coordinates[0]);
     }
 
     return new Location(world,
