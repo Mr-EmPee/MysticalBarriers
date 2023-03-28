@@ -19,11 +19,14 @@ public final class MysticalBarriersPlugin extends JavaPlugin {
     CommandExecutor.setPrefix(PREFIX);
   }
 
+  private InventoryManager inventoryManager = new InventoryManager(this);
   private CommandManager commandManager;
   @Getter
   private SimpleIoC iocContainer;
 
   public void onEnable() {
+    inventoryManager.invoke();
+
     initialize();
 
     Metrics.of(this, METRICS_PLUGIN_ID);
@@ -32,7 +35,7 @@ public final class MysticalBarriersPlugin extends JavaPlugin {
 
   public void onDisable() {
     commandManager.unregisterCommands();
-    iocContainer.removeAllBeans();
+    iocContainer.removeAllBeans(true);
   }
 
   public void initialize() {
@@ -41,18 +44,13 @@ public final class MysticalBarriersPlugin extends JavaPlugin {
     }
 
     if(iocContainer != null) {
-      iocContainer.removeAllBeans();
+      iocContainer.removeAllBeans(true);
     }
 
     commandManager =  new CommandManager(this);
     iocContainer = new SimpleIoC(this);
 
-    InventoryManager inventoryManager = new InventoryManager(this);
-    inventoryManager.invoke();
-
     iocContainer.addBean(commandManager);
-    iocContainer.addBean(inventoryManager);
-
     iocContainer.initialize("relocations");
   }
 }
