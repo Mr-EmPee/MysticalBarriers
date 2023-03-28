@@ -3,7 +3,6 @@ package ml.empee.mysticalbarriers.services;
 import lombok.RequiredArgsConstructor;
 import ml.empee.ioc.Bean;
 import ml.empee.mysticalbarriers.model.adapters.MultiBlockPacket;
-import ml.empee.mysticalbarriers.model.dto.BarrierDTO;
 import ml.empee.mysticalbarriers.model.entities.Barrier;
 import ml.empee.mysticalbarriers.model.exceptions.MysticalBarrierException;
 import ml.empee.mysticalbarriers.model.mappers.BarrierMapper;
@@ -18,8 +17,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -36,9 +37,9 @@ public class BarriersService implements Bean {
   public void onStart() {
     BarrierMapper.mapToLatest(jsonPersistence.getFile());
 
-    barriers = jsonPersistence.deserializeList(BarrierDTO[].class).stream()
-      .map(Barrier::new)
-      .toList();
+    barriers = jsonPersistence.deserializeList(Map[].class).stream()
+      .map(Barrier::fromMap)
+      .collect(Collectors.toCollection(ArrayList::new));
 
     logger.info("Loaded " + barriers.size() + " barriers");
     refreshAllBarriers();
@@ -49,8 +50,8 @@ public class BarriersService implements Bean {
   }
 
   private void saveAsyncBarriers() {
-    List<BarrierDTO> barriers = this.barriers.stream()
-      .map(Barrier::toDTO)
+    List<Map<String, Object>> barriers = this.barriers.stream()
+      .map(Barrier::toMap)
       .toList();
 
     Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {

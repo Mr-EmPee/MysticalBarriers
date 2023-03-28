@@ -1,9 +1,10 @@
 package ml.empee.mysticalbarriers.model.entities;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import ml.empee.mysticalbarriers.Permissions;
-import ml.empee.mysticalbarriers.model.dto.BarrierDTO;
 import ml.empee.mysticalbarriers.utils.LocationUtils;
+import ml.empee.mysticalbarriers.utils.ValidationUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -12,64 +13,75 @@ import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import static ml.empee.mysticalbarriers.utils.JsonSerializationUtils.parseLocation;
 
-@Data
+@Getter
 public class Barrier {
 
+  @Setter
   private String id;
   private Location firstCorner;
   private Location secondCorner;
+
+  @Setter
   private Material material;
+  @Setter
   private Integer activationRange;
+  @Setter
   private BlockData blockData;
 
   public Barrier(String id) {
+    Objects.requireNonNull(id);
+
     this.id = id;
     this.material = Material.BARRIER;
     this.activationRange = 3;
   }
-  public Barrier(BarrierDTO dto) {
-    id = dto.getId();
 
-    setCorners(parseLocation(dto.getFirstCorner()), parseLocation(dto.getSecondCorner()));
-    activationRange = dto.getActivationRange();
-    if(activationRange < 1) {
-      throw new IllegalArgumentException("Activation range of " + dto.getId() + " can't be lower then 1");
+  public static Barrier fromMap(Map<String, Object> map) {
+    String id = ValidationUtils.has(map, "id", String.class);
+    String firstCorner = ValidationUtils.has(map, "first_corner", String.class);
+    String secondCorner = ValidationUtils.has(map, "second_corner", String.class);
+    String material = ValidationUtils.has(map, "material", String.class);
+    Integer activationRange = ValidationUtils.has(map, "activation_range", Integer.class);
+    Optional<String> blockData = ValidationUtils.hasType(map, "block_data", String.class);
+
+    if (activationRange < 1) {
+      throw new IllegalArgumentException("Activation range of " + id + " can't be lower then 1");
     }
 
-    try {
-      material = Material.valueOf(dto.getMaterial());
-      if(dto.getBlockData() != null) {
-        blockData = Bukkit.createBlockData(dto.getBlockData());
-      }
-    } catch (IllegalArgumentException e) {
-      throw new IllegalArgumentException(
-        "The block '" + (dto.getBlockData() == null ? dto.getMaterial() : dto.getBlockData())
-          + "' of the barrier '" + dto.getId() + "' is " + "invalid!"
-      );
-    }
+    Barrier barrier = new Barrier(id);
+    barrier.setMaterial(Material.valueOf(material));
+    barrier.setActivationRange(activationRange);
+    blockData.ifPresent(s -> barrier.setBlockData(Bukkit.createBlockData(s)));
+    barrier.setCorners(
+      parseLocation(firstCorner),
+      parseLocation(secondCorner)
+    );
+
+    return barrier;
   }
-  public BarrierDTO toDTO() {
-    return BarrierDTO.builder()
-      .id(id)
-      .firstCorner(parseLocation(firstCorner))
-      .secondCorner(parseLocation(secondCorner))
-      .material(material.name())
-      .activationRange(activationRange)
-      .blockData(blockData == null ? null : blockData.getAsString())
-      .version(1)
-      .build();
+  public Map<String, Object> toMap() {
+    HashMap<String, Object> properties = new HashMap<>();
+    properties.put("id", id);
+    properties.put("first_corner", parseLocation(firstCorner));
+    properties.put("second_corner", parseLocation(secondCorner));
+    properties.put("material", material.name());
+    properties.put("activation_range", activationRange);
+    properties.put("version", 1);
+    if (blockData != null) {
+      properties.put("block_data", blockData.getAsString());
+    }
+
+    return properties;
   }
 
-  public void setFirstCorner(Location firstCorner) {
-    setCorners(firstCorner, secondCorner);
-  }
-  public void setSecondCorner(Location secondCorner) {
-    setCorners(firstCorner, secondCorner);
-  }
   public void setCorners(Location firstCorner, Location secondCorner) {
     this.firstCorner = LocationUtils.findLowestPoint(firstCorner, secondCorner);
     this.secondCorner = LocationUtils.findGreatestPoint(firstCorner, secondCorner);
@@ -87,6 +99,7 @@ public class Barrier {
       && z >= firstCorner.getBlockZ()
       && z <= secondCorner.getBlockZ();
   }
+
   public boolean isBarrierAt(Location location) {
     return isBarrierAt(location.getWorld(), location.getBlockX(), location.getBlockY(), location.getBlockZ());
   }
@@ -119,6 +132,7 @@ public class Barrier {
       && isWithinFirstCornerZ
       && isWithinSecondCornerZ;
   }
+
   public boolean isWithinRange(Location location, @Nullable Integer range) {
     return isWithinRange(
       location.getWorld(), range, location.getBlockX(), location.getBlockY(), location.getBlockZ()
@@ -128,6 +142,7 @@ public class Barrier {
   public boolean isHiddenFor(Player player) {
     return player.hasPermission(Permissions.BYPASS_PERMISSION + id);
   }
+
   public void forEachVisibleBarrierBlock(Location location, Consumer<Location> consumer) {
     if (!getWorld().equals(location.getWorld())) {
       return;
@@ -146,6 +161,7 @@ public class Barrier {
       }
     });
   }
+
   public World getWorld() {
     return firstCorner.getWorld();
   }
