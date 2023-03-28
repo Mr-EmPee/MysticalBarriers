@@ -60,8 +60,10 @@ public class PluginController extends CommandExecutor implements Bean {
 
     Barrier barrier = new Barrier("performanceTest");
     barrier.setActivationRange(range);
-    barrier.setFirstCorner(new Location(location.getWorld(), 0, 0, 0));
-    barrier.setSecondCorner(new Location(location.getWorld(), 100, 200, 100));
+    barrier.setCorners(
+      new Location(location.getWorld(), 0, 0, 0),
+      new Location(location.getWorld(), 100, 200, 100)
+    );
 
     long time = System.currentTimeMillis();
     barrierSpawner.sendBarrierBlocks(sender, barrier,

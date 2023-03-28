@@ -51,8 +51,7 @@ public class BarrierController extends Controller implements Bean {
     }
 
     Barrier barrier = new Barrier(name);
-    barrier.setFirstCorner(corners[0]);
-    barrier.setSecondCorner(corners[1]);
+    barrier.setCorners(corners[0], corners[1]);
 
     barriersService.saveBarrier(barrier);
     barrierDefiner.clearSelectedCorners(sender);
