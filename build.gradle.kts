@@ -34,12 +34,12 @@ dependencies {
   paperweight.paperDevBundle("1.19.3-R0.1-SNAPSHOT")
   compileOnly("com.comphenix.protocol:ProtocolLib:4.8.0")
 
-  implementation("com.github.Mr-EmPee:SimpleIoC:1.6.0")
+  implementation("com.github.Mr-EmPee:SimpleIoC:1.7.1")
   implementation("com.github.Mr-EmPee:ImperialEdicta:1.0.0")
   implementation("com.github.Mr-EmPee:SimpleLectorem:1.0.0")
   implementation("com.github.Mr-EmPee:SimpleHeraut:1.0.1")
   implementation("com.github.Mr-EmPee:ItemBuilder:1.0.0")
-  implementation("io.github.rysefoxx.inventory:RyseInventory-Plugin:1.5.6.2")
+  implementation("io.github.rysefoxx.inventory:RyseInventory-Plugin:1.5.7")
 }
 
 tasks {
