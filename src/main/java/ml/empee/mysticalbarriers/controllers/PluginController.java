@@ -7,6 +7,7 @@ import ml.empee.ioc.Bean;
 import ml.empee.mysticalbarriers.config.BarriersConfig;
 import ml.empee.mysticalbarriers.config.CommandsConfig;
 import ml.empee.mysticalbarriers.constants.Permissions;
+import ml.empee.mysticalbarriers.repositories.BarrierRepository;
 import ml.empee.mysticalbarriers.utils.Logger;
 import org.bukkit.command.CommandSender;
 
@@ -20,6 +21,7 @@ import java.io.IOException;
 public class PluginController implements Bean {
 
   private final CommandsConfig commandsConfig;
+  private final BarrierRepository barrierRepository;
   private final BarriersConfig barriersConfig;
 
   @Override
@@ -31,6 +33,8 @@ public class PluginController implements Bean {
   @CommandPermission(Permissions.ADMIN)
   public void reload(CommandSender sender) throws IOException {
     barriersConfig.reload();
+    barrierRepository.loadBarriers();
+
     Logger.log(sender, "&7The plugin has been reloaded");
   }
 
