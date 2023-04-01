@@ -6,10 +6,12 @@ import lombok.RequiredArgsConstructor;
 import ml.empee.ioc.Bean;
 import ml.empee.mysticalbarriers.config.BarriersConfig;
 import ml.empee.mysticalbarriers.config.CommandsConfig;
+import ml.empee.mysticalbarriers.constants.ItemRegistry;
 import ml.empee.mysticalbarriers.constants.Permissions;
 import ml.empee.mysticalbarriers.repositories.BarrierRepository;
 import ml.empee.mysticalbarriers.utils.Logger;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.io.IOException;
 
@@ -27,6 +29,21 @@ public class PluginController implements Bean {
   @Override
   public void onStart() {
     commandsConfig.register(this);
+  }
+
+  @CommandMethod("mb wand")
+  @CommandPermission(Permissions.ADMIN)
+  public void giveWand(Player sender) {
+    boolean wandReceived = sender.getInventory().addItem(
+        ItemRegistry.SELECTION_WAND.build()
+    ).isEmpty();
+
+    if (!wandReceived) {
+      Logger.log(sender, "&cYour inventory is full!");
+      return;
+    }
+
+    Logger.log(sender, "&7You have received the selection tool");
   }
 
   @CommandMethod("mb reload")
