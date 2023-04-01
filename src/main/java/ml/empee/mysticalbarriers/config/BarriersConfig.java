@@ -55,7 +55,7 @@ public class BarriersConfig implements Bean {
   }
 
   private void updateToV2(int version) {
-    if (version != 1) {
+    if (version >= 2) {
       return;
     }
 
