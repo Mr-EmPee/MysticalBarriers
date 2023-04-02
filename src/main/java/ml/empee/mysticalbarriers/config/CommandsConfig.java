@@ -16,6 +16,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.function.Function;
 
+/**
+ * Config class to setup cloud commands framework
+ */
+
 public class CommandsConfig implements Bean {
 
   private final PaperCommandManager<CommandSender> commandManager;
@@ -26,11 +30,14 @@ public class CommandsConfig implements Bean {
         plugin, CommandExecutionCoordinator.simpleCoordinator(), Function.identity(), Function.identity()
     );
 
-    registerExceptionHandlers();
-
     commandParser = new AnnotationParser<>(
         commandManager, CommandSender.class, parameters -> SimpleCommandMeta.empty()
     );
+  }
+
+  @Override
+  public void onStart() {
+    registerExceptionHandlers();
 
     try {
       commandManager.registerBrigadier();
