@@ -15,6 +15,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutput;
 import java.time.LocalDateTime;
+import java.util.regex.Pattern;
 
 /**
  * Converts complex objects into raw one
@@ -23,27 +24,31 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ObjectConverter {
 
+  private static final Pattern LOCATION_PATTERN = Pattern.compile(
+      ".+:-?\\d+(\\.\\d+)?:-?\\d+(\\.\\d+)?:-?\\d+(\\.\\d+)?"
+  );
+
   /**
    * Parse a location from a string
    *
    * @param rawLoc format "world:x:y:z"
    */
   public static Location parseLocation(String rawLoc) {
-    if (rawLoc == null || !rawLoc.matches(".+:-?\\d+:-?\\d+:-?\\d+")) {
-      throw new IllegalArgumentException("The location '" + rawLoc + "' must match '.+:-?\\d+:-?\\d+:-?\\d+'");
+    if (rawLoc == null || !LOCATION_PATTERN.matcher(rawLoc).matches()) {
+      throw new RuntimeException("The location '" + rawLoc + "' must match 'world:x:y:z'");
     }
 
     String[] coordinates = rawLoc.split(":");
     World world = Bukkit.getWorld(coordinates[0]);
     if (world == null) {
-      throw new IllegalArgumentException("Unable to find world " + coordinates[0]);
+      throw new RuntimeException("Unable to find world " + coordinates[0]);
     }
 
     return new Location(
-      world,
-      Integer.parseInt(coordinates[1]),
-      Integer.parseInt(coordinates[2]),
-      Integer.parseInt(coordinates[3])
+        world,
+        Double.parseDouble(coordinates[1]),
+        Double.parseDouble(coordinates[2]),
+        Double.parseDouble(coordinates[3])
     );
   }
 
@@ -53,7 +58,7 @@ public class ObjectConverter {
    * @return world:x:y:z
    */
   public static String parseLocation(Location loc) {
-    return loc.getWorld().getName() + ":" + loc.getBlockX() + ":" + loc.getBlockY() + ":" + loc.getBlockZ();
+    return loc.getWorld().getName() + ":" + loc.getX() + ":" + loc.getY() + ":" + loc.getZ();
   }
 
   /**
@@ -67,6 +72,7 @@ public class ObjectConverter {
 
   /**
    * Parse a date-time to a string
+   *
    * @return "2007-12-03T10:15:30"
    */
   public static String parseTime(LocalDateTime time) {
@@ -78,8 +84,8 @@ public class ObjectConverter {
    */
   public static String parseInventory(ItemStack[] items) throws IOException {
     try (
-      ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-      ObjectOutput dataOutput = new BukkitObjectOutputStream(outputStream)
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        ObjectOutput dataOutput = new BukkitObjectOutputStream(outputStream)
     ) {
 
       dataOutput.writeInt(items.length);
@@ -104,8 +110,8 @@ public class ObjectConverter {
     }
 
     try (
-      ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64Coder.decodeLines(rawItems));
-      BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream)
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64Coder.decodeLines(rawItems));
+        BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream)
     ) {
       ItemStack[] items = new ItemStack[dataInput.readInt()];
 

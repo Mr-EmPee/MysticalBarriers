@@ -19,4 +19,10 @@ public class CuboidSelection {
   public boolean isValid() {
     return start != null && end != null && start.getWorld().equals(end.getWorld());
   }
+
+  public void invalidate() {
+    start = null;
+    end = null;
+  }
+
 }
