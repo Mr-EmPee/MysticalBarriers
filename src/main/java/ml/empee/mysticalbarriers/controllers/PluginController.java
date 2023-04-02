@@ -10,6 +10,7 @@ import ml.empee.mysticalbarriers.constants.ItemRegistry;
 import ml.empee.mysticalbarriers.constants.Permissions;
 import ml.empee.mysticalbarriers.repositories.BarrierRepository;
 import ml.empee.mysticalbarriers.utils.Logger;
+import ml.empee.mysticalbarriers.utils.Translator;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -51,6 +52,7 @@ public class PluginController implements Bean {
   public void reload(CommandSender sender) throws IOException {
     barriersConfig.reload();
     barrierRepository.loadBarriers();
+    Translator.reload();
 
     Logger.log(sender, "&7The plugin has been reloaded");
   }

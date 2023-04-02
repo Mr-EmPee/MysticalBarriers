@@ -11,6 +11,7 @@ import cloud.commandframework.meta.SimpleCommandMeta;
 import cloud.commandframework.paper.PaperCommandManager;
 import ml.empee.ioc.Bean;
 import ml.empee.mysticalbarriers.utils.Logger;
+import ml.empee.mysticalbarriers.utils.Translator;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -48,23 +49,23 @@ public class CommandsConfig implements Bean {
 
   private void registerExceptionHandlers() {
     commandManager.registerExceptionHandler(NoPermissionException.class, (sender, e) -> {
-      Logger.translatedLog(sender, "cmd-no-permission");
+      Logger.log(sender, Translator.translate("cmd-no-permission"));
     });
 
     commandManager.registerExceptionHandler(InvalidSyntaxException.class, (sender, e) -> {
-      Logger.translatedLog(sender, "cmd-invalid-syntax");
+      Logger.log(sender, Translator.translate("cmd-invalid-syntax"));
     });
 
     commandManager.registerExceptionHandler(InvalidCommandSenderException.class, (sender, e) -> {
-      Logger.translatedLog(sender, "cmd-invalid-sender");
+      Logger.log(sender, Translator.translate("cmd-invalid-sender"));
     });
 
     commandManager.registerExceptionHandler(ArgumentParseException.class, (sender, e) -> {
-      Logger.translatedLog(sender, "cmd-invalid-argument", e.getCause().getMessage());
+      Logger.log(sender, Translator.translate("cmd-invalid-argument"), e.getCause().getMessage());
     });
 
     commandManager.registerExceptionHandler(Exception.class, (sender, e) -> {
-      Logger.translatedLog(sender, "cmd-exception");
+      Logger.log(sender, Translator.translate("cmd-exception"));
     });
   }
 
