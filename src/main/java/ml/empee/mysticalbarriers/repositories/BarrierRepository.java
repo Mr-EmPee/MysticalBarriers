@@ -13,6 +13,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.nio.file.Files;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -118,10 +119,8 @@ public class BarrierRepository implements Bean {
     saveAsync();
   }
 
-  public Optional<Barrier> findById(String id) {
-    return barriers.stream()
-        .filter(b -> b.getId().equals(id))
-        .findFirst();
+  public Set<Barrier> findAll() {
+    return Collections.unmodifiableSet(barriers);
   }
 
   private void saveAsync() {
