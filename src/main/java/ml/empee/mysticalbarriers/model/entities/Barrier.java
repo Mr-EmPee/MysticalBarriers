@@ -83,7 +83,7 @@ public class Barrier {
     properties.put("second_corner", parseLocation(secondCorner));
     properties.put("material", material.name());
     properties.put("activation_range", activationRange);
-    properties.put("version", 1);
+    properties.put("version", 2);
     if (blockData != null) {
       properties.put("block_data", blockData.getAsString());
     }
