@@ -9,8 +9,6 @@ import org.bukkit.Bukkit;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ServerVersion {
 
-  public static final String VALUE = Bukkit.getServer().getClass().getPackage().getName()
-      .split("\\.")[3];
   private static final int[] VERSION;
 
   static {

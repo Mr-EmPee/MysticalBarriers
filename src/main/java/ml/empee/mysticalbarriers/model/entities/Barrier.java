@@ -14,8 +14,8 @@ import java.util.Objects;
 import java.util.Optional;
 
 import static ml.empee.mysticalbarriers.utils.ObjectConverter.parseLocation;
-import static ml.empee.mysticalbarriers.utils.ValidationUtils.has;
-import static ml.empee.mysticalbarriers.utils.ValidationUtils.hasType;
+import static ml.empee.mysticalbarriers.utils.ValidationUtils.get;
+import static ml.empee.mysticalbarriers.utils.ValidationUtils.getOrEmpty;
 
 /**
  * A barrier
@@ -47,8 +47,8 @@ public class Barrier {
    * Convert a map to a Barrier
    */
   public static Barrier fromMap(Map<String, Object> map) {
-    String id = has(map, "id", String.class);
-    Integer activationRange = has(map, "activation_range", Integer.class);
+    String id = get(map, "id", String.class);
+    Integer activationRange = get(map, "activation_range", Integer.class);
 
     if (activationRange < 1) {
       throw new IllegalArgumentException("Activation range of " + id + " can't be lower then 1");
@@ -57,14 +57,14 @@ public class Barrier {
     Barrier barrier = new Barrier(id);
     barrier.setActivationRange(activationRange);
 
-    String material = has(map, "material", String.class);
+    String material = get(map, "material", String.class);
     barrier.setMaterial(Material.valueOf(material));
 
-    Optional<String> blockData = hasType(map, "block_data", String.class);
+    Optional<String> blockData = getOrEmpty(map, "block_data", String.class);
     blockData.ifPresent(s -> barrier.setBlockData(Bukkit.createBlockData(s)));
 
-    String firstCorner = has(map, "first_corner", String.class);
-    String secondCorner = has(map, "second_corner", String.class);
+    String firstCorner = get(map, "first_corner", String.class);
+    String secondCorner = get(map, "second_corner", String.class);
     barrier.setCorners(
         parseLocation(firstCorner),
         parseLocation(secondCorner)
