@@ -13,7 +13,7 @@ plugins {
 }
 
 group = "ml.empee"
-version = "1.0.0-SNAPSHOT"
+version = "2.0.0"
 var basePackage = "ml.empee.mysticalbarriers"
 
 bukkit {
