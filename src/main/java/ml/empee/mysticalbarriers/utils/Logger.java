@@ -10,6 +10,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Locale;
 import java.util.logging.Level;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * This class allow you to easily log messages.
@@ -18,13 +20,22 @@ import java.util.logging.Level;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Logger {
 
-  @Getter @Setter
+  @Getter
+  @Setter
   private static String prefix;
-  @Getter @Setter
+  @Getter
+  @Setter
   private static boolean isDebugEnabled;
   @Setter
   private static java.util.logging.Logger consoleLogger = JavaPlugin.getProvidingPlugin(Logger.class).getLogger();
 
+  private static final String HEX_PREFIX = "&#";
+  private static final Pattern HEX_COLOR = Pattern.compile(HEX_PREFIX + "[a-zA-z0-9]{6}");
+
+  /**
+   * Send a formatted message to the player
+   * # Lol
+   */
   public static void log(CommandSender sender, String message, Object... args) {
     message = String.format(message, args);
 
@@ -37,12 +48,25 @@ public class Logger {
     message = message.replace("\t", "    ");
 
     sender.sendMessage(
-        ChatColor.translateAlternateColorCodes('&', message).split("\n")
+        ChatColor.translateAlternateColorCodes(
+            '&', translateHexCodes(message)
+        ).split("\n")
     );
   }
 
-  public static void translatedLog(CommandSender sender, String key, Object... args) {
-    log(sender, Translator.translate(key), args);
+  private static String translateHexCodes(String input) {
+    Matcher matcher = HEX_COLOR.matcher(input);
+    while (matcher.find()) {
+      String group = matcher.group().substring(HEX_PREFIX.length());
+      StringBuilder hex = new StringBuilder("&x");
+      for (char code : group.toLowerCase().toCharArray()) {
+        hex.append("&").append(code);
+      }
+
+      input = input.replace(HEX_PREFIX + group, hex.toString());
+    }
+
+    return input;
   }
 
   /** Log to the console a debug message. **/
