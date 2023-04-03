@@ -46,8 +46,7 @@ dependencies {
   implementation("cloud.commandframework:cloud-annotations:1.8.3")
 
   // Utilities
-  //implementation("com.github.Mr-EmPee:JsonPersistence:2.1.0")
-  //implementation("com.github.Mr-EmPee:SimpleHeraut:1.0.1")
+  implementation("com.github.Mr-EmPee:SimpleHeraut:1.0.1")
   implementation("com.github.Mr-EmPee:ItemBuilder:1.0.0")
 
   //implementation("io.github.rysefoxx.inventory:RyseInventory-Plugin:1.5.7")

@@ -3,6 +3,7 @@ package ml.empee.mysticalbarriers;
 import lombok.Getter;
 import ml.empee.ioc.SimpleIoC;
 import ml.empee.mysticalbarriers.utils.Logger;
+import ml.empee.mysticalbarriers.utils.Metrics;
 import ml.empee.mysticalbarriers.utils.PaperUtils;
 import ml.empee.mysticalbarriers.utils.Translator;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -11,8 +12,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public final class MysticalBarriers extends JavaPlugin {
 
-  //private static final String SPIGOT_PLUGIN_ID = "";
-  //private static final Integer METRICS_PLUGIN_ID = 0;
+  private static final String SPIGOT_PLUGIN_ID = "105671";
+  private static final Integer METRICS_PLUGIN_ID = 16669;
 
   @Getter
   private final SimpleIoC iocContainer = new SimpleIoC(this);
@@ -28,8 +29,8 @@ public final class MysticalBarriers extends JavaPlugin {
       printPaperWarning();
     }
 
-    //Metrics.of(this, METRICS_PLUGIN_ID);
-    //Notifier.listenForUpdates(this, SPIGOT_PLUGIN_ID);
+    Metrics.of(this, METRICS_PLUGIN_ID);
+    Notifier.listenForUpdates(this, SPIGOT_PLUGIN_ID);
 
     iocContainer.initialize("relocations");
   }
