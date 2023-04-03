@@ -24,7 +24,9 @@ bukkit {
 }
 
 repositories {
+  maven("https://repo.dmulloy2.net/repository/public/")
   maven("https://jitpack.io")
+
   mavenCentral()
 }
 
@@ -33,6 +35,7 @@ dependencies {
   compileOnly("org.xerial:sqlite-jdbc:3.34.0")
 
   // Core depends
+  compileOnly("com.comphenix.protocol:ProtocolLib:4.8.0")
   implementation("com.github.Mr-EmPee:SimpleIoC:1.7.1")
 
   implementation("me.lucko:commodore:2.2") {

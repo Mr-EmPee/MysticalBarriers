@@ -3,6 +3,7 @@ package ml.empee.mysticalbarriers.repositories;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import lombok.SneakyThrows;
 import ml.empee.ioc.Bean;
 import ml.empee.mysticalbarriers.model.entities.Barrier;
@@ -97,7 +98,12 @@ public class BarrierRepository implements Bean {
 
     String blockData = element.getAsJsonPrimitive("material").getAsString().toLowerCase();
     blockData = "minecraft:" + blockData;
-    blockData += element.getAsJsonPrimitive("block_data").getAsString().toLowerCase();
+
+    JsonPrimitive oldData = element.getAsJsonPrimitive("block_data");
+    if (oldData != null) {
+      blockData += oldData.getAsString().toLowerCase();
+    }
+
     element.addProperty("block_data", blockData);
   }
 

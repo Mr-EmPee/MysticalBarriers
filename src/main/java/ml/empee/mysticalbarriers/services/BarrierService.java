@@ -4,7 +4,9 @@ import lombok.RequiredArgsConstructor;
 import ml.empee.ioc.Bean;
 import ml.empee.mysticalbarriers.model.entities.Barrier;
 import ml.empee.mysticalbarriers.repositories.BarrierRepository;
+import org.bukkit.Location;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -27,6 +29,12 @@ public class BarrierService implements Bean {
 
   public Set<Barrier> findAll() {
     return repository.findAll();
+  }
+
+  public List<Barrier> findBarrierNear(Location location) {
+    return findAll().stream()
+        .filter(b -> b.isNear(location))
+        .toList();
   }
 
   public Optional<Barrier> findById(String id) {

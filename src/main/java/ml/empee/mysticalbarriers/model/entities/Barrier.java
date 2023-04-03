@@ -2,20 +2,21 @@ package ml.empee.mysticalbarriers.model.entities;
 
 import lombok.Getter;
 import lombok.Setter;
+import ml.empee.mysticalbarriers.model.content.MultiBlockPacket;
 import ml.empee.mysticalbarriers.utils.LocationUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.data.BlockData;
+import org.bukkit.entity.Player;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 
 import static ml.empee.mysticalbarriers.utils.ObjectConverter.parseLocation;
 import static ml.empee.mysticalbarriers.utils.ValidationUtils.get;
-import static ml.empee.mysticalbarriers.utils.ValidationUtils.getOrEmpty;
 
 /**
  * A barrier
@@ -23,23 +24,24 @@ import static ml.empee.mysticalbarriers.utils.ValidationUtils.getOrEmpty;
 
 public class Barrier {
 
-  @Getter @Setter
+  @Getter
+  @Setter
   private String id;
   private Location firstCorner;
   private Location secondCorner;
 
-  @Getter @Setter
-  private Material material;
-  @Getter @Setter
+  @Getter
+  @Setter
   private Integer activationRange;
-  @Getter @Setter
+  @Getter
+  @Setter
   private BlockData blockData;
 
   public Barrier(String id) {
     Objects.requireNonNull(id);
 
     this.id = id;
-    this.material = Material.BARRIER;
+    this.blockData = Bukkit.createBlockData(Material.GLASS);
     this.activationRange = 3;
   }
 
@@ -57,11 +59,8 @@ public class Barrier {
     Barrier barrier = new Barrier(id);
     barrier.setActivationRange(activationRange);
 
-    String material = get(map, "material", String.class);
-    barrier.setMaterial(Material.valueOf(material));
-
-    Optional<String> blockData = getOrEmpty(map, "block_data", String.class);
-    blockData.ifPresent(s -> barrier.setBlockData(Bukkit.createBlockData(s)));
+    String blockData = get(map, "block_data", String.class);
+    barrier.setBlockData(Bukkit.createBlockData(blockData));
 
     String firstCorner = get(map, "first_corner", String.class);
     String secondCorner = get(map, "second_corner", String.class);
@@ -81,12 +80,9 @@ public class Barrier {
     properties.put("id", id);
     properties.put("first_corner", parseLocation(firstCorner));
     properties.put("second_corner", parseLocation(secondCorner));
-    properties.put("material", material.name());
+    properties.put("block_data", blockData.getAsString());
     properties.put("activation_range", activationRange);
     properties.put("version", 2);
-    if (blockData != null) {
-      properties.put("block_data", blockData.getAsString());
-    }
 
     return properties;
   }
@@ -96,12 +92,83 @@ public class Barrier {
     this.secondCorner = LocationUtils.findGreatestPoint(firstCorner, secondCorner);
   }
 
+  public World getWorld() {
+    return firstCorner.getWorld();
+  }
+
   public Location getFirstCorner() {
     return firstCorner.clone();
   }
 
   public Location getSecondCorner() {
     return secondCorner.clone();
+  }
+
+  public boolean isNear(Location location) {
+    return isNear(location, activationRange);
+  }
+
+  private boolean isNear(Location location, int range) {
+    if (!getWorld().equals(location.getWorld())) {
+      return false;
+    }
+
+    int x = location.getBlockX();
+    int y = location.getBlockY();
+    int z = location.getBlockZ();
+
+    boolean isWithinFirstCornerX = firstCorner.getBlockX() - range <= x;
+    boolean isWithinFirstCornerY = firstCorner.getBlockY() - range <= y;
+    boolean isWithinFirstCornerZ = firstCorner.getBlockZ() - range <= z;
+
+    boolean isWithinSecondCornerX = secondCorner.getBlockX() + range >= x;
+    boolean isWithinSecondCornerY = secondCorner.getBlockY() + range >= y;
+    boolean isWithinSecondCornerZ = secondCorner.getBlockZ() + range >= z;
+
+    return isWithinSecondCornerX
+        && isWithinFirstCornerX
+        && isWithinFirstCornerY
+        && isWithinSecondCornerY
+        && isWithinFirstCornerZ
+        && isWithinSecondCornerZ;
+  }
+
+  public boolean isBarrierAt(Location location) {
+    return isNear(location, 0);
+  }
+
+  /**
+   * Send the barrier blocks within the barrier range to the player
+   */
+  public void showBarrier(Player player, Location location) {
+    sendBarrierBlocksTo(player, location, blockData);
+  }
+
+  private void sendBarrierBlocksTo(Player player, Location location, BlockData block) {
+    MultiBlockPacket packet = new MultiBlockPacket(false);
+    LocationUtils.getBlocksWithin(location, activationRange).forEach(
+        loc -> {
+          if (!isBarrierAt(loc)) {
+            return;
+          }
+
+          packet.addBlock(loc, block);
+        }
+    );
+
+    packet.send(player);
+  }
+
+  /**
+   * Hide the barrier blocks within the barrier range to the player
+   */
+  public void hideBarrier(Player player, Location location) {
+    sendBarrierBlocksTo(player, location, Bukkit.createBlockData(Material.AIR));
+  }
+
+  public boolean isVisibleFor(Player player) {
+    //TODO: Change
+    return true;
   }
 
   @Override
