@@ -6,6 +6,7 @@ import ml.empee.mysticalbarriers.utils.Logger;
 import ml.empee.mysticalbarriers.utils.Metrics;
 import ml.empee.mysticalbarriers.utils.PaperUtils;
 import ml.empee.mysticalbarriers.utils.Translator;
+import ml.empee.notifier.Notifier;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /** Boot class of this plugin. **/
