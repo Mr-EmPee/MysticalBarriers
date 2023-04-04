@@ -37,6 +37,9 @@ public class BarrierSelectionHandler implements Bean, RegisteredListener {
     }
   }
 
+  /**
+   * Select a block by clicking on it with the barrier wand
+   */
   @EventHandler
   @SuppressWarnings("checkstyle:CyclomaticComplexity")
   private void onPlayerClickBlock(PlayerInteractEvent event) {
