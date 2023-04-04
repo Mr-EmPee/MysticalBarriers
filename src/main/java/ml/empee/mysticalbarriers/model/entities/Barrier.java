@@ -150,6 +150,8 @@ public class Barrier {
         loc -> {
           if (!isBarrierAt(loc)) {
             return;
+          } else if (!loc.getBlock().getType().name().contains("AIR")) {
+            return;
           }
 
           packet.addBlock(loc, block);
