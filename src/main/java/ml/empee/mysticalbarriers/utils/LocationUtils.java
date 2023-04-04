@@ -21,6 +21,10 @@ public final class LocationUtils {
       && first.getBlockZ() - second.getBlockZ() == 0;
   }
 
+  public static Location toBlockLoc(Location target) {
+    return new Location(target.getWorld(), target.getBlockX(), target.getBlockY(), target.getBlockZ());
+  }
+
   /** Get all the blocks within a radius. **/
   public static List<Location> getBlocksWithin(Location location, int radius) {
     int maxX = location.getBlockX() + radius;

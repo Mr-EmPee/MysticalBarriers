@@ -9,7 +9,7 @@ block-entities:
 
 repel-projectiles:
   enabled: true
-  # Enable only for projectiles shot by a player
+  # Enable only for projectiles shot by a player (It may reduce lag)
   only-from-player: false
 
 version: 2
