@@ -5,6 +5,7 @@ import ml.empee.ioc.Bean;
 import ml.empee.mysticalbarriers.model.entities.Barrier;
 import ml.empee.mysticalbarriers.repositories.BarrierRepository;
 import org.bukkit.Location;
+import org.bukkit.block.Block;
 
 import java.util.List;
 import java.util.Optional;
@@ -35,6 +36,12 @@ public class BarrierService implements Bean {
     return findAll().stream()
         .filter(b -> b.isNear(location))
         .toList();
+  }
+
+  public Optional<Barrier> findBarrierByBlock(Block block) {
+    return findAll().stream()
+            .filter(b -> b.isBarrierBlock(block))
+            .findFirst();
   }
 
   public Optional<Barrier> findById(String id) {

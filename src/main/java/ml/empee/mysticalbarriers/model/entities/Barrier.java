@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Player;
 
@@ -137,6 +138,14 @@ public class Barrier {
     return isNear(location, 0);
   }
 
+  public boolean isBarrierBlock(Block block) {
+    if (!isBarrierAt(block.getLocation())) {
+      return false;
+    }
+
+    return block.getType().name().contains("AIR");
+  }
+
   /**
    * Send the barrier blocks within the barrier range to the player
    */
@@ -148,9 +157,7 @@ public class Barrier {
     MultiBlockPacket packet = new MultiBlockPacket(false);
     LocationUtils.getBlocksWithin(location, activationRange).forEach(
         loc -> {
-          if (!isBarrierAt(loc)) {
-            return;
-          } else if (!loc.getBlock().getType().name().contains("AIR")) {
+          if (!isBarrierBlock(loc.getBlock())) {
             return;
           }
 
