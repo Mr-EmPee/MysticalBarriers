@@ -23,6 +23,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
@@ -58,6 +59,8 @@ public class BarrierSpawnHandler implements Bean, RegisteredListener {
    */
   @SneakyThrows
   public void onServerSendBlockChange(PacketEvent event) {
+    //TODO: Refactoring
+
     Player player = event.getPlayer();
     PacketContainer packet = event.getPacket();
     Block block = packet.getBlockPositionModifier().read(0).toLocation(player.getWorld()).getBlock();
@@ -105,6 +108,20 @@ public class BarrierSpawnHandler implements Bean, RegisteredListener {
       }
     }
 
+  }
+
+  /**
+   * Update visible barrier blocks when a player teleports
+   */
+  @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
+  public void onPlayerTeleport(PlayerTeleportEvent event) {
+    barrierService.findBarrierNear(event.getFrom()).forEach(
+            b -> b.hideBarrier(event.getPlayer(), event.getFrom())
+    );
+
+    barrierService.findBarrierNear(event.getTo()).forEach(
+            b -> b.showBarrier(event.getPlayer(), event.getTo())
+    );
   }
 
   /**
