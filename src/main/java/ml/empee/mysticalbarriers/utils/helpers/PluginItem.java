@@ -8,7 +8,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
 
-/** Allow you to easily create a custom item **/
+/**
+ * Allow you to easily create a custom item
+ **/
 
 public class PluginItem {
 

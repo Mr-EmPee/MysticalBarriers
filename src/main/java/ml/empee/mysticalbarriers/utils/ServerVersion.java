@@ -4,7 +4,9 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.bukkit.Bukkit;
 
-/** Utility class to compare the server version. **/
+/**
+ * Utility class to compare the server version.
+ **/
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ServerVersion {

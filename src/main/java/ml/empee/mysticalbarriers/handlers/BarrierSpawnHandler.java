@@ -116,11 +116,11 @@ public class BarrierSpawnHandler implements Bean, RegisteredListener {
   @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
   public void onPlayerTeleport(PlayerTeleportEvent event) {
     barrierService.findBarrierNear(event.getFrom()).forEach(
-            b -> b.hideBarrier(event.getPlayer(), event.getFrom())
+        b -> b.hideBarrier(event.getPlayer(), event.getFrom())
     );
 
     barrierService.findBarrierNear(event.getTo()).forEach(
-            b -> b.showBarrier(event.getPlayer(), event.getTo())
+        b -> b.showBarrier(event.getPlayer(), event.getTo())
     );
   }
 

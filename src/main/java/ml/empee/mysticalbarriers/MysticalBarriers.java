@@ -9,7 +9,9 @@ import ml.empee.mysticalbarriers.utils.Translator;
 import ml.empee.notifier.Notifier;
 import org.bukkit.plugin.java.JavaPlugin;
 
-/** Boot class of this plugin. **/
+/**
+ * Boot class of this plugin.
+ **/
 
 public final class MysticalBarriers extends JavaPlugin {
 

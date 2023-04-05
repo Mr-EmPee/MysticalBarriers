@@ -17,6 +17,13 @@ import java.util.ResourceBundle;
 public class Translator {
 
   private static Translator instance;
+  private final JavaPlugin plugin;
+  private ResourceBundle defaultBundle;
+
+  public Translator(JavaPlugin plugin) {
+    this.plugin = plugin;
+    this.defaultBundle = getResourceBundle(Locale.getDefault());
+  }
 
   public static void init(JavaPlugin plugin) {
     instance = new Translator(plugin);
@@ -28,26 +35,6 @@ public class Translator {
     }
 
     return instance;
-  }
-
-  private final JavaPlugin plugin;
-  private ResourceBundle defaultBundle;
-
-  public Translator(JavaPlugin plugin) {
-    this.plugin = plugin;
-    this.defaultBundle = getResourceBundle(Locale.getDefault());
-  }
-
-  @SneakyThrows
-  private ResourceBundle getResourceBundle(Locale locale) {
-    File messageFile = new File(plugin.getDataFolder(), "messages.properties");
-    if (!messageFile.exists()) {
-      messageFile.getParentFile().mkdirs();
-      FileUtils.copyInputStreamToFile(plugin.getResource("messages.properties"), messageFile);
-    }
-
-    URL url = messageFile.getParentFile().toURI().toURL();
-    return ResourceBundle.getBundle("messages", locale, new URLClassLoader(new URL[] {url}));
   }
 
   private static String[] parseBlock(String input) {
@@ -78,6 +65,18 @@ public class Translator {
 
   public static String[] translateBlock(String key, Locale locale) {
     return parseBlock(translate(key, locale));
+  }
+
+  @SneakyThrows
+  private ResourceBundle getResourceBundle(Locale locale) {
+    File messageFile = new File(plugin.getDataFolder(), "messages.properties");
+    if (!messageFile.exists()) {
+      messageFile.getParentFile().mkdirs();
+      FileUtils.copyInputStreamToFile(plugin.getResource("messages.properties"), messageFile);
+    }
+
+    URL url = messageFile.getParentFile().toURI().toURL();
+    return ResourceBundle.getBundle("messages", locale, new URLClassLoader(new URL[]{url}));
   }
 
 }

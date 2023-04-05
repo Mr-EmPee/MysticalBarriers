@@ -357,7 +357,7 @@ public final class Metrics {
       }
       StringBuilder builder = new StringBuilder();
       try (BufferedReader bufferedReader =
-          new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+               new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
         String line;
         while ((line = bufferedReader.readLine()) != null) {
           builder.append(line);

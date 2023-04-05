@@ -15,8 +15,8 @@ public class ItemRegistry {
   public static final PluginItem SELECTION_WAND = new PluginItem(
       plugin, "barrier_wand", "1",
       ItemBuilder.from(Material.STICK)
-        .setName("&eBarrier Wand")
-        .setLore("\n\t&7Right click to set a barrier corner\t\n")
+          .setName("&eBarrier Wand")
+          .setLore("\n\t&7Right click to set a barrier corner\t\n")
   );
 
 }

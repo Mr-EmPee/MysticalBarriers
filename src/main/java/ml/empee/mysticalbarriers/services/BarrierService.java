@@ -40,8 +40,8 @@ public class BarrierService implements Bean {
 
   public Optional<Barrier> findBarrierByBlock(Block block) {
     return findAll().stream()
-            .filter(b -> b.isBarrierBlock(block))
-            .findFirst();
+        .filter(b -> b.isBarrierBlock(block))
+        .findFirst();
   }
 
   public Optional<Barrier> findById(String id) {

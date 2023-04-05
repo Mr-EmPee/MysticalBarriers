@@ -59,7 +59,7 @@ public class ProjectileMovementHandler extends ScheduledTask implements Bean, Re
 
       Location startLoc = LocationUtils.toBlockLoc(projectile.getLocation());
       Location endLoc = startLoc.clone().add(
-              LocationUtils.toBlockLoc(projectile.getVelocity().toLocation(startLoc.getWorld()))
+          LocationUtils.toBlockLoc(projectile.getVelocity().toLocation(startLoc.getWorld()))
       );
 
       for (Location loc : LocationUtils.getBlocksArea(startLoc, endLoc)) {
@@ -75,7 +75,7 @@ public class ProjectileMovementHandler extends ScheduledTask implements Bean, Re
 
   private void reflectProjectile(Projectile projectile) {
     projectile.getWorld().playSound(
-            projectile.getLocation(), Sound.BLOCK_END_PORTAL_FRAME_FILL, 1, 1
+        projectile.getLocation(), Sound.BLOCK_END_PORTAL_FRAME_FILL, 1, 1
     );
 
     Vector velocity = projectile.getVelocity();

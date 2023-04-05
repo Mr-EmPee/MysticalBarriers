@@ -20,6 +20,8 @@ import java.util.regex.Pattern;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Logger {
 
+  private static final String HEX_PREFIX = "&#";
+  private static final Pattern HEX_COLOR = Pattern.compile(HEX_PREFIX + "[a-zA-z0-9]{6}");
   @Getter
   @Setter
   private static String prefix;
@@ -28,9 +30,6 @@ public class Logger {
   private static boolean isDebugEnabled;
   @Setter
   private static java.util.logging.Logger consoleLogger = JavaPlugin.getProvidingPlugin(Logger.class).getLogger();
-
-  private static final String HEX_PREFIX = "&#";
-  private static final Pattern HEX_COLOR = Pattern.compile(HEX_PREFIX + "[a-zA-z0-9]{6}");
 
   /**
    * Send a formatted message to the player
@@ -69,35 +68,45 @@ public class Logger {
     return input;
   }
 
-  /** Log to the console a debug message. **/
+  /**
+   * Log to the console a debug message.
+   **/
   public static void debug(String message, Object... args) {
     if (isDebugEnabled) {
       consoleLogger.info(String.format(Locale.ROOT, message, args));
     }
   }
 
-  /** Log a debug message to a player. **/
+  /**
+   * Log a debug message to a player.
+   **/
   public static void debug(CommandSender player, String message, Object... args) {
     if (isDebugEnabled) {
       log(player, message, ChatColor.DARK_GRAY, args);
     }
   }
 
-  /** Log to the console an info message. **/
+  /**
+   * Log to the console an info message.
+   **/
   public static void info(String message, Object... args) {
     if (consoleLogger.isLoggable(Level.INFO)) {
       consoleLogger.info(String.format(Locale.ROOT, message, args));
     }
   }
 
-  /** Log to the console a warning message. **/
+  /**
+   * Log to the console a warning message.
+   **/
   public static void warning(String message, Object... args) {
     if (consoleLogger.isLoggable(Level.WARNING)) {
       consoleLogger.warning(String.format(Locale.ROOT, message, args));
     }
   }
 
-  /** Log to the console an error message. **/
+  /**
+   * Log to the console an error message.
+   **/
   public static void error(String message, Object... args) {
     if (consoleLogger.isLoggable(Level.SEVERE)) {
       consoleLogger.severe(String.format(Locale.ROOT, message, args));

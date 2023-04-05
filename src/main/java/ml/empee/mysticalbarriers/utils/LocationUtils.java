@@ -9,23 +9,29 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/** Set of utilities method used to work with locations. **/
+/**
+ * Set of utilities method used to work with locations.
+ **/
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class LocationUtils {
 
-  /** Check if 2 locations represent the same block. **/
+  /**
+   * Check if 2 locations represent the same block.
+   **/
   public static boolean isSameBlock(@NotNull Location first, @NotNull Location second) {
     return first.getBlockX() - second.getBlockX() == 0
-      && first.getBlockY() - second.getBlockY() == 0
-      && first.getBlockZ() - second.getBlockZ() == 0;
+        && first.getBlockY() - second.getBlockY() == 0
+        && first.getBlockZ() - second.getBlockZ() == 0;
   }
 
   public static Location toBlockLoc(Location target) {
     return new Location(target.getWorld(), target.getBlockX(), target.getBlockY(), target.getBlockZ());
   }
 
-  /** Get all the blocks within a radius. **/
+  /**
+   * Get all the blocks within a radius.
+   **/
   public static List<Location> getBlocksWithin(Location location, int radius) {
     int maxX = location.getBlockX() + radius;
     int maxY = location.getBlockY() + radius;
@@ -64,7 +70,9 @@ public final class LocationUtils {
     return Math.max(Math.max(Math.abs(dx), Math.abs(dy)), Math.abs(dz));
   }
 
-  /** Get a list of all the adjacent blocks. **/
+  /**
+   * Get a list of all the adjacent blocks.
+   **/
   public static List<Location> getAdjacentBlocks(Location center) {
     center = center.getBlock().getLocation();
 
@@ -123,7 +131,9 @@ public final class LocationUtils {
     return new Location(second.getWorld(), minX, minY, minZ);
   }
 
-  /** Get the blocks between the starting location and the ending location. **/
+  /**
+   * Get the blocks between the starting location and the ending location.
+   **/
   public static List<Location> getBlocksArea(Location first, Location second) {
     Location start = findLowestPoint(first, second);
     Location end = findGreatestPoint(first, second);
