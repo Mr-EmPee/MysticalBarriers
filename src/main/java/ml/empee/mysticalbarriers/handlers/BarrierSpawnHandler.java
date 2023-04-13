@@ -25,6 +25,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.util.Vector;
 
 /**
  * Handler used to spawn the barrier blocks near a player
@@ -69,8 +70,9 @@ public class BarrierSpawnHandler implements Bean, RegisteredListener {
       return;
     }
 
-    int distance = LocationUtils.getGreatestAxisDistance(player.getLocation(), block.getLocation());
-    if (distance > barrier.getActivationRange()) {
+    Vector distance = LocationUtils.getDistance(player.getLocation(), block.getLocation());
+    double maxDistance = Math.max(distance.getX(), Math.max(distance.getY(), distance.getZ()));
+    if (maxDistance > barrier.getActivationRange()) {
       return;
     }
 
