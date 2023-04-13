@@ -30,6 +30,7 @@ public class PlayerMovementHandler implements Bean, RegisteredListener {
    */
   @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
   public void onPlayerMove(PlayerMoveEvent event) {
+    //TODO: PlayerMoveEvent not called on player pixel-moving, listen for the packet instead
     if (LocationUtils.isSameBlock(event.getFrom(), event.getTo())) {
       return;
     }
