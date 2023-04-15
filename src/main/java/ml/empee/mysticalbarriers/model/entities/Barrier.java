@@ -11,6 +11,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,8 +29,8 @@ public class Barrier {
   @Getter
   @Setter
   private String id;
-  private Location firstCorner;
-  private Location secondCorner;
+  private Location lowestCorner;
+  private Location greatestCorner;
 
   @Getter
   @Setter
@@ -79,8 +80,8 @@ public class Barrier {
   public Map<String, Object> toMap() {
     HashMap<String, Object> properties = new HashMap<>();
     properties.put("id", id);
-    properties.put("first_corner", parseLocation(firstCorner));
-    properties.put("second_corner", parseLocation(secondCorner));
+    properties.put("first_corner", parseLocation(lowestCorner));
+    properties.put("second_corner", parseLocation(greatestCorner));
     properties.put("block_data", blockData.getAsString());
     properties.put("activation_range", activationRange);
     properties.put("version", 2);
@@ -89,20 +90,25 @@ public class Barrier {
   }
 
   public void setCorners(Location firstCorner, Location secondCorner) {
-    this.firstCorner = LocationUtils.findLowestPoint(firstCorner, secondCorner);
-    this.secondCorner = LocationUtils.findGreatestPoint(firstCorner, secondCorner);
+    this.lowestCorner = Vector.getMinimum(
+        firstCorner.toVector(), secondCorner.toVector()
+    ).toLocation(firstCorner.getWorld());
+
+    this.greatestCorner = Vector.getMaximum(
+        firstCorner.toVector(), secondCorner.toVector()
+    ).toLocation(firstCorner.getWorld());
   }
 
   public World getWorld() {
-    return firstCorner.getWorld();
+    return lowestCorner.getWorld();
   }
 
-  public Location getFirstCorner() {
-    return firstCorner.clone();
+  public Location getLowestCorner() {
+    return lowestCorner.clone();
   }
 
-  public Location getSecondCorner() {
-    return secondCorner.clone();
+  public Location getGreatestCorner() {
+    return greatestCorner.clone();
   }
 
   public boolean isNear(Location location) {
@@ -118,13 +124,13 @@ public class Barrier {
     int y = location.getBlockY();
     int z = location.getBlockZ();
 
-    boolean isWithinFirstCornerX = firstCorner.getBlockX() - range <= x;
-    boolean isWithinFirstCornerY = firstCorner.getBlockY() - range <= y;
-    boolean isWithinFirstCornerZ = firstCorner.getBlockZ() - range <= z;
+    boolean isWithinFirstCornerX = lowestCorner.getBlockX() - range <= x;
+    boolean isWithinFirstCornerY = lowestCorner.getBlockY() - range <= y;
+    boolean isWithinFirstCornerZ = lowestCorner.getBlockZ() - range <= z;
 
-    boolean isWithinSecondCornerX = secondCorner.getBlockX() + range >= x;
-    boolean isWithinSecondCornerY = secondCorner.getBlockY() + range >= y;
-    boolean isWithinSecondCornerZ = secondCorner.getBlockZ() + range >= z;
+    boolean isWithinSecondCornerX = greatestCorner.getBlockX() + range >= x;
+    boolean isWithinSecondCornerY = greatestCorner.getBlockY() + range >= y;
+    boolean isWithinSecondCornerZ = greatestCorner.getBlockZ() + range >= z;
 
     return isWithinSecondCornerX
         && isWithinFirstCornerX
