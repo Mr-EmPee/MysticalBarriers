@@ -153,6 +153,17 @@ public class Barrier {
   }
 
   /**
+   * Show the barrier to all the players within range
+   */
+  public void showBarrier() {
+    for (Player player : getWorld().getPlayers()) {
+      if (isVisibleFor(player)) {
+        showBarrier(player, player.getLocation());
+      }
+    }
+  }
+
+  /**
    * Send the barrier blocks within the barrier range to the player
    */
   public void showBarrier(Player player, Location location) {
@@ -179,6 +190,17 @@ public class Barrier {
    */
   public void hideBarrier(Player player, Location location) {
     sendBarrierBlocksTo(player, location, Bukkit.createBlockData(Material.AIR));
+  }
+
+  /**
+   * Hide the barrier to all the players
+   */
+  public void hideBarrier() {
+    for (Player player : getWorld().getPlayers()) {
+      if (isVisibleFor(player)) {
+        hideBarrier(player, player.getLocation());
+      }
+    }
   }
 
   public boolean isVisibleFor(Player player) {

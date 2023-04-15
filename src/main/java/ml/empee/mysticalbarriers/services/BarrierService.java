@@ -22,10 +22,12 @@ public class BarrierService implements Bean {
 
   public void save(Barrier barrier) {
     repository.save(barrier);
+    barrier.showBarrier();
   }
 
   public void delete(Barrier barrier) {
     repository.delete(barrier);
+    barrier.hideBarrier();
   }
 
   public Set<Barrier> findAll() {
