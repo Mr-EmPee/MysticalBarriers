@@ -47,12 +47,10 @@ public class ProjectileReflectionHandler extends EntityTracker<Projectile> imple
       return false;
     }
 
-    Location impact = findBarrierImpactBlock(entity);
+    Location impact = findImpactLocation(entity);
     if (impact == null) {
       return false;
     }
-
-    impact = LocationUtils.toBlockLoc(impact);
 
     Barrier barrier = barrierService.findBarrierByBlock(impact.getBlock()).get();
 
@@ -95,40 +93,20 @@ public class ProjectileReflectionHandler extends EntityTracker<Projectile> imple
    * An entity can travel several blocks per ticks, this
    * method will check every block that otherwise would have been skipped
    */
-  private Location findBarrierImpactBlock(Entity entity) {
-    Vector velocity = entity.getVelocity();
-    velocity.setX(velocity.getBlockX());
-    velocity.setY(velocity.getBlockY());
-    velocity.setZ(velocity.getBlockZ());
+  private Location findImpactLocation(Entity entity) {
+    Location start = entity.getLocation();
+    if (barrierService.findBarrierByBlock(start.getBlock()).isPresent()) {
+      return entity.getLocation();
+    }
 
-    Location impact = entity.getLocation();
-    while (barrierService.findBarrierByBlock(impact.getBlock()).isEmpty()) {
-      if (velocity.isZero()) {
-        return null;
-      }
-
-      impact.add(velocity.getX(), velocity.getY(), velocity.getZ());
-
-      if (velocity.getX() > 0) {
-        velocity.setX(velocity.getX() - 1);
-      } else if (velocity.getX() < 0) {
-        velocity.setX(velocity.getX() + 1);
-      }
-
-      if (velocity.getY() > 0) {
-        velocity.setY(velocity.getY() - 1);
-      } else if (velocity.getY() < 0) {
-        velocity.setY(velocity.getY() + 1);
-      }
-
-      if (velocity.getZ() > 0) {
-        velocity.setZ(velocity.getZ() - 1);
-      } else if (velocity.getZ() < 0) {
-        velocity.setZ(velocity.getZ() + 1);
+    Location end = start.clone().add(entity.getVelocity());
+    for (Location impact : LocationUtils.getBlocksArea(start, end)) {
+      if (barrierService.findBarrierByBlock(impact.getBlock()).isPresent()) {
+        return impact;
       }
     }
 
-    return impact;
+    return null;
   }
 
   /**

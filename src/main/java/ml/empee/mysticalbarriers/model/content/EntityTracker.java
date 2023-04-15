@@ -28,7 +28,7 @@ public abstract class EntityTracker<T extends Entity> extends ScheduledTask {
     while (iterator.hasNext()) {
       T entity = iterator.next();
 
-      if (entity.isDead()) {
+      if (entity.isDead() || !entity.isValid()) {
         iterator.remove();
         continue;
       }
