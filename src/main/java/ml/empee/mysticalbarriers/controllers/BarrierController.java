@@ -5,8 +5,10 @@ import cloud.commandframework.annotations.CommandMethod;
 import cloud.commandframework.annotations.CommandPermission;
 import lombok.RequiredArgsConstructor;
 import ml.empee.ioc.Bean;
+import ml.empee.ioc.annotations.DependsOn;
 import ml.empee.mysticalbarriers.config.CommandsConfig;
 import ml.empee.mysticalbarriers.constants.Permissions;
+import ml.empee.mysticalbarriers.controllers.parsers.BarrierParser;
 import ml.empee.mysticalbarriers.handlers.BarrierSelectionHandler;
 import ml.empee.mysticalbarriers.model.entities.Barrier;
 import ml.empee.mysticalbarriers.services.BarrierService;
@@ -19,6 +21,7 @@ import org.bukkit.entity.Player;
  */
 
 @RequiredArgsConstructor
+@DependsOn(BarrierParser.class)
 public class BarrierController implements Bean {
 
   private final CommandsConfig commandsConfig;
@@ -53,6 +56,16 @@ public class BarrierController implements Bean {
 
     barrierService.save(barrier);
     Logger.log(sender, "&7You created a barrier named &e%s", name);
+  }
+
+  /**
+   * Delete a barrier
+   */
+  @CommandMethod("mb delete <barrier>")
+  @CommandPermission(Permissions.ADMIN)
+  public void deleteBarrier(Player sender, @Argument Barrier barrier) {
+    barrierService.delete(barrier);
+    Logger.log(sender, "&7You deleted the barrier &e%s", barrier.getId());
   }
 
 }

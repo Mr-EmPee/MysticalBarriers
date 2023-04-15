@@ -1,6 +1,7 @@
 package ml.empee.mysticalbarriers.config;
 
 import cloud.commandframework.annotations.AnnotationParser;
+import cloud.commandframework.arguments.parser.ArgumentParser;
 import cloud.commandframework.bukkit.BukkitCommandManager;
 import cloud.commandframework.exceptions.ArgumentParseException;
 import cloud.commandframework.exceptions.InvalidCommandSenderException;
@@ -9,6 +10,7 @@ import cloud.commandframework.exceptions.NoPermissionException;
 import cloud.commandframework.execution.CommandExecutionCoordinator;
 import cloud.commandframework.meta.SimpleCommandMeta;
 import cloud.commandframework.paper.PaperCommandManager;
+import io.leangen.geantyref.TypeToken;
 import ml.empee.ioc.Bean;
 import ml.empee.mysticalbarriers.utils.Logger;
 import ml.empee.mysticalbarriers.utils.Translator;
@@ -71,6 +73,12 @@ public class CommandsConfig implements Bean {
 
   public <T> void register(T command) {
     commandParser.parse(command);
+  }
+
+  public <T> void register(Class<T> type, ArgumentParser<CommandSender, T> parser) {
+    commandManager.parserRegistry().registerParserSupplier(
+        TypeToken.get(type), opts -> parser
+    );
   }
 
 }
