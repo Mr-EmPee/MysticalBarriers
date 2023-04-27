@@ -28,14 +28,12 @@ public abstract class AbstractConfig {
 
   private YamlConfiguration loadConfig(File file) {
     YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
-
-    update();
-
+    update(config);
     return config;
   }
 
   @SneakyThrows
-  private void update() {
+  private void update(YamlConfiguration config) {
     int currentVersion = config.getInt("version", 1);
     if (currentVersion == version) {
       return;
