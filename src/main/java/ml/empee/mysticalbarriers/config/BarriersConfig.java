@@ -2,56 +2,22 @@ package ml.empee.mysticalbarriers.config;
 
 import ml.empee.ioc.Bean;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 /**
  * Barriers related general configs
  */
 
-public class BarriersConfig implements Bean {
+public class BarriersConfig extends AbstractConfig implements Bean {
 
-  private static final int LATEST_VERSION = 2;
-  private final File file;
-
-  private ConfigurationSection config;
-
-  public BarriersConfig(JavaPlugin plugin) throws IOException {
-    file = new File(plugin.getDataFolder(), "config.yml");
-    if (!file.exists()) {
-      plugin.saveResource("config.yml", true);
-    }
-
-    this.config = loadConfig(file);
+  public BarriersConfig(JavaPlugin plugin) {
+    super(plugin, "config.yml", 2);
   }
 
-  private YamlConfiguration loadConfig(File file) throws IOException {
-    YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
-
-    boolean hasBeenUpdated = updateConfig(config.getInt("version", 1));
-    if (hasBeenUpdated) {
-      config.save(file);
-    }
-
-    return config;
-  }
-
-  public void reload() throws IOException {
-    config = loadConfig(file);
-  }
-
-  private boolean updateConfig(int currentVersion) {
-    if (currentVersion == LATEST_VERSION) {
-      return false;
-    }
-
-    updateToV2(currentVersion);
-
-    return true;
+  protected void update(int from) {
+    updateToV2(from);
   }
 
   private void updateToV2(int version) {
@@ -85,5 +51,4 @@ public class BarriersConfig implements Bean {
   public boolean shouldRepelOnlyPlayerProjectiles() {
     return config.getBoolean("repel-projectiles.only-from-player", false);
   }
-
 }
