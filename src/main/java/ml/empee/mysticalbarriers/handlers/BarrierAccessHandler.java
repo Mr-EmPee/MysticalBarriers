@@ -1,5 +1,6 @@
 package ml.empee.mysticalbarriers.handlers;
 
+import io.papermc.paper.event.entity.EntityMoveEvent;
 import lombok.RequiredArgsConstructor;
 import ml.empee.ioc.Bean;
 import ml.empee.ioc.RegisteredListener;
@@ -7,11 +8,13 @@ import ml.empee.mysticalbarriers.config.BarriersConfig;
 import ml.empee.mysticalbarriers.model.entities.Barrier;
 import ml.empee.mysticalbarriers.services.BarrierService;
 import ml.empee.mysticalbarriers.utils.LocationUtils;
+import ml.empee.mysticalbarriers.utils.PaperUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.vehicle.VehicleEnterEvent;
 
 import java.util.List;
 
@@ -20,7 +23,7 @@ import java.util.List;
  */
 
 @RequiredArgsConstructor
-public class PlayerMovementHandler implements Bean, RegisteredListener {
+public class BarrierAccessHandler implements Bean, RegisteredListener {
 
   private final BarrierService barrierService;
   private final BarriersConfig config;
@@ -42,9 +45,6 @@ public class PlayerMovementHandler implements Bean, RegisteredListener {
     }
 
     event.setCancelled(true);
-    if (player.getVehicle() != null) {
-      player.getVehicle().eject();
-    }
   }
 
   /**
@@ -78,6 +78,56 @@ public class PlayerMovementHandler implements Bean, RegisteredListener {
     }
 
     event.setCancelled(true);
+  }
+
+  /**
+   * Prevents player from entering a vehicle inside a barrier
+   */
+  @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
+  public void onPlayerEnterVehicle(VehicleEnterEvent event) {
+    Barrier barrier = barrierService.findBarrierByBlock(
+        event.getVehicle().getLocation().getBlock()
+    ).orElse(null);
+
+    if (barrier == null) {
+      return;
+    } else if (event.getEntered() instanceof Player player) {
+      if (!barrier.isVisibleFor(player)) {
+        return;
+      }
+    }
+
+    event.setCancelled(true);
+  }
+
+  /**
+   * Listeners registered only if the server is running paper
+   */
+  @RequiredArgsConstructor
+  public static class PaperListeners implements Bean, RegisteredListener {
+    private final BarrierService barrierService;
+
+    @Override
+    public boolean isEnabled() {
+      return PaperUtils.IS_RUNNING_PAPER;
+    }
+
+    /**
+     * Prevents entities from going into a barrier
+     */
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
+    public void onEntityMove(EntityMoveEvent event) {
+      if (LocationUtils.isSameBlock(event.getFrom(), event.getTo())) {
+        return;
+      }
+
+      Barrier barrier = barrierService.findBarrierByBlock(event.getTo().getBlock()).orElse(null);
+      if (barrier == null) {
+        return;
+      }
+
+      event.setCancelled(true);
+    }
   }
 
 }
