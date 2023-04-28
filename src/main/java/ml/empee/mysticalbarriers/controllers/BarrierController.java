@@ -3,25 +3,30 @@ package ml.empee.mysticalbarriers.controllers;
 import cloud.commandframework.annotations.Argument;
 import cloud.commandframework.annotations.CommandMethod;
 import cloud.commandframework.annotations.CommandPermission;
+import cloud.commandframework.annotations.parsers.Parser;
+import cloud.commandframework.annotations.suggestions.Suggestions;
+import cloud.commandframework.context.CommandContext;
 import lombok.RequiredArgsConstructor;
 import ml.empee.ioc.Bean;
-import ml.empee.ioc.annotations.DependsOn;
 import ml.empee.mysticalbarriers.config.CommandsConfig;
 import ml.empee.mysticalbarriers.constants.Permissions;
-import ml.empee.mysticalbarriers.controllers.parsers.BarrierParser;
 import ml.empee.mysticalbarriers.handlers.BarrierSelectionHandler;
 import ml.empee.mysticalbarriers.model.entities.Barrier;
 import ml.empee.mysticalbarriers.services.BarrierService;
 import ml.empee.mysticalbarriers.utils.Logger;
 import ml.empee.mysticalbarriers.utils.helpers.CuboidSelection;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.Queue;
 
 /**
  * Controller used for managing barriers
  */
 
 @RequiredArgsConstructor
-@DependsOn(BarrierParser.class)
 public class BarrierController implements Bean {
 
   private final CommandsConfig commandsConfig;
@@ -66,6 +71,37 @@ public class BarrierController implements Bean {
   public void deleteBarrier(Player sender, @Argument Barrier barrier) {
     barrierService.delete(barrier);
     Logger.log(sender, "&7You deleted the barrier &e%s", barrier.getId());
+  }
+
+  /**
+   * Parse a barrier from using a command input
+   */
+  @Parser(suggestions = "barriersProvider")
+  public Barrier parseBarrier(CommandContext<CommandSender> context, Queue<String> input) {
+    String barrierID = input.peek();
+    if (barrierID == null) {
+      throw new IllegalArgumentException("Missing barrier name");
+    }
+
+    Optional<Barrier> barrier = barrierService.findById(barrierID);
+    if (barrier.isPresent()) {
+      input.remove();
+      return barrier.get();
+    }
+
+    throw new IllegalArgumentException("Unable to find the barrier");
+  }
+
+  /**
+   * Find all matchable barriers based on a command input
+   */
+  @Suggestions("barriersProvider")
+  public List<String> getBarriersSuggestions(
+      CommandContext<CommandSender> context, String input
+  ) {
+    return barrierService.findAll().stream()
+        .map(Barrier::getId)
+        .toList();
   }
 
 }
