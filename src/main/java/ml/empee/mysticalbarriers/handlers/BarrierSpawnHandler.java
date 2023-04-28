@@ -16,16 +16,22 @@ import ml.empee.mysticalbarriers.model.entities.Barrier;
 import ml.empee.mysticalbarriers.services.BarrierService;
 import ml.empee.mysticalbarriers.utils.LocationUtils;
 import ml.empee.mysticalbarriers.utils.PaperUtils;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Llama;
+import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.vehicle.VehicleMoveEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
+
+import java.util.List;
 
 /**
  * Handler used to spawn the barrier blocks near a player
@@ -60,8 +66,6 @@ public class BarrierSpawnHandler implements Bean, RegisteredListener {
    */
   @SneakyThrows
   public void onServerSendBlockChange(PacketEvent event) {
-    //TODO: Refactoring
-
     Player player = event.getPlayer();
     PacketContainer packet = event.getPacket();
     Block block = packet.getBlockPositionModifier().read(0).toLocation(player.getWorld()).getBlock();
@@ -97,19 +101,25 @@ public class BarrierSpawnHandler implements Bean, RegisteredListener {
       return;
     }
 
-    Player player = event.getPlayer();
+    refreshBarriers(event.getPlayer(), event.getFrom(), event.getTo());
+  }
 
-    //TODO Improve performance
-    for (Barrier barrier : barrierService.findAll()) {
-      if (barrier.isNear(event.getFrom())) {
-        barrier.hideBarrier(player, event.getFrom());
-      }
-
-      if (barrier.isNear(event.getTo()) && barrier.isVisibleFor(player)) {
-        barrier.showBarrier(player, event.getTo());
-      }
+  @EventHandler
+  public void onVehicleMove(VehicleMoveEvent event) {
+    if (!(event.getVehicle() instanceof Minecart) || !(event.getVehicle() instanceof Llama)) {
+      return;      //It fires PlayerMoveEvent
     }
 
+    List<Player> players = event.getVehicle().getPassengers().stream()
+        .filter(e -> e instanceof Player)
+        .map(e -> (Player) e)
+        .toList();
+
+    if (players.isEmpty()) {
+      return;
+    }
+
+    players.forEach(p -> refreshBarriers(p, event.getFrom(), event.getTo()));
   }
 
   /**
@@ -117,12 +127,17 @@ public class BarrierSpawnHandler implements Bean, RegisteredListener {
    */
   @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
   public void onPlayerTeleport(PlayerTeleportEvent event) {
-    barrierService.findBarrierNear(event.getFrom()).forEach(
-        b -> b.hideBarrier(event.getPlayer(), event.getFrom())
+    refreshBarriers(event.getPlayer(), event.getFrom(), event.getTo());
+  }
+
+  private void refreshBarriers(Player player, Location from, Location to) {
+    //TODO Improve performance
+    barrierService.findBarrierNear(from).forEach(
+        b -> b.hideBarrier(player, from)
     );
 
-    barrierService.findBarrierNear(event.getTo()).forEach(
-        b -> b.showBarrier(event.getPlayer(), event.getTo())
+    barrierService.findBarrierNear(to).forEach(
+        b -> b.showBarrier(player, to)
     );
   }
 
