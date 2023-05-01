@@ -40,8 +40,7 @@ public final class MysticalBarriers extends JavaPlugin {
 
   private void printPaperWarning() {
     Logger.warning("THIS SERVER ISN'T RUNNING PAPER");
-    Logger.warning("USE IT TO ENABLE FEATURE LIKE:");
-    Logger.warning("   - Barrier spawning when player join near it");
+    Logger.warning("USE IT TO ENABLE FEATURES LIKE:");
     Logger.warning("   - Preventing living entities from getting through a barrier");
   }
 
