@@ -9,12 +9,14 @@ import ml.empee.mysticalbarriers.model.entities.Barrier;
 import ml.empee.mysticalbarriers.services.BarrierService;
 import ml.empee.mysticalbarriers.utils.LocationUtils;
 import ml.empee.mysticalbarriers.utils.PaperUtils;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
+import org.bukkit.event.vehicle.VehicleMoveEvent;
 
 import java.util.List;
 
@@ -45,6 +47,20 @@ public class BarrierAccessHandler implements Bean, RegisteredListener {
     }
 
     event.setCancelled(true);
+  }
+
+  @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
+  public void onVehicleMove(VehicleMoveEvent event) {
+    if (LocationUtils.isSameBlock(event.getFrom(), event.getTo())) {
+      return;
+    } else if (barrierService.findBarrierByBlock(event.getTo().getBlock()).isEmpty()) {
+      return;
+    }
+
+    Entity vehicle = event.getVehicle();
+
+    vehicle.eject();
+    vehicle.teleport(event.getFrom());
   }
 
   /**
