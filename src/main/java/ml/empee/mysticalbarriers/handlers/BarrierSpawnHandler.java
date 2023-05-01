@@ -7,38 +7,40 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedBlockData;
-import io.papermc.paper.event.packet.PlayerChunkLoadEvent;
-import lombok.RequiredArgsConstructor;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import lombok.SneakyThrows;
 import ml.empee.ioc.Bean;
 import ml.empee.ioc.RegisteredListener;
+import ml.empee.ioc.ScheduledTask;
 import ml.empee.mysticalbarriers.model.entities.Barrier;
 import ml.empee.mysticalbarriers.services.BarrierService;
 import ml.empee.mysticalbarriers.utils.LocationUtils;
-import ml.empee.mysticalbarriers.utils.PaperUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Llama;
-import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
-import org.bukkit.event.vehicle.VehicleMoveEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
- * Handler used to spawn the barrier blocks near a player
+ * <p>Handler used to spawn the barrier blocks near a player.</p>
+ * <p>This is a scheduled task due some problems when needing to track (precisely) the player movement through events</p>
+ * <ul>
+ *   <li>Horse movement bugged (When jumping it doesn't call playerMoveEv nor VehicleMovEv)</li>
+ *   <li>PlayerMovEv isn't called when riding Llamas or mine-carts (It exists a workaround)</li>
+ *   <li>Player when join the server hasn't yet loaded the chunks (It exists a paper-event)</li>
+ * </ul>
  */
 
-@RequiredArgsConstructor
-public class BarrierSpawnHandler implements Bean, RegisteredListener {
+public class BarrierSpawnHandler extends ScheduledTask implements Bean, RegisteredListener {
 
   private static final ProtocolManager PROTOCOL_MANAGER = ProtocolLibrary.getProtocolManager();
   private static final JavaPlugin plugin = JavaPlugin.getProvidingPlugin(BarrierSpawnHandler.class);
@@ -50,6 +52,15 @@ public class BarrierSpawnHandler implements Bean, RegisteredListener {
   };
 
   private final BarrierService barrierService;
+  private final Cache<Player, Location> lastLocations = CacheBuilder.newBuilder()
+      .expireAfterWrite(10, TimeUnit.SECONDS)
+      .build();
+
+  public BarrierSpawnHandler(BarrierService barrierService) {
+    super(0, 6, false);
+
+    this.barrierService = barrierService;
+  }
 
   @Override
   public void onStart() {
@@ -93,55 +104,6 @@ public class BarrierSpawnHandler implements Bean, RegisteredListener {
   }
 
   /**
-   * Send barrier blocks when a player move
-   */
-  @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
-  public void onPlayerMove(PlayerMoveEvent event) {
-    if (LocationUtils.isSameBlock(event.getFrom(), event.getTo())) {
-      return;
-    }
-
-    refreshBarriers(event.getPlayer(), event.getFrom(), event.getTo());
-  }
-
-  @EventHandler
-  public void onVehicleMove(VehicleMoveEvent event) {
-    if (!(event.getVehicle() instanceof Minecart) || !(event.getVehicle() instanceof Llama)) {
-      return;      //It fires PlayerMoveEvent
-    }
-
-    List<Player> players = event.getVehicle().getPassengers().stream()
-        .filter(e -> e instanceof Player)
-        .map(e -> (Player) e)
-        .toList();
-
-    if (players.isEmpty()) {
-      return;
-    }
-
-    players.forEach(p -> refreshBarriers(p, event.getFrom(), event.getTo()));
-  }
-
-  /**
-   * Update visible barrier blocks when a player teleports
-   */
-  @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
-  public void onPlayerTeleport(PlayerTeleportEvent event) {
-    refreshBarriers(event.getPlayer(), event.getFrom(), event.getTo());
-  }
-
-  private void refreshBarriers(Player player, Location from, Location to) {
-    //TODO Improve performance
-    barrierService.findBarrierNear(from).forEach(
-        b -> b.hideBarrier(player, from)
-    );
-
-    barrierService.findBarrierNear(to).forEach(
-        b -> b.showBarrier(player, to)
-    );
-  }
-
-  /**
    * Prevent players from breaking a barrier block
    */
   @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
@@ -154,31 +116,34 @@ public class BarrierSpawnHandler implements Bean, RegisteredListener {
     event.setCancelled(true);
   }
 
-
-  /**
-   * Listeners registered only if the server is running paper
-   */
-  @RequiredArgsConstructor
-  public static class PaperListeners implements Bean, RegisteredListener {
-    private final BarrierService barrierService;
-
-    @Override
-    public boolean isEnabled() {
-      return PaperUtils.IS_RUNNING_PAPER;
+  @Override
+  public void run() {
+    for (Player player : Bukkit.getOnlinePlayers()) {
+      refreshBarriers(player, lastLocations.getIfPresent(player));
+      lastLocations.put(player, player.getLocation());
     }
+  }
 
-    /**
-     * Spawn barrier blocks when a player join near a barrier
-     */
-    @EventHandler
-    public void onPlayerLoadChunk(PlayerChunkLoadEvent event) {
-      Player player = event.getPlayer();
-      for (Barrier barrier : barrierService.findBarrierNear(player.getLocation())) {
-        if (barrier.isVisibleFor(player)) {
-          barrier.showBarrier(player, player.getLocation());
-        }
+  private void refreshBarriers(Player player, @Nullable Location lastLoc) {
+    //TODO: Improve performance
+    Location currentLoc = player.getLocation();
+    if (lastLoc != null) {
+      if (LocationUtils.isSameBlock(currentLoc, lastLoc)) {
+        return;
       }
+
+      barrierService.findBarrierNear(lastLoc).forEach(b -> {
+        if (b.isVisibleFor(player)) {
+          b.hideBarrier(player, lastLoc);
+        }
+      });
     }
+
+    barrierService.findBarrierNear(currentLoc).forEach(b -> {
+      if (b.isVisibleFor(player)) {
+        b.showBarrier(player, currentLoc);
+      }
+    });
   }
 
 }
