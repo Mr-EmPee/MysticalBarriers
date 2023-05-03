@@ -4,8 +4,6 @@ import ml.empee.ioc.Bean;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.List;
-
 /**
  * Barriers related general configs
  */
@@ -27,7 +25,6 @@ public class BarriersConfig extends AbstractConfig implements Bean {
 
     ConfigurationSection section = config.createSection("block-entities");
     section.set("enabled", true);
-    section.set("exclude", List.of("ARMOR_STAND"));
 
     section = config.createSection("repel-projectiles");
     section.set("enabled", config.get("block-movement.projectiles.enabled", true));

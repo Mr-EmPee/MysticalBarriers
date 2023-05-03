@@ -4,8 +4,6 @@ block-chorus-teleportation: true
 # Prevent entities from getting through barriers
 block-entities:
   enabled: true
-  exclude:
-    - ARMOR_STAND
 
 repel-projectiles:
   enabled: true

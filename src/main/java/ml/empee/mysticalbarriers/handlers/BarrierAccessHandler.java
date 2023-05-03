@@ -122,10 +122,11 @@ public class BarrierAccessHandler implements Bean, RegisteredListener {
   @RequiredArgsConstructor
   public static class PaperListeners implements Bean, RegisteredListener {
     private final BarrierService barrierService;
+    private final BarriersConfig barriersConfig;
 
     @Override
     public boolean isEnabled() {
-      return PaperUtils.IS_RUNNING_PAPER;
+      return PaperUtils.IS_RUNNING_PAPER && barriersConfig.shouldBlockEntities();
     }
 
     /**
