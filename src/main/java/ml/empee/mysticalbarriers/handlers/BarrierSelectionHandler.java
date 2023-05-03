@@ -8,11 +8,11 @@ import ml.empee.ioc.RegisteredListener;
 import ml.empee.mysticalbarriers.constants.ItemRegistry;
 import ml.empee.mysticalbarriers.constants.Permissions;
 import ml.empee.mysticalbarriers.utils.Logger;
-import ml.empee.mysticalbarriers.utils.ServerVersion;
 import ml.empee.mysticalbarriers.utils.helpers.CuboidSelection;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
@@ -25,25 +25,16 @@ import java.util.concurrent.TimeUnit;
 
 public class BarrierSelectionHandler implements Bean, RegisteredListener {
 
-  private boolean isOffhandEnabled = true;
   private final Cache<Player, CuboidSelection> selectionCache = CacheBuilder.newBuilder()
       .expireAfterAccess(5, TimeUnit.MINUTES)
       .build();
-
-  @Override
-  public void onStart() {
-    if (ServerVersion.isLowerThan(1, 9)) {
-      isOffhandEnabled = false;
-    }
-  }
 
   /**
    * Select a block by clicking on it with the barrier wand
    */
   @EventHandler
-  @SuppressWarnings("checkstyle:CyclomaticComplexity")
   private void onPlayerClickBlock(PlayerInteractEvent event) {
-    if (event.getAction().isLeftClick() || (isOffhandEnabled && event.getHand() == EquipmentSlot.OFF_HAND)) {
+    if (event.getHand() == EquipmentSlot.OFF_HAND) {
       return;
     } else if (!event.hasBlock() || !event.hasItem() || event.getClickedBlock() == null) {
       return;
@@ -56,22 +47,19 @@ public class BarrierSelectionHandler implements Bean, RegisteredListener {
       return;
     }
 
-    selectCorner(event.getPlayer(), event.getClickedBlock().getLocation());
+    selectCorner(event.getPlayer(), event.getAction(), event.getClickedBlock().getLocation());
   }
 
   /**
-   * Add a corner to the player selection
+   * Set a corner of the player selection
    */
-  public void selectCorner(Player player, Location location) {
+  public void selectCorner(Player player, Action action, Location location) {
     CuboidSelection selection = getSelection(player);
-    if (selection.getStart() == null || selection.getEnd() != null) {
+    if (action.isRightClick()) {
       selection.setStart(location);
-      selection.setEnd(null);
-
       Logger.log(player, "&7Selected first corner");
     } else {
       selection.setEnd(location);
-
       Logger.log(player, "&7Selected second corner");
     }
   }
