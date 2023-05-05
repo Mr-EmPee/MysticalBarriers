@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Permissions {
 
-  public static final String ADMIN = "ADMIN";
+  private static final String PREFIX = "mysticalbarriers.";
+  public static final String ADMIN = PREFIX + "admin";
+  public static final String BYPASS_BARRIER = PREFIX + "bypass.";
 
 }

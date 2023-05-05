@@ -2,6 +2,7 @@ package ml.empee.mysticalbarriers.model.entities;
 
 import lombok.Getter;
 import lombok.Setter;
+import ml.empee.mysticalbarriers.constants.Permissions;
 import ml.empee.mysticalbarriers.model.content.MultiBlockPacket;
 import ml.empee.mysticalbarriers.utils.LocationUtils;
 import org.bukkit.Bukkit;
@@ -11,6 +12,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.Permissible;
 import org.bukkit.util.Vector;
 
 import java.util.HashMap;
@@ -203,9 +205,8 @@ public class Barrier {
     }
   }
 
-  public boolean isVisibleFor(Player player) {
-    //TODO: Change
-    return true;
+  public boolean isVisibleFor(Permissible entity) {
+    return !entity.hasPermission(Permissions.BYPASS_BARRIER + id);
   }
 
   @Override

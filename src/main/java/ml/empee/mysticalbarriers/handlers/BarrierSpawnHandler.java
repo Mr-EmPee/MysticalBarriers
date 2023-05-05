@@ -9,6 +9,7 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedBlockData;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import lombok.Data;
 import lombok.SneakyThrows;
 import ml.empee.ioc.Bean;
 import ml.empee.ioc.RegisteredListener;
@@ -28,7 +29,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BinaryOperator;
 
 /**
  * <p>Handler used to spawn the barrier blocks near a player.</p>
@@ -52,9 +56,15 @@ public class BarrierSpawnHandler extends ScheduledTask implements Bean, Register
   };
 
   private final BarrierService barrierService;
-  private final Cache<Player, Location> lastLocations = CacheBuilder.newBuilder()
-      .expireAfterWrite(10, TimeUnit.SECONDS)
+  private final Cache<Player, PlayerData> lastLocations = CacheBuilder.newBuilder()
+      .expireAfterAccess(10, TimeUnit.SECONDS)
       .build();
+
+  @Data
+  private static class PlayerData {
+    private Location lastLocation;
+    private Set<Barrier> lastSeen = new HashSet<>();
+  }
 
   public BarrierSpawnHandler(BarrierService barrierService) {
     super(0, 6, false);
@@ -117,31 +127,36 @@ public class BarrierSpawnHandler extends ScheduledTask implements Bean, Register
   }
 
   @Override
+  @SneakyThrows
   public void run() {
     for (Player player : Bukkit.getOnlinePlayers()) {
-      refreshBarriers(player, lastLocations.getIfPresent(player));
-      lastLocations.put(player, player.getLocation());
+      var data = lastLocations.get(player, PlayerData::new);
+
+      refreshBarriers(player, data);
+
+      data.setLastLocation(player.getLocation());
     }
   }
 
-  private void refreshBarriers(Player player, @Nullable Location lastLoc) {
+  private void refreshBarriers(Player player, PlayerData data) {
     //TODO: Improve performance
     Location currentLoc = player.getLocation();
-    if (lastLoc != null) {
-      if (LocationUtils.isSameBlock(currentLoc, lastLoc)) {
+    if (data.getLastLocation() != null) {
+      if (LocationUtils.isSameBlock(currentLoc, data.getLastLocation())) {
         return;
       }
 
-      barrierService.findBarrierNear(lastLoc).forEach(b -> {
-        if (b.isVisibleFor(player)) {
-          b.hideBarrier(player, lastLoc);
-        }
+      data.getLastSeen().forEach(b -> {
+        b.hideBarrier(player, data.getLastLocation());
       });
     }
+
+    data.getLastSeen().clear();
 
     barrierService.findBarrierNear(currentLoc).forEach(b -> {
       if (b.isVisibleFor(player)) {
         b.showBarrier(player, currentLoc);
+        data.getLastSeen().add(b);
       }
     });
   }
