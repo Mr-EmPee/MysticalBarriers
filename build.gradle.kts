@@ -20,6 +20,7 @@ bukkit {
   load = BukkitPluginDescription.PluginLoadOrder.POSTWORLD
   main = "${basePackage}.MysticalBarriers"
   apiVersion = "1.13"
+  depend = listOf("ProtocolLib")
   authors = listOf("Mr. EmPee")
 }
 
