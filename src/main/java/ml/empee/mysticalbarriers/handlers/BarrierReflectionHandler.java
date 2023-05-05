@@ -66,6 +66,7 @@ public class BarrierReflectionHandler extends EntityTracker<Entity> implements B
     }
 
     //TODO: Make ceiling exception
+    //TODO: FIX fast projectiles bounce back before hitting the barrier
     entity.getWorld().playSound(impact.location(), Sound.BLOCK_END_PORTAL_FRAME_FILL, 1, 1);
     entity.setVelocity(entity.getVelocity().multiply(-1));
     return true;
