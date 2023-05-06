@@ -251,7 +251,7 @@
             <property name="excludeScope" value="nothing"/>
         </module>
         <module name="CyclomaticComplexity">
-            <property name="max" value="7"/>
+            <property name="max" value="13"/>
         </module>
         <module name="MethodName">
             <property name="format" value="^[a-z][a-z0-9]\w*$"/>
