@@ -27,17 +27,16 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.util.function.BinaryOperator;
 
 /**
  * <p>Handler used to spawn the barrier blocks near a player.</p>
- * <p>This is a scheduled task due some problems when needing to track (precisely) the player movement through events</p>
+ * <p>This is a scheduled task due some factors</p>
  * <ul>
+ *   <li>It doesn't exists an event that notify the plugin when the user permissions changes</li>
  *   <li>Horse movement bugged (When jumping it doesn't call playerMoveEv nor VehicleMovEv)</li>
  *   <li>PlayerMovEv isn't called when riding Llamas or mine-carts (It exists a workaround)</li>
  *   <li>Player when join the server hasn't yet loaded the chunks (It exists a paper-event)</li>
