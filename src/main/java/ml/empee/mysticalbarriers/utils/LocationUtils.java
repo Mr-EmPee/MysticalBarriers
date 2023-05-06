@@ -4,7 +4,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.bukkit.Location;
 import org.bukkit.util.Vector;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,7 +20,11 @@ public final class LocationUtils {
   /**
    * Check if 2 locations represent the same block.
    **/
-  public static boolean isSameBlock(@NotNull Location first, @NotNull Location second) {
+  public static boolean isSameBlock(@Nullable Location first, @Nullable Location second) {
+    if (first == null || second == null) {
+      return false;
+    }
+
     return first.getBlockX() - second.getBlockX() == 0
         && first.getBlockY() - second.getBlockY() == 0
         && first.getBlockZ() - second.getBlockZ() == 0;
