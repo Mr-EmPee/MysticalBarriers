@@ -1,4 +1,5 @@
 import net.minecrell.pluginyml.bukkit.BukkitPluginDescription
+import org.gradle.internal.impldep.bsh.commands.dir
 
 plugins {
   id("org.gradle.java-library")
@@ -55,6 +56,11 @@ dependencies {
 }
 
 tasks {
+  checkstyle {
+    toolVersion = "10.10.0"
+    configFile = file("$projectDir/checkstyle.xml")
+  }
+
   shadowJar {
     isEnableRelocation = false
     relocationPrefix = "$basePackage.relocations"
