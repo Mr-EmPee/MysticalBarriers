@@ -8,7 +8,7 @@ import ml.empee.ioc.RegisteredListener;
 import ml.empee.mysticalbarriers.constants.ItemRegistry;
 import ml.empee.mysticalbarriers.constants.Permissions;
 import ml.empee.mysticalbarriers.utils.Logger;
-import ml.empee.mysticalbarriers.utils.helpers.CuboidSelection;
+import ml.empee.mysticalbarriers.utils.helpers.CuboidRegion;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 public class BarrierSelectionHandler implements Bean, RegisteredListener {
 
-  private final Cache<Player, CuboidSelection> selectionCache = CacheBuilder.newBuilder()
+  private final Cache<Player, CuboidRegion> selectionCache = CacheBuilder.newBuilder()
       .expireAfterAccess(5, TimeUnit.MINUTES)
       .build();
 
@@ -54,19 +54,19 @@ public class BarrierSelectionHandler implements Bean, RegisteredListener {
    * Set a corner of the player selection
    */
   public void selectCorner(Player player, Action action, Location location) {
-    CuboidSelection selection = getSelection(player);
+    CuboidRegion selection = getSelection(player);
     if (action.isRightClick()) {
-      selection.setStart(location);
+      selection.setFirstCorner(location);
       Logger.log(player, "&7Selected first corner");
     } else {
-      selection.setEnd(location);
+      selection.setSecondCorner(location);
       Logger.log(player, "&7Selected second corner");
     }
   }
 
   @SneakyThrows
-  public CuboidSelection getSelection(Player player) {
-    return selectionCache.get(player, CuboidSelection::empty);
+  public CuboidRegion getSelection(Player player) {
+    return selectionCache.get(player, CuboidRegion::empty);
   }
 
 }

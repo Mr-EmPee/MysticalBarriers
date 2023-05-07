@@ -5,15 +5,14 @@ import lombok.Setter;
 import ml.empee.mysticalbarriers.constants.Permissions;
 import ml.empee.mysticalbarriers.model.content.MultiBlockPacket;
 import ml.empee.mysticalbarriers.utils.LocationUtils;
+import ml.empee.mysticalbarriers.utils.helpers.CuboidRegion;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permissible;
-import org.bukkit.util.Vector;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,8 +30,9 @@ public class Barrier {
   @Getter
   @Setter
   private String id;
-  private Location lowestCorner;
-  private Location greatestCorner;
+
+  @Getter @Setter
+  private CuboidRegion region;
 
   @Getter
   @Setter
@@ -68,10 +68,10 @@ public class Barrier {
 
     String firstCorner = get(map, "first_corner", String.class);
     String secondCorner = get(map, "second_corner", String.class);
-    barrier.setCorners(
+    barrier.setRegion(CuboidRegion.of(
         parseLocation(firstCorner),
         parseLocation(secondCorner)
-    );
+    ));
 
     return barrier;
   }
@@ -82,8 +82,8 @@ public class Barrier {
   public Map<String, Object> toMap() {
     HashMap<String, Object> properties = new HashMap<>();
     properties.put("id", id);
-    properties.put("first_corner", parseLocation(lowestCorner));
-    properties.put("second_corner", parseLocation(greatestCorner));
+    properties.put("first_corner", parseLocation(region.getLowestCorner()));
+    properties.put("second_corner", parseLocation(region.getGreatestCorner()));
     properties.put("block_data", blockData.getAsString());
     properties.put("activation_range", activationRange);
     properties.put("version", 2);
@@ -91,63 +91,12 @@ public class Barrier {
     return properties;
   }
 
-  public void setCorners(Location firstCorner, Location secondCorner) {
-    this.lowestCorner = Vector.getMinimum(
-        firstCorner.toVector(), secondCorner.toVector()
-    ).toLocation(firstCorner.getWorld());
-
-    this.greatestCorner = Vector.getMaximum(
-        firstCorner.toVector(), secondCorner.toVector()
-    ).toLocation(firstCorner.getWorld());
-  }
-
-  public World getWorld() {
-    return lowestCorner.getWorld();
-  }
-
-  public Location getLowestCorner() {
-    return lowestCorner.clone();
-  }
-
-  public Location getGreatestCorner() {
-    return greatestCorner.clone();
-  }
-
   public boolean isNear(Location location) {
-    return isNear(location, activationRange);
-  }
-
-  private boolean isNear(Location location, int range) {
-    if (!getWorld().equals(location.getWorld())) {
-      return false;
-    }
-
-    int x = location.getBlockX();
-    int y = location.getBlockY();
-    int z = location.getBlockZ();
-
-    boolean isWithinFirstCornerX = lowestCorner.getBlockX() - range <= x;
-    boolean isWithinFirstCornerY = lowestCorner.getBlockY() - range <= y;
-    boolean isWithinFirstCornerZ = lowestCorner.getBlockZ() - range <= z;
-
-    boolean isWithinSecondCornerX = greatestCorner.getBlockX() + range >= x;
-    boolean isWithinSecondCornerY = greatestCorner.getBlockY() + range >= y;
-    boolean isWithinSecondCornerZ = greatestCorner.getBlockZ() + range >= z;
-
-    return isWithinSecondCornerX
-        && isWithinFirstCornerX
-        && isWithinFirstCornerY
-        && isWithinSecondCornerY
-        && isWithinFirstCornerZ
-        && isWithinSecondCornerZ;
-  }
-
-  public boolean isBarrierAt(Location location) {
-    return isNear(location, 0);
+    return region.isNear(location, activationRange);
   }
 
   public boolean isBarrierBlock(Block block) {
-    if (!isBarrierAt(block.getLocation())) {
+    if (!region.isRegionAt(block.getLocation())) {
       return false;
     }
 
@@ -158,7 +107,7 @@ public class Barrier {
    * Show the barrier to all the players within range
    */
   public void showBarrier() {
-    for (Player player : getWorld().getPlayers()) {
+    for (Player player : region.getWorld().getPlayers()) {
       if (isVisibleFor(player)) {
         showBarrier(player, player.getLocation());
       }
@@ -198,7 +147,7 @@ public class Barrier {
    * Hide the barrier to all the players
    */
   public void hideBarrier() {
-    for (Player player : getWorld().getPlayers()) {
+    for (Player player : region.getWorld().getPlayers()) {
       if (isVisibleFor(player)) {
         hideBarrier(player, player.getLocation());
       }

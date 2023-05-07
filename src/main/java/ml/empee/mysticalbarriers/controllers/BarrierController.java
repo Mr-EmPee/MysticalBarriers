@@ -14,7 +14,7 @@ import ml.empee.mysticalbarriers.handlers.BarrierSelectionHandler;
 import ml.empee.mysticalbarriers.model.entities.Barrier;
 import ml.empee.mysticalbarriers.services.BarrierService;
 import ml.empee.mysticalbarriers.utils.Logger;
-import ml.empee.mysticalbarriers.utils.helpers.CuboidSelection;
+import ml.empee.mysticalbarriers.utils.helpers.CuboidRegion;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -49,14 +49,14 @@ public class BarrierController implements Bean {
       return;
     }
 
-    CuboidSelection selection = selectionHandler.getSelection(sender);
+    CuboidRegion selection = selectionHandler.getSelection(sender);
     if (!selection.isValid()) {
       Logger.log(sender, "&cYou need to make a selection!");
       return;
     }
 
     Barrier barrier = new Barrier(name);
-    barrier.setCorners(selection.getStart(), selection.getEnd());
+    barrier.setRegion(selection.clone());
     selection.invalidate();
 
     barrierService.save(barrier);
