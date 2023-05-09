@@ -47,6 +47,7 @@ public class BarrierSelectionHandler implements Bean, RegisteredListener {
       return;
     }
 
+    event.setCancelled(true);
     selectCorner(event.getPlayer(), event.getAction(), event.getClickedBlock().getLocation());
   }
 
