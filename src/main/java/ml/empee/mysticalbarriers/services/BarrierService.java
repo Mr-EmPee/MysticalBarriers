@@ -30,7 +30,7 @@ public class BarrierService implements Bean {
     barrier.hideBarrier();
   }
 
-  public Set<Barrier> findAll() {
+  public List<Barrier> findAll() {
     return repository.findAll();
   }
 

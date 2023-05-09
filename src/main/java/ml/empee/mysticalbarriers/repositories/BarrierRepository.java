@@ -14,6 +14,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -31,7 +32,7 @@ public class BarrierRepository implements Bean {
   private static final int LATEST_VERSION = 2;
   private final JsonPersistence repo;
   private final JavaPlugin plugin;
-  private Set<Barrier> barriers;
+  private List<Barrier> barriers;
 
   public BarrierRepository(JavaPlugin plugin) {
     this.repo = new JsonPersistence(new File(plugin.getDataFolder(), "barriers.json"));
@@ -110,13 +111,16 @@ public class BarrierRepository implements Bean {
   public void loadBarriers() {
     barriers = repo.deserializeList(Map[].class).stream()
         .map(Barrier::fromMap)
-        .collect(Collectors.toCollection(HashSet::new));
+        .collect(Collectors.toCollection(ArrayList::new));
 
     Logger.info("Loaded " + barriers.size() + " barriers");
   }
 
   public void save(Barrier barrier) {
-    barriers.add(barrier);
+    if (!barriers.contains(barrier)) {
+      barriers.add(barrier);
+    }
+
     saveAsync();
   }
 
@@ -125,8 +129,8 @@ public class BarrierRepository implements Bean {
     saveAsync();
   }
 
-  public Set<Barrier> findAll() {
-    return Collections.unmodifiableSet(barriers);
+  public List<Barrier> findAll() {
+    return Collections.unmodifiableList(barriers);
   }
 
   private void saveAsync() {
