@@ -1,0 +1,7 @@
+common.buttons:
+  previous-page:
+    title: "&ePrevious page"
+    lore: "&7Click to go to the previous page"
+  next-page:
+    title: "&eNext page"
+    lore: "&7Click to go to the next page"

@@ -1,68 +1,43 @@
-import net.minecrell.pluginyml.bukkit.BukkitPluginDescription
+import net.minecrell.pluginyml.bukkit.BukkitPluginDescription.PluginLoadOrder
 
 plugins {
-  id("org.gradle.java-library")
-  id("org.gradle.checkstyle")
+  id("template.java-conventions")
 
-  id("io.freefair.lombok") version "6.6.3"
-  id("com.github.johnrengelman.shadow") version "8.1.0"
-
-  id("io.papermc.paperweight.userdev") version "1.5.2"
+  id("com.github.johnrengelman.shadow") version "8.1.1"
   id("xyz.jpenilla.run-paper") version "2.0.1"
+  id("io.freefair.lombok") version "8.4"
   id("net.minecrell.plugin-yml.bukkit") version "0.5.3"
 }
 
-group = "ml.empee"
-version = "1.8.2"
-var basePackage = "ml.empee.mysticalbarriers"
-
-bukkit {
-  load = BukkitPluginDescription.PluginLoadOrder.POSTWORLD
-  main = "${basePackage}.MysticalBarriersPlugin"
-  apiVersion = "1.13"
-  depend = listOf("ProtocolLib")
-  softDepend = listOf("Multiverse-Core", "MultiWorld", "LuckPerms")
-  authors = listOf("Mr. EmPee")
-}
-
-repositories {
-  maven("https://repo.dmulloy2.net/repository/public/")
-  maven("https://jitpack.io")
-}
+group = "net.jarcloud.template"
+version = findProperty("tag") ?: "0.0.1-SNAPSHOT"
 
 dependencies {
-  paperweight.paperDevBundle("1.19.3-R0.1-SNAPSHOT")
-  compileOnly("com.comphenix.protocol:ProtocolLib:4.8.0")
-
-  implementation("com.github.Mr-EmPee:SimpleIoC:1.7.1")
-  implementation("com.github.Mr-EmPee:ImperialEdicta:1.0.0")
-  implementation("com.github.Mr-EmPee:SimpleLectorem:1.0.0")
-  implementation("com.github.Mr-EmPee:SimpleHeraut:1.0.1")
-  implementation("com.github.Mr-EmPee:ItemBuilder:1.0.0")
-  implementation("io.github.rysefoxx.inventory:RyseInventory-Plugin:1.5.7")
+  implementation(project(":plugin:core"))
 }
 
-tasks {
-  shadowJar {
-    isEnableRelocation = false
-    relocationPrefix = "$basePackage.relocations"
-  }
+bukkit {
+  val bootstrap = "plugin.MysticalBarriers"
+  main = if (isRelease()) "$group.$bootstrap" else bootstrap
 
-  javadoc {
-    options.encoding = Charsets.UTF_8.name()
-  }
-
-  processResources {
-    filteringCharset = Charsets.UTF_8.name()
-  }
-
-  compileJava {
-    options.encoding = Charsets.UTF_8.name()
-    options.release.set(17)
-  }
+  softDepend = listOf("Multiverse-Core", "MultiWorld", "LuckPerms")
+  depend = listOf("ProtocolLib")
+  load = PluginLoadOrder.POSTWORLD
+  apiVersion = "1.20"
 }
 
-java {
-  // Configure the java toolchain. This allows gradle to auto-provision JDK 17 on systems that only have JDK 8 installed for example.
-  toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+tasks.runServer {
+  runDirectory.set(file(".run"))
+  minecraftVersion("1.20.1")
 }
+
+tasks.shadowJar {
+  isEnableRelocation = isRelease()
+  relocationPrefix = project.group.toString()
+}
+
+fun isRelease(): Boolean {
+  return !project.version.toString().endsWith("-SNAPSHOT")
+}
+
+java.toolchain.languageVersion.set(JavaLanguageVersion.of(17))

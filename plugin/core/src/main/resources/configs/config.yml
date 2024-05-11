@@ -1,0 +1,13 @@
+lang: "en"
+
+messages:
+  prefix: "&f&l(&6&l!&f&l) &r"
+
+# Prevent chorus fruit teleportation within 8 blocks of a barrier
+block-chorus-teleportation: true
+
+# Prevent entities from getting through barriers
+block-movement:
+  projectiles:
+    enabled: true
+    only-from-player: false # Enabled only for projectiles shot by a player
