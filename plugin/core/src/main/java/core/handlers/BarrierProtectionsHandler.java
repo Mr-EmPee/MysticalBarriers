@@ -39,9 +39,6 @@ public class BarrierProtectionsHandler extends PacketAdapter implements Listener
     }
 
     event.setCancelled(true);
-    Bukkit.getScheduler().runTask(plugin, () -> {
-      player.sendBlockChange(block.getLocation(), barrier.getMaterial());
-    });
   }
 
   @EventHandler
@@ -54,9 +51,6 @@ public class BarrierProtectionsHandler extends PacketAdapter implements Listener
     }
 
     event.setCancelled(true);
-    Bukkit.getScheduler().runTask(plugin, () -> {
-      player.sendBlockChange(block.getLocation(), barrier.getMaterial());
-    });
   }
 
   @Override
