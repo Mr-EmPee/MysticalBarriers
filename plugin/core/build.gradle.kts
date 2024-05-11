@@ -8,17 +8,20 @@ dependencies {
     compileOnly("com.mojang:brigadier:1.0.18")
     compileOnly("com.comphenix.protocol:ProtocolLib:4.8.0")
 
-    implementation(project(":plugin:nms"))
     implementation(project(":plugin:utils"))
 
-    implementation("io.github.mr-empee:lightwire:0.0.1-SNAPSHOT")
-    implementation("io.github.mr-empee:colonel:0.0.3-SNAPSHOT")
-    implementation("io.github.mr-empee:easy-gui:0.0.1-SNAPSHOT")
-    implementation("io.github.mr-empee:item-builder:0.0.1-SNAPSHOT")
+    implementation("io.github.mr-empee:lightwire:0.0.1")
+    implementation("io.github.mr-empee:colonel:0.0.3")
+    implementation("io.github.mr-empee:easy-gui:0.0.1")
+    implementation("io.github.mr-empee:item-builder:0.0.1")
 
-    implementation(platform("org.dizitart:nitrite-bom:4.2.2"))
-    implementation("org.dizitart:nitrite-mvstore-adapter")
-    implementation("org.dizitart:nitrite")
+    implementation("org.dizitart:nitrite-mvstore-adapter:4.2.2") {
+        exclude("org.slf4j", "slf4j-api")
+    }
+    
+    implementation("org.dizitart:nitrite:4.2.2") {
+        exclude("org.slf4j", "slf4j-api")
+    }
 
     implementation("com.github.cryptomorin:XSeries:9.7.0")
 }

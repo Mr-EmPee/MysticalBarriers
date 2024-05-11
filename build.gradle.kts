@@ -3,21 +3,21 @@ import net.minecrell.pluginyml.bukkit.BukkitPluginDescription.PluginLoadOrder
 plugins {
   id("template.java-conventions")
 
-  id("com.github.johnrengelman.shadow") version "8.1.1"
-  id("xyz.jpenilla.run-paper") version "2.0.1"
+  id("io.github.goooler.shadow") version "8.1.7"
+  id("xyz.jpenilla.run-paper") version "2.3.0"
   id("io.freefair.lombok") version "8.4"
-  id("net.minecrell.plugin-yml.bukkit") version "0.5.3"
+  id("net.minecrell.plugin-yml.bukkit") version "0.6.0"
 }
 
-group = "net.jarcloud.template"
-version = findProperty("tag") ?: "0.0.1-SNAPSHOT"
+group = "io.github.mr-empee.mysticalbarriers"
+version = findProperty("tag") ?: "2.0.1-SNAPSHOT"
 
 dependencies {
   implementation(project(":plugin:core"))
 }
 
 bukkit {
-  val bootstrap = "plugin.MysticalBarriers"
+  val bootstrap = "core.MysticalBarriers"
   main = if (isRelease()) "$group.$bootstrap" else bootstrap
 
   softDepend = listOf("Multiverse-Core", "MultiWorld", "LuckPerms")
@@ -27,7 +27,6 @@ bukkit {
 }
 
 tasks.runServer {
-  runDirectory.set(file(".run"))
   minecraftVersion("1.20.1")
 }
 
