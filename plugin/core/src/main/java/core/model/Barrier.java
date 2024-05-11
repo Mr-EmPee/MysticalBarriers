@@ -1,5 +1,6 @@
 package core.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,19 +11,34 @@ import org.dizitart.no2.repository.annotations.Id;
 import org.jetbrains.annotations.Nullable;
 import utils.regions.CubicRegion;
 
+import java.util.List;
+
 @Builder
 @Getter @Setter
 public class Barrier {
+
+  public static final Material MASK_BLOCK = Material.BEDROCK;
+  public static final BlockData DEFAULT_BLOCK = Material.AIR.createBlockData();
 
   @Id
   private String id;
   private CubicRegion region;
 
-  @Builder.Default
-  private BlockData material = Material.BARRIER.createBlockData();
+  private List<Block> barrierBlocks;
 
   @Builder.Default
   private int activationRange = 3;
+
+  @Nullable
+  public BlockData getBlockAt(Location location) {
+    for (Block block : barrierBlocks) {
+      if (location.equals(block.getLocation())) {
+        return block.getData();
+      }
+    }
+
+    return null;
+  }
 
   public boolean isWithin(Location location) {
     if (!region.getWorld().equals(location.getWorld())) {
@@ -41,7 +57,7 @@ public class Barrier {
   }
 
   @Nullable
-  public CubicRegion findVisibleRegion(CubicRegion perimeter) {
+  public CubicRegion findIntersection(CubicRegion perimeter) {
     var barrierMin = getRegion().getMin();
     var barrierMax = getRegion().getMax();
 
@@ -64,6 +80,13 @@ public class Barrier {
         new Location(getRegion().getWorld(), minX, minY, minZ),
         new Location(getRegion().getWorld(), maxX, maxY, maxZ)
     );
+  }
+
+  @Getter @Setter
+  @AllArgsConstructor(staticName = "of")
+  public static class Block {
+    private Location location;
+    private BlockData data;
   }
 
 }

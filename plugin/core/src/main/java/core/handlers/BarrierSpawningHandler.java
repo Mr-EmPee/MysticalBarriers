@@ -49,7 +49,37 @@ public class BarrierSpawningHandler implements Listener {
   //TODO Async
   //TODO Despawn only out of range and spawn only new blocks
   private void refreshBarriers(Location loc, Player player) {
+    despawnBarriersNear(loc, player);
+    spawnBarriersNear(loc, player);
+  }
+
+  private void spawnBarriersNear(Location loc, Player player) {
     var newVisibleRegions = findRegionsWithinVisibleRange(loc);
+    newVisibleRegions.forEach((barrier, region) -> {
+      if (barriersService.isHidden(barrier, player)) {
+        return;
+      }
+
+      var packet = new MultiBlockPacket(loc, true);
+      region.forEach(l -> {
+        var serverBlock = l.getBlock();
+        if (serverBlock.isEmpty()) {
+          var barrierBlock = barrier.getBlockAt(l);
+          if (barrierBlock == null) {
+            return;
+          }
+
+          packet.addBlock(barrierBlock, l);
+        }
+      });
+
+      packet.send(player);
+    });
+
+    spawnedBarriers.put(player.getUniqueId(), newVisibleRegions);
+  }
+
+  private void despawnBarriersNear(Location loc, Player player) {
     var lastVisibleRegions = spawnedBarriers.getOrDefault(player.getUniqueId(), new HashMap<>());
 
     lastVisibleRegions.forEach((barrier, region) -> {
@@ -61,30 +91,13 @@ public class BarrierSpawningHandler implements Listener {
       });
       packet.send(player);
     });
-
-    newVisibleRegions.forEach((barrier, region) -> {
-      if (barriersService.isHidden(barrier, player)) {
-        return;
-      }
-
-      var packet = new MultiBlockPacket(loc, true);
-      region.forEach(l -> {
-        if (l.getBlock().isEmpty()) {
-          packet.addBlock(barrier.getMaterial(), l);
-        }
-      });
-
-      packet.send(player);
-    });
-
-    spawnedBarriers.put(player.getUniqueId(), newVisibleRegions);
   }
 
   private Map<Barrier, CubicRegion> findRegionsWithinVisibleRange(Location newLoc) {
     var visibleRegions = new HashMap<Barrier, CubicRegion>();
 
     for (Barrier barrier : barriersService.findAll()) {
-      var visibleRegion = barrier.findVisibleRegion(CubicRegion.of(newLoc, barrier.getActivationRange()));
+      var visibleRegion = barrier.findIntersection(CubicRegion.of(newLoc, barrier.getActivationRange()));
       if (visibleRegion != null) {
         visibleRegions.put(barrier, visibleRegion);
       }

@@ -17,7 +17,11 @@ public class BarriersRepository {
   }
 
   public void save(Barrier barrier) {
-    repository.update(barrier, true);
+    repository.insert(barrier);
+  }
+
+  public void update(Barrier barrier) {
+    repository.update(barrier);
   }
 
   public List<Barrier> findAll() {

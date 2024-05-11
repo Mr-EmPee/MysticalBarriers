@@ -86,7 +86,7 @@ public class BarrierEntitiesActionHandler extends BukkitRunnable implements List
     var movementBox = CubicRegion.of(start, start.clone().add(velocity));
 
     for (Barrier barrier : barriersService.findAll()) {
-      if (barrier.findVisibleRegion(movementBox) != null) {
+      if (barrier.findIntersection(movementBox) != null) {
         return true;
       }
     }

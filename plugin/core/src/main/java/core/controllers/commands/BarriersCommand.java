@@ -65,12 +65,7 @@ public class BarriersCommand extends BrigadierCommand<CommandSender> {
             return;
           }
 
-          var barrier = Barrier.builder()
-              .id(id)
-              .region(selection)
-              .build();
-
-          barriersService.save(barrier);
+          barriersService.createBarrier(id, selection);
           selectionWand.invalidate(player.getUniqueId());
 
           Messenger.log(player, "&aBarrier created");
