@@ -16,7 +16,7 @@ public class SchedulersConfig {
       scheduler.runTaskTimer(plugin, 0, 1);
     }
 
-    Messenger.log("Scheduler registered {}", schedulers.size());
+    Messenger.log("Registered {} schedulers", schedulers.size());
   }
 
 }
