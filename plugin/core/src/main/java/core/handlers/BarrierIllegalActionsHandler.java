@@ -39,7 +39,7 @@ public class BarrierIllegalActionsHandler implements Listener {
     var barriers = new ArrayList<Barrier>();
 
     for (Barrier barrier : barriersService.findAll()) {
-      var visibleRegion = barrier.findVisibleRegion(CubicRegion.of(center, range));
+      var visibleRegion = barrier.findIntersection(CubicRegion.of(center, range));
       if (visibleRegion != null) {
         barriers.add(barrier);
       }

@@ -4,11 +4,11 @@ import io.github.empee.easygui.guis.inventories.ChestGUI;
 import io.github.empee.easygui.model.inventories.Item;
 import io.github.empee.itembuilder.StackBuilder;
 import io.github.empee.lightwire.annotations.LightWired;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import core.controllers.guis.commons.IntPickerGUI;
-import core.items.BarrierBlockSelectorWand;
 import core.model.Barrier;
 import core.services.BarriersService;
 import utils.Messenger;
@@ -21,23 +21,22 @@ import java.util.function.Consumer;
 public class BarrierEditGUI extends PluginGUI {
 
   private final BarriersService barriersService;
-  private final BarrierBlockSelectorWand blockSelectorWand;
 
   public void open(Player player, Barrier barrier) {
     new Menu(player, barrier).open();
   }
 
-  @RequiredArgsConstructor
+  @AllArgsConstructor
   private class Menu {
 
     private final Player player;
-    private final Barrier barrier;
+    private Barrier barrier;
 
     public void open() {
       var gui = ChestGUI.of(3);
       gui.title("Editing: " + barrier.getId());
 
-      gui.inserts(changeMaterial().slot(1, 1));
+      gui.inserts(updateWall().slot(1, 1));
       gui.inserts(changeActivationRange().slot(1, 4));
       gui.inserts(delete().slot(1, 7));
 
@@ -55,8 +54,7 @@ public class BarrierEditGUI extends PluginGUI {
           return;
         }
 
-        barrier.setActivationRange(value);
-        barriersService.save(barrier);
+        barrier = barriersService.updateBarrierRange(barrier.getId(), value);
 
         Messenger.log(player, "&aThe barrier activation range has been changed");
       };
@@ -66,16 +64,17 @@ public class BarrierEditGUI extends PluginGUI {
       );
     }
 
-    private Item changeMaterial() {
-      var item = new StackBuilder(Material.GRASS_BLOCK)
-          .withName(TextUtils.colorize("&eChange barrier material"))
-          .withLore(TextUtils.colorize("&7Current: &e" + barrier.getMaterial().getMaterial()))
+    private Item updateWall() {
+      var item = new StackBuilder(Material.SCAFFOLDING)
+          .withName(TextUtils.colorize("&eSave barrier wall"))
           .toItemStack();
 
       return Item.of(item).clickHandler(e -> {
         player.closeInventory();
-        player.getInventory().addItem(blockSelectorWand.get(barrier));
-        Messenger.log(player, "&aUse the given wand to select a block");
+
+        barrier = barriersService.updateBarrierWall(barrier.getId());
+
+        Messenger.log(player, "&aThe barrier wall has been updated");
       });
     }
 
@@ -86,7 +85,10 @@ public class BarrierEditGUI extends PluginGUI {
 
       return Item.of(item).clickHandler(e -> {
         player.closeInventory();
-        barriersService.delete(barrier);
+
+        barriersService.delete(barrier.getId());
+        barrier = null;
+
         Messenger.log(player, "&aThe barrier has been deleted");
       });
     }
