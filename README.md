@@ -10,7 +10,6 @@ A minecraft plugin that allows you to create magic walls visible only to a group
 1. Execute `/mb modify`
 
 ## TODO
-- [ ] Create custom walls, atm you can only have a solid wall of a single material
-- [ ] Create particle walls, atm you can only have block walls
 - [ ] Block living entities from passing through a wall
 - [ ] Block mounts from passing through a wall
+- [ ] Create particle walls, atm you can only have block walls
