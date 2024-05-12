@@ -7,11 +7,10 @@ import org.bukkit.Bukkit;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ServerVersion {
 
-  public static final String VALUE = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
   private static final int[] VERSION;
 
   static {
-    String[] rawVersioning = Bukkit.getBukkitVersion().split("-")[0].split("\\.");
+    String[] rawVersioning = Bukkit.getServer().getBukkitVersion().split("-")[0].split("\\.");
 
     VERSION = new int[rawVersioning.length];
 
