@@ -1,6 +1,10 @@
 package core.controllers.guis;
 
+import core.controllers.guis.commons.IntPickerGUI;
+import core.controllers.guis.themes.global.GlobalTheme;
 import core.items.BarrierBlockSelectorWand;
+import core.model.Barrier;
+import core.services.BarriersService;
 import io.github.empee.easygui.guis.inventories.ChestGUI;
 import io.github.empee.easygui.model.inventories.Item;
 import io.github.empee.itembuilder.StackBuilder;
@@ -9,13 +13,11 @@ import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import core.controllers.guis.commons.IntPickerGUI;
-import core.model.Barrier;
-import core.services.BarriersService;
 import org.bukkit.inventory.ItemStack;
 import utils.Messenger;
 import utils.TextUtils;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -25,6 +27,7 @@ public class BarrierEditGUI extends PluginGUI {
 
   private final BarriersService barriersService;
   private final BarrierBlockSelectorWand barrierBlockSelectorWand;
+  private final GlobalTheme globalTheme;
 
   public void open(Player player, Barrier barrier) {
     new Menu(player, barrier).open();
@@ -39,6 +42,8 @@ public class BarrierEditGUI extends PluginGUI {
 
     public void open() {
       gui.title("Editing: " + barrier.getId());
+
+      gui.inserts(globalTheme.previousGUI(e -> get(BarrierListGUI.class).open(player)).slot(2, 0));
 
       gui.inserts(updateMaterial().slot(1, 1));
       gui.inserts(updateStructure().slot(1, 1));
@@ -66,7 +71,11 @@ public class BarrierEditGUI extends PluginGUI {
       };
 
       return Item.of(item).clickHandler(e ->
-          IntPickerGUI.of(barrier.getActivationRange(), action).open(player)
+          IntPickerGUI.builder()
+              .value(new AtomicInteger(barrier.getActivationRange()))
+              .back(globalTheme.previousGUI(g -> gui.open(player)).slot(2, 0))
+              .action(action)
+              .build().open(player)
       );
     }
 

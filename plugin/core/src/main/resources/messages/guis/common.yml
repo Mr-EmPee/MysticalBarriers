@@ -5,3 +5,6 @@ common.buttons:
   next-page:
     title: "&eNext page"
     lore: "&7Click to go to the next page"
+  previous-gui:
+    title: "&eBack"
+    lore: "&7Click to go to the previous menu"

@@ -4,6 +4,7 @@ import io.github.empee.easygui.guis.inventories.ChestGUI;
 import io.github.empee.easygui.model.inventories.Item;
 import io.github.empee.itembuilder.StackBuilder;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -13,20 +14,21 @@ import utils.TextUtils;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder
 public class IntPickerGUI {
 
   private final ChestGUI gui = ChestGUI.of(3);
 
   private final AtomicInteger value;
   private final Consumer<Integer> action;
-
-  public static IntPickerGUI of(int value, Consumer<Integer> action) {
-    return new IntPickerGUI(new AtomicInteger(value), action);
-  }
+  private Item back;
 
   public void open(Player player) {
     gui.closeHandler(this::onClose);
+
+    if (back != null) {
+      gui.inserts(back);
+    }
 
     gui.inserts(remove().slot(1, 2));
     gui.inserts(value().slot(1, 4));

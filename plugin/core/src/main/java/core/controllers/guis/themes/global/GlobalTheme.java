@@ -2,11 +2,14 @@ package core.controllers.guis.themes.global;
 
 import core.configs.client.resources.MessagesConfig;
 import core.controllers.guis.themes.ITheme;
+import io.github.empee.easygui.guis.inventories.InventoryGUI;
 import io.github.empee.easygui.model.inventories.Item;
 import io.github.empee.easygui.model.inventories.containers.ScrollableContainer;
+import org.bukkit.event.inventory.InventoryClickEvent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public abstract class GlobalTheme extends ITheme {
 
@@ -22,6 +25,8 @@ public abstract class GlobalTheme extends ITheme {
 
     themes.add(this);
   }
+
+  public abstract Item previousGUI(Consumer<InventoryClickEvent> action);
 
   public abstract Item previousPage(ScrollableContainer container);
 
