@@ -73,7 +73,7 @@ public class BarrierEditGUI extends PluginGUI {
     private Item updateStructure() {
       var item = new StackBuilder(Material.SCAFFOLDING)
           .withName(TextUtils.colorize("&eUpdate structure"))
-          .withLore(TextUtils.description(
+          .withLore(TextUtils.centered(
               """
                   &dLeft-Click &7to update the
                   &7barrier structure blocks
@@ -106,7 +106,7 @@ public class BarrierEditGUI extends PluginGUI {
     private Item updateMaterial() {
       Supplier<ItemStack> item = () -> new StackBuilder(barrier.getFillBlock().getMaterial())
           .withName(TextUtils.colorize("&eChange Material"))
-          .withLore(TextUtils.description(
+          .withLore(TextUtils.centered(
               """
                   &dLeft-Click &7to get a wand that is able
                   &7to change the barrier wall material

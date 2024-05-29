@@ -14,8 +14,8 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import utils.TextUtils;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @LightWired
 @RequiredArgsConstructor
@@ -51,9 +51,24 @@ public class BarrierListGUI extends PluginGUI {
     }
 
     private Item barrier(Barrier barrier) {
+      Map<String, Object> placeholders = Map.of(
+          "type", barrier.getStructure() != null ? "Multi Block" : "Single Block",
+          "range", barrier.getActivationRange(),
+          "loc_w", barrier.getRegion().getWorld().getName(),
+          "loc_x", barrier.getRegion().getFirst().getBlockX(),
+          "loc_y", barrier.getRegion().getFirst().getBlockY(),
+          "loc_z", barrier.getRegion().getFirst().getBlockZ()
+      );
+
       var item = new StackBuilder(Material.BOOK)
-          .withName(TextUtils.colorize("&e" + barrier.getId()))
-          .toItemStack();
+          .withName(TextUtils.colorize("&6" + barrier.getId()))
+          .withLore(TextUtils.centered(
+              """
+                  &eBarrier type&7: &b{type}
+                  &eActivation range&7: &b{range}
+                  &eLocation&7: &b{loc_w} &8  &b{loc_x}&8X &b{loc_y}&8Y &b{loc_z}&8Z
+                  """, placeholders
+          )).toItemStack();
 
       return Item.of(item).clickHandler(
           e -> PluginGUI.get(BarrierEditGUI.class).open(player, barrier)

@@ -3,6 +3,9 @@ package utils;
 import lombok.experimental.UtilityClass;
 import org.bukkit.ChatColor;
 
+import java.util.Collections;
+import java.util.Map;
+
 /**
  * Utility class to format minecraft text
  */
@@ -15,8 +18,15 @@ public class TextUtils {
   }
 
   public String[] formatted(String text) {
-    text = colorize(text);
+    return formatted(text, Collections.emptyMap());
+  }
 
+  public String[] formatted(String text, Map<String, Object> placeholders) {
+    for (var placeholder : placeholders.entrySet()) {
+      text = text.replace("{" + placeholder.getKey() + "}", placeholder.getValue().toString());
+    }
+
+    text = colorize(text);
     if (text.endsWith("\n")) {
       text += " ";
     }
@@ -26,7 +36,7 @@ public class TextUtils {
     return text.split("\n");
   }
 
-  public String[] description(String text) {
+  public String[] centered(String text) {
     if (!text.startsWith("\n")) {
       text = "\n" + text;
     }
@@ -36,6 +46,18 @@ public class TextUtils {
     }
 
     return formatted(text);
+  }
+
+  public String[] centered(String text, Map<String, Object> placeholders) {
+    if (!text.startsWith("\n")) {
+      text = "\n" + text;
+    }
+
+    if (!text.endsWith("\n")) {
+      text += "\n";
+    }
+
+    return formatted(text, placeholders);
   }
 
 }
