@@ -1,2 +1,3 @@
 errors:
   internal_error: "&cAn internal error occurred (╯°□°)╯︵ ┻━┻"
+  barrier_not_found: "&cBarrier not found"

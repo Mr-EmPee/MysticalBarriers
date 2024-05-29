@@ -3,6 +3,8 @@ package core.controllers.commands;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import core.controllers.commands.arguments.BarrierArgumentType;
+import core.controllers.guis.BarrierEditGUI;
 import io.github.empee.colonel.BrigadierCommand;
 import io.github.empee.lightwire.annotations.LightWired;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +33,7 @@ public class BarriersCommand extends BrigadierCommand<CommandSender> {
         .then(wand())
         .then(create())
         .then(modify())
+        .then(list())
         .then(reload());
   }
 
@@ -44,7 +47,13 @@ public class BarriersCommand extends BrigadierCommand<CommandSender> {
   }
 
   public ArgumentBuilder<CommandSender, ?> modify() {
-    return node(literal("modify"))
+    return node(literal("edit"), arg("barrier", BarrierArgumentType.barrier(barriersService)))
+        .executes(c -> PluginGUI.get(BarrierEditGUI.class).open(player(c), c.getArgument("barrier", Barrier.class)))
+        .build();
+  }
+
+  public ArgumentBuilder<CommandSender, ?> list() {
+    return node(literal("list"))
         .executes(c -> PluginGUI.get(BarrierListGUI.class).open(player(c)))
         .build();
   }
