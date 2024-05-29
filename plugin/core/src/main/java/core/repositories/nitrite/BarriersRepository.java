@@ -1,9 +1,9 @@
 package core.repositories.nitrite;
 
-import io.github.empee.lightwire.annotations.LightWired;
-import org.dizitart.no2.repository.ObjectRepository;
 import core.configs.server.db.nitrite.NitriteConfig;
 import core.model.Barrier;
+import io.github.empee.lightwire.annotations.LightWired;
+import org.dizitart.no2.repository.ObjectRepository;
 
 import java.util.List;
 

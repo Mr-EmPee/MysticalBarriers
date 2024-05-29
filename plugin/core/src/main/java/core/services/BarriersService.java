@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.Validate;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Player;
 import utils.regions.CubicRegion;
 
@@ -22,51 +22,61 @@ public class BarriersService {
 
   private final BarriersRepository barriersRepository;
 
-  public Barrier updateBarrierRange(String barrierId, int range) {
+  public void updateBarrierRange(Barrier barrier, int range) {
     Validate.isTrue(range > 0);
-
-    var barrier = findById(barrierId).orElseThrow();
 
     barrier.setActivationRange(range);
     barriersRepository.update(barrier);
-
-    return barrier;
   }
 
-  public Barrier updateBarrierWall(String barrierId) {
-    var barrier = findById(barrierId).orElseThrow();
+  public void updateBarrierFillBlock(Barrier barrier, BlockData data) {
+    barrier.setFillBlock(data);
+    barriersRepository.update(barrier);
+  }
 
-    List<Barrier.Block> barrierBlocks = barrier.getBarrierBlocks();
-    for (var barrierBlock : barrierBlocks) {
+  public void removeBarrierStructure(Barrier barrier) {
+    if (barrier.getFillBlock() == null) {
+      barrier.setFillBlock(Barrier.DEFAULT_FILL_BLOCK);
+    }
+
+    barrier.setStructure(null);
+    barriersRepository.update(barrier);
+  }
+
+  public void updateBarrierStructure(Barrier barrier) {
+    List<Barrier.Block> structure = barrier.getStructure();
+    for (var barrierBlock : structure) {
       var newBarrierBlock = barrierBlock.getLocation().getBlock().getBlockData();
       barrierBlock.setData(newBarrierBlock);
     }
 
-    barrier.setBarrierBlocks(barrierBlocks);
+    barrier.setStructure(structure);
     barriersRepository.update(barrier);
 
-    for (var barrierBlock : barrierBlocks) {
+    for (var barrierBlock : structure) {
       barrierBlock.getLocation().getBlock().setType(Material.AIR);
     }
-
-    return barrier;
   }
 
-  public Barrier createBarrier(String id, CubicRegion region) {
+  public void updateBarrierStructureMask(Barrier barrier) {
     List<Barrier.Block> barrierBlocks = new ArrayList<>();
 
-    region.forEach(loc -> {
+    barrier.getRegion().forEach(loc -> {
       var serverBlock = loc.getBlock();
-      if (serverBlock.getType() == Barrier.MASK_BLOCK) {
-        barrierBlocks.add(Barrier.Block.of(loc, Barrier.DEFAULT_BLOCK));
+      if (serverBlock.getType() == Barrier.STRUCTURE_MASK) {
+        barrierBlocks.add(Barrier.Block.of(loc, Barrier.STRUCTURE_DEFAULT_BLOCK));
         serverBlock.setType(Material.AIR);
       }
     });
 
+    barrier.setStructure(barrierBlocks);
+    barriersRepository.update(barrier);
+  }
+
+  public Barrier createBarrier(String id, CubicRegion region) {
     var result = Barrier.builder()
         .id(id)
         .region(region)
-        .barrierBlocks(barrierBlocks)
         .build();
 
     barriersRepository.save(result);

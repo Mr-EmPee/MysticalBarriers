@@ -17,21 +17,28 @@ import java.util.List;
 @Getter @Setter
 public class Barrier {
 
-  public static final Material MASK_BLOCK = Material.BEDROCK;
-  public static final BlockData DEFAULT_BLOCK = Material.AIR.createBlockData();
+  public static final Material STRUCTURE_MASK = Material.BEDROCK;
+  public static final BlockData STRUCTURE_DEFAULT_BLOCK = Material.AIR.createBlockData();
+  public static final BlockData DEFAULT_FILL_BLOCK = Material.BARRIER.createBlockData();
 
   @Id
   private String id;
   private CubicRegion region;
 
-  private List<Block> barrierBlocks;
+  @Builder.Default
+  private BlockData fillBlock = DEFAULT_FILL_BLOCK;
+  private List<Block> structure;
 
   @Builder.Default
   private int activationRange = 3;
 
   @Nullable
   public BlockData getBlockAt(Location location) {
-    for (Block block : barrierBlocks) {
+    if (structure == null) {
+      return fillBlock;
+    }
+
+    for (Block block : structure) {
       if (location.equals(block.getLocation())) {
         return block.getData();
       }
