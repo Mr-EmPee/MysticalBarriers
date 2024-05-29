@@ -46,7 +46,7 @@ public class IntPickerGUI {
 
     return Item.of(item).clickHandler(c -> {
       value.incrementAndGet();
-      gui.updateInventory();
+      gui.update();
     });
   }
 
@@ -57,7 +57,7 @@ public class IntPickerGUI {
 
     return Item.of(item).clickHandler(c -> {
       value.decrementAndGet();
-      gui.updateInventory();
+      gui.update();
     });
   }
 

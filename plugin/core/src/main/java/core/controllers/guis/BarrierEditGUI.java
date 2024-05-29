@@ -90,7 +90,7 @@ public class BarrierEditGUI extends PluginGUI {
           .clickHandler(e -> {
             if (e.isRightClick()) {
               barriersService.removeBarrierStructure(barrier);
-              gui.updateInventory();
+              gui.update();
 
               Messenger.log(player, "&aSwitching the barrier to single block barrier wall");
               return;
@@ -125,7 +125,7 @@ public class BarrierEditGUI extends PluginGUI {
           .clickHandler(e -> {
             if (e.isRightClick()) {
               barriersService.updateBarrierStructureMask(barrier);
-              gui.updateInventory();
+              gui.update();
 
               Messenger.log(player, "&aSwitching the barrier to multi block barrier wall");
               return;

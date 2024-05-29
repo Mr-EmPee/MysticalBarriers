@@ -1,9 +1,9 @@
 package core.controllers.guis.themes.global;
 
-import io.github.empee.easygui.model.inventories.Item;
-import io.github.empee.easygui.model.inventories.containers.PageContainer;
 import core.configs.client.resources.MessagesConfig;
 import core.controllers.guis.themes.ITheme;
+import io.github.empee.easygui.model.inventories.Item;
+import io.github.empee.easygui.model.inventories.containers.ScrollableContainer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,8 +23,8 @@ public abstract class GlobalTheme extends ITheme {
     themes.add(this);
   }
 
-  public abstract Item previousPage(PageContainer page);
+  public abstract Item previousPage(ScrollableContainer container);
 
-  public abstract Item nextPage(PageContainer page);
+  public abstract Item nextPage(ScrollableContainer container);
 
 }

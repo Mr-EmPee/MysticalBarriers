@@ -1,10 +1,10 @@
 package core.controllers.guis.themes.global;
 
 import com.cryptomorin.xseries.XMaterial;
-import io.github.empee.easygui.model.inventories.Item;
-import io.github.empee.easygui.model.inventories.containers.PageContainer;
-import io.github.empee.lightwire.annotations.LightWired;
 import core.configs.client.resources.MessagesConfig;
+import io.github.empee.easygui.model.inventories.Item;
+import io.github.empee.easygui.model.inventories.containers.ScrollableContainer;
+import io.github.empee.lightwire.annotations.LightWired;
 
 @LightWired
 public class DefaultGlobalTheme extends GlobalTheme {
@@ -14,27 +14,21 @@ public class DefaultGlobalTheme extends GlobalTheme {
   }
 
   @Override
-  public Item previousPage(PageContainer page) {
+  public Item previousPage(ScrollableContainer container) {
     var item = parse(XMaterial.ARROW, "common.buttons.previous-page");
 
     return Item.of(item)
-        .visibility(page::hasPrevious)
-        .clickHandler(c -> {
-          page.previous();
-          page.update();
-        });
+        .priority(() -> container.hasPrevious() ? 1 : -1)
+        .clickHandler(c -> container.previous());
   }
 
   @Override
-  public Item nextPage(PageContainer page) {
+  public Item nextPage(ScrollableContainer container) {
     var item = parse(XMaterial.ARROW, "common.buttons.next-page");
 
     return Item.of(item)
-        .visibility(page::hasNext)
-        .clickHandler(c -> {
-          page.previous();
-          page.update();
-        });
+        .priority(() -> container.hasNext() ? 1 : -1)
+        .clickHandler(c -> container.next());
   }
 
   @Override
