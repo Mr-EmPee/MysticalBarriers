@@ -10,7 +10,6 @@ dependencyResolutionManagement {
 
   repositories {
     mavenCentral()
-    mavenLocal()
 
     maven("https://repo.dmulloy2.net/repository/public/")
     maven("https://repo.papermc.io/repository/maven-public/")
