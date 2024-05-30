@@ -1,11 +1,13 @@
 package core.handlers;
 
+import core.configs.client.resources.PluginConfig;
 import io.github.empee.lightwire.annotations.LightWired;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -27,14 +29,25 @@ public class BarrierEntitiesActionHandler extends BukkitRunnable implements List
   private final List<Entity> trackedEntities = new ArrayList<>();
 
   private final BarriersService barriersService;
+  private final PluginConfig pluginConfig;
 
   @EventHandler
   public void onProjectileLaunch(ProjectileLaunchEvent event) {
+    if (!pluginConfig.blockProjectiles()) return;
+    if (pluginConfig.blockProjectilesOnlyFromPlayers()) {
+      if (!(event.getEntity().getShooter() instanceof Player)) return;
+    }
+
     trackedEntities.add(event.getEntity());
   }
 
   @EventHandler
   public void onItemDrop(ItemSpawnEvent event) {
+    if (!pluginConfig.blockItems()) return;
+    if (pluginConfig.blockItemsOnlyFromPlayers()) {
+      if (event.getEntity().getOwner() == null) return;
+    }
+
     trackedEntities.add(event.getEntity());
   }
 
