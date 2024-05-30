@@ -50,7 +50,7 @@ public class MessagesConfig implements IReloadable {
   private void loadMessages() {
     var shouldReplaceExistingMessage = plugin.isDevelop();
     var messages = findDefaultMessages().stream()
-        .map(path -> new ResourceConfig(plugin, path, shouldReplaceExistingMessage))
+        .map(path -> new ResourceConfig(plugin, path, shouldReplaceExistingMessage, 2))
         .toList();
 
     for (ResourceConfig message : messages) {

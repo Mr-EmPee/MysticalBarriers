@@ -1,3 +1,5 @@
+version: 2
+
 common.buttons:
   previous-page:
     title: "&ePrevious page"

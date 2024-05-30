@@ -13,7 +13,7 @@ import utils.files.ResourceConfig;
 public class PluginConfig extends ResourceConfig {
 
   public PluginConfig(MysticalBarriers plugin) {
-    super(plugin, "configs/config.yml", plugin.isDevelop());
+    super(plugin, "configs/config.yml", plugin.isDevelop(), 1);
 
     Messenger.setPrefix(getPrefix());
   }
