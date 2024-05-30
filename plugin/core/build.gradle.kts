@@ -10,7 +10,7 @@ dependencies {
 
     implementation(project(":plugin:utils"))
 
-    implementation("io.github.mr-empee:lightwire:0.0.1")
+    implementation("io.github.mr-empee:lightwire:0.0.2")
     implementation("io.github.mr-empee:colonel:0.0.3")
     implementation("io.github.mr-empee:easy-gui:0.0.2")
     implementation("io.github.mr-empee:item-builder:0.0.1")
