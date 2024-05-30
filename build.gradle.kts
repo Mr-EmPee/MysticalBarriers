@@ -10,7 +10,7 @@ plugins {
 }
 
 group = "io.github.mr-empee.mysticalbarriers"
-version = findProperty("tag") ?: "2.2.0-SNAPSHOT"
+version = findProperty("tag") ?: "2.2.1-SNAPSHOT"
 
 dependencies {
   implementation(project(":plugin:core"))
