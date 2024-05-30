@@ -26,3 +26,16 @@ from there you can:
 - Modify the barrier material/structure
 - Modify the barrier visibility range
 - Delete the barrier
+
+## Structure barrier wall
+
+By default the barrier is composed only by 1 type of block, but it's possible to make it uses
+your own build instead.
+
+- Create a barrier / If you already have a barrier ignore this step
+- Inside the barrier area **place bedrock** blocks to refine the selection (This allows you to create more complex barrier region)
+- Go into the editing GUI of the barrier and **right-click** on "Change Material"
+- If the bedrock disappears it means that you successfully refined the barrier area
+- Build the barrier structure inside the newly refined area (Were you placed the bedrock blocks)
+- Go into the editing GUI of the barrier and **left-click** on "Update structure"
+- If the structure disappears it means that you have updated the barrier.
