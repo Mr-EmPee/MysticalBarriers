@@ -2,6 +2,7 @@ package core.items;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import core.registries.Permissions;
 import io.github.empee.itembuilder.StackBuilder;
 import io.github.empee.lightwire.annotations.LightWired;
 import lombok.SneakyThrows;
@@ -14,20 +15,19 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
-import core.registries.Permissions;
 import utils.Messenger;
 import utils.TextUtils;
 import utils.regions.CubicRegion;
 
-import java.time.Duration;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @LightWired
 public class RegionSelectorWand extends PluginItem implements Listener {
 
   private final Cache<UUID, CubicRegion> selections = CacheBuilder.newBuilder()
-      .expireAfterWrite(Duration.ofMinutes(5))
+      .expireAfterWrite(5, TimeUnit.MINUTES)
       .build();
 
   public RegionSelectorWand(JavaPlugin plugin) {
@@ -44,7 +44,7 @@ public class RegionSelectorWand extends PluginItem implements Listener {
       return;
     }
 
-    if (!event.getAction().isRightClick()) {
+    if (!event.getAction().name().contains("RIGHT")) {
       return;
     }
 

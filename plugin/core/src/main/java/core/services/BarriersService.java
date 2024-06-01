@@ -5,7 +5,6 @@ import core.registries.Permissions;
 import core.repositories.nitrite.BarriersRepository;
 import io.github.empee.lightwire.annotations.LightWired;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.Validate;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.data.BlockData;
@@ -23,7 +22,7 @@ public class BarriersService {
   private final BarriersRepository barriersRepository;
 
   public void updateBarrierRange(Barrier barrier, int range) {
-    Validate.isTrue(range > 0);
+    if (range <= 0) throw new IllegalArgumentException("Range must be greater then 0");
 
     barrier.setActivationRange(range);
     barriersRepository.update(barrier);

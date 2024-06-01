@@ -1,0 +1,7 @@
+version: 2
+
+barriers.selector:
+  entry.description: |
+    &eBarrier type&7: &b{type}
+    &eActivation range&7: &b{range}
+    &eLocation&7: &b{loc_w} &8  &b{loc_x}&8X &b{loc_y}&8Y &b{loc_z}&8Z

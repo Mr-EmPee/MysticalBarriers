@@ -10,7 +10,7 @@ plugins {
 }
 
 group = "io.github.mr-empee.mysticalbarriers"
-version = findProperty("tag") ?: "2.2.1-SNAPSHOT"
+version = findProperty("tag") ?: "2.2.2-SNAPSHOT"
 
 dependencies {
   implementation(project(":plugin:core"))
@@ -23,11 +23,11 @@ bukkit {
   softDepend = listOf("Multiverse-Core", "MultiWorld", "LuckPerms")
   depend = listOf("ProtocolLib")
   load = PluginLoadOrder.POSTWORLD
-  apiVersion = "1.20"
+  apiVersion = "1.16"
 }
 
 tasks.runServer {
-  minecraftVersion("1.20.1")
+  minecraftVersion("1.16.5")
 }
 
 tasks.shadowJar {
@@ -39,4 +39,4 @@ fun isRelease(): Boolean {
   return !project.version.toString().endsWith("-SNAPSHOT")
 }
 
-java.toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+java.toolchain.languageVersion.set(JavaLanguageVersion.of(11))

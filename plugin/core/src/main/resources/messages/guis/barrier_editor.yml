@@ -1,0 +1,19 @@
+version: 2
+
+barriers.editor:
+  update-structure.description: |
+    &dLeft-Click &7to update the
+    &7barrier structure blocks
+
+    &dRight-Click &7to switch to
+    &7single block barrier wall
+
+    &4&l!&c Switching will reset the current mask
+  update-material.description: |
+    &dLeft-Click &7to update the
+    &7barrier structure blocks
+
+    &dRight-Click &7to switch to
+    &7single block barrier wall
+
+    &4&l!&c Switching will reset the current mask

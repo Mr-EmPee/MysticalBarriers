@@ -39,7 +39,7 @@ public class BarrierBlockSelectorWand extends PluginItem implements Listener {
 
   @EventHandler
   public void onClick(PlayerInteractEvent event) {
-    if (!event.getAction().isRightClick()) {
+    if (!event.getAction().name().contains("RIGHT")) {
       return;
     }
 

@@ -18,6 +18,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * This class is responsible for loading and managing the messages configuration files.
@@ -51,7 +52,7 @@ public class MessagesConfig implements IReloadable {
     var shouldReplaceExistingMessage = plugin.isDevelop();
     var messages = findDefaultMessages().stream()
         .map(path -> new ResourceConfig(plugin, path, shouldReplaceExistingMessage, 2))
-        .toList();
+        .collect(Collectors.toList());
 
     for (ResourceConfig message : messages) {
       var lang = extractLangFrom(message.getFile().getName());

@@ -1,5 +1,6 @@
 package core.controllers.guis;
 
+import core.configs.client.resources.MessagesConfig;
 import core.controllers.guis.commons.IntPickerGUI;
 import core.controllers.guis.themes.global.GlobalTheme;
 import core.items.BarrierBlockSelectorWand;
@@ -28,6 +29,7 @@ public class BarrierEditGUI extends PluginGUI {
   private final BarriersService barriersService;
   private final BarrierBlockSelectorWand barrierBlockSelectorWand;
   private final GlobalTheme globalTheme;
+  private final MessagesConfig messagesConfig;
 
   public void open(Player player, Barrier barrier) {
     new Menu(player, barrier).open();
@@ -82,17 +84,8 @@ public class BarrierEditGUI extends PluginGUI {
     private Item updateStructure() {
       var item = new StackBuilder(Material.SCAFFOLDING)
           .withName(TextUtils.colorize("&eUpdate structure"))
-          .withLore(TextUtils.centered(
-              """
-                  &dLeft-Click &7to update the
-                  &7barrier structure blocks
-
-                  &dRight-Click &7to switch to
-                  &7single block barrier wall
-                  
-                  &4&l!&c Switching will reset the current mask
-                  """
-          )).toItemStack();
+          .withLore(TextUtils.formatted(messagesConfig.get("barriers.editor.update-structure.description")))
+          .toItemStack();
 
       return Item.of(item)
           .priority(() -> barrier.getStructure() == null ? -1 : 1)
@@ -115,19 +108,8 @@ public class BarrierEditGUI extends PluginGUI {
     private Item updateMaterial() {
       Supplier<ItemStack> item = () -> new StackBuilder(barrier.getFillBlock().getMaterial())
           .withName(TextUtils.colorize("&eChange Material"))
-          .withLore(TextUtils.centered(
-              """
-                  &dLeft-Click &7to get a wand that is able
-                  &7to change the barrier wall material
-
-                  &dRight-Click &7(ADVANCED) to switch
-                  &7to multiple blocks type barrier wall
-                  
-                  &4&l! &cBefore switching it needs a mask of bedrock
-                  &cto be able to tell which block should be part of
-                  &cthe barrier structure
-                  """
-          )).toItemStack();
+          .withLore(TextUtils.formatted(messagesConfig.get("barriers.editor.update-material.description")))
+          .toItemStack();
 
       return Item.of(item)
           .priority(() -> barrier.getStructure() != null ? -1 : 1)

@@ -1,5 +1,6 @@
 package core.controllers.guis;
 
+import core.configs.client.resources.MessagesConfig;
 import core.controllers.guis.themes.global.GlobalTheme;
 import core.model.Barrier;
 import core.services.BarriersService;
@@ -16,6 +17,7 @@ import utils.TextUtils;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @LightWired
 @RequiredArgsConstructor
@@ -23,6 +25,7 @@ public class BarrierListGUI extends PluginGUI {
 
   private final BarriersService barriersService;
   private final GlobalTheme globalTheme;
+  private final MessagesConfig messagesConfig;
 
   public void open(Player player) {
     new Menu(player).open();
@@ -47,7 +50,7 @@ public class BarrierListGUI extends PluginGUI {
     private List<Item> barriers() {
       return barriersService.findAll().stream()
           .map(this::barrier)
-          .toList();
+          .collect(Collectors.toList());
     }
 
     private Item barrier(Barrier barrier) {
@@ -62,13 +65,8 @@ public class BarrierListGUI extends PluginGUI {
 
       var item = new StackBuilder(Material.BOOK)
           .withName(TextUtils.colorize("&6" + barrier.getId()))
-          .withLore(TextUtils.centered(
-              """
-                  &eBarrier type&7: &b{type}
-                  &eActivation range&7: &b{range}
-                  &eLocation&7: &b{loc_w} &8  &b{loc_x}&8X &b{loc_y}&8Y &b{loc_z}&8Z
-                  """, placeholders
-          )).toItemStack();
+          .withLore(TextUtils.formatted(messagesConfig.get("barriers.selector.entry.description", placeholders)))
+          .toItemStack();
 
       return Item.of(item).clickHandler(
           e -> PluginGUI.get(BarrierEditGUI.class).open(player, barrier)

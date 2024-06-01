@@ -34,8 +34,8 @@ public class CommandsConfig extends BrigadierManager<CommandSender> {
   @Override
   @SneakyThrows
   protected void handleException(CommandSender source, Exception e) {
-    if (e instanceof PluginException pl) {
-      Messenger.log(source, messages.get(pl.getId(), pl.getArguments()));
+    if (e instanceof PluginException) {
+      Messenger.log(source, messages.get(((PluginException) e).getId(), ((PluginException) e).getArguments()));
     } else if (e instanceof CommandSyntaxException) {
       Messenger.log(source, e.getMessage());
     } else {

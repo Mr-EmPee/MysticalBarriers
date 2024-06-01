@@ -4,13 +4,12 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
-import com.google.gson.ToNumberPolicy;
+import core.configs.server.db.nitrite.plugins.mappers.gson.converters.NitriteIdConverter;
 import org.dizitart.no2.NitriteConfig;
 import org.dizitart.no2.collection.Document;
 import org.dizitart.no2.collection.NitriteId;
 import org.dizitart.no2.common.mapper.NitriteMapper;
 import org.dizitart.no2.exceptions.ObjectMappingException;
-import core.configs.server.db.nitrite.plugins.mappers.gson.converters.NitriteIdConverter;
 
 import java.util.Map;
 
@@ -21,7 +20,6 @@ public class GsonMapperPlugin implements NitriteMapper {
 
   public GsonMapperPlugin(GsonBuilder gson) {
     gson.registerTypeAdapter(NitriteId.class, new NitriteIdConverter());
-    gson.setObjectToNumberStrategy(ToNumberPolicy.LONG_OR_DOUBLE);
     gson.serializeNulls();
 
     this.gson = gson.create();
