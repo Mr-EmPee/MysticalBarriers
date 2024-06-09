@@ -3,11 +3,13 @@ package core.handlers;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.wrappers.WrappedBlockData;
 import io.github.empee.lightwire.annotations.LightWired;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -20,12 +22,10 @@ import core.services.BarriersService;
 public class BarrierProtectionsHandler extends PacketAdapter implements Listener {
 
   private final BarriersService barriersService;
-  private final JavaPlugin plugin;
 
   public BarrierProtectionsHandler(JavaPlugin plugin, BarriersService barriersService) {
     super(plugin, PacketType.Play.Server.BLOCK_CHANGE);
 
-    this.plugin = plugin;
     this.barriersService = barriersService;
   }
 
@@ -73,7 +73,7 @@ public class BarrierProtectionsHandler extends PacketAdapter implements Listener
       return;
     }
 
-    event.setCancelled(true);
+    packet.getBlockData().write(0, WrappedBlockData.createData(barrier.getBlockAt(location)));
   }
 
 }
