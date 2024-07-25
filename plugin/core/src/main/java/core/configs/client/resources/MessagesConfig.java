@@ -2,8 +2,11 @@ package core.configs.client.resources;
 
 import io.github.empee.lightwire.annotations.LightWired;
 import lombok.SneakyThrows;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.Nullable;
 import core.MysticalBarriers;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import utils.IReloadable;
 import utils.Messenger;
 import utils.files.JarUtils;
@@ -34,11 +37,13 @@ public class MessagesConfig implements IReloadable {
   private final PluginConfig pluginConfig;
   private final MysticalBarriers plugin;
   private final Map<String, List<ResourceConfig>> languages = new HashMap<>();
+  private final Map<String, List<ResourceConfig.Migrator>> migrators = new HashMap<>();
 
   public MessagesConfig(PluginConfig pluginConfig, MysticalBarriers plugin) {
     this.pluginConfig = pluginConfig;
     this.plugin = plugin;
 
+    loadMigrators();
     loadMessages();
   }
 
@@ -48,11 +53,17 @@ public class MessagesConfig implements IReloadable {
     loadMessages();
   }
 
+  private void loadMigrators() {
+    //Nothing
+  }
+
   private void loadMessages() {
     var shouldReplaceExistingMessage = plugin.isDevelop();
     var messages = findDefaultMessages().stream()
-        .map(path -> new ResourceConfig(plugin, path, shouldReplaceExistingMessage, 2))
-        .collect(Collectors.toList());
+        .map(path -> {
+          var migrators = this.migrators.getOrDefault(path, Collections.emptyList());
+          return new ResourceConfig(plugin, path, shouldReplaceExistingMessage, migrators);
+        }).collect(Collectors.toList());
 
     for (ResourceConfig message : messages) {
       var lang = extractLangFrom(message.getFile().getName());

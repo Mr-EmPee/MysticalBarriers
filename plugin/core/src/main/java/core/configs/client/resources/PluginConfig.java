@@ -5,6 +5,8 @@ import core.MysticalBarriers;
 import utils.Messenger;
 import utils.files.ResourceConfig;
 
+import java.util.List;
+
 /**
  * The plugin configuration class.
  */
@@ -13,7 +15,7 @@ import utils.files.ResourceConfig;
 public class PluginConfig extends ResourceConfig {
 
   public PluginConfig(MysticalBarriers plugin) {
-    super(plugin, "configs/config.yml", plugin.isDevelop(), 2);
+    super(plugin, "configs/config.yml", plugin.isDevelop(), List.of());
 
     Messenger.setPrefix(getPrefix());
   }

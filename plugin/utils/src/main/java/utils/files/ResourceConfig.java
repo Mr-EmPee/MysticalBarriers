@@ -9,8 +9,11 @@ import utils.IReloadable;
 import utils.Messenger;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class facilitates the management of a resource file typically used for configuration
@@ -27,6 +30,8 @@ public class ResourceConfig implements IReloadable {
   @Getter
   private YamlConfiguration config;
 
+  private final List<Migrator> migrators;
+
   private static void patch(ConfigurationSection target, ConfigurationSection patch) {
     for (String key : patch.getKeys(false)) {
       if (!target.contains(key)) {
@@ -41,39 +46,52 @@ public class ResourceConfig implements IReloadable {
     }
   }
 
+  public interface Migrator {
+    /**
+     * @return The version the migrator does produce in output
+     */
+    int migrate(int currentVersion, YamlConfiguration config);
+  }
+
   /**
    * Copy and load the resource file from the JAR to the file system if it does not exist.
    */
   @SneakyThrows
-  public ResourceConfig(JavaPlugin plugin, String path, boolean replace, int version) {
-    this.file = new File(plugin.getDataFolder(), path);
+  public ResourceConfig(JavaPlugin plugin, String resourcePath, boolean replace, List<Migrator> migrators) {
+    this.file = new File(plugin.getDataFolder(), resourcePath);
+    this.migrators = migrators;
 
     if (replace || !file.exists()) {
       Files.createDirectories(file.getParentFile().toPath());
-      plugin.saveResource(path, true);
+      plugin.saveResource(resourcePath, true);
 
-      Messenger.log("Extracted '{}' from JAR to plugin directory", path);
+      Messenger.log("Extracted '{}' from JAR to plugin directory", resourcePath);
     }
 
     config = YamlConfiguration.loadConfiguration(file);
-    if (getVersion() < version) {
-      Messenger.log("Updating config {} to version {}", file, version);
-      migrate(version);
+    updateConfiguration(plugin, resourcePath);
+  }
 
-      var patchConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(plugin.getResource(path)));
-      patch(config, patchConfig);
+  private void updateConfiguration(JavaPlugin plugin, String resourcePath) throws IOException {
+    var defaultConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(plugin.getResource(resourcePath)));
 
-      config.set("version", version);
-      config.save(file);
+    int defaultVersion = defaultConfig.getInt("version", 1);
+    int currentVersion = config.getInt("version", 1);
+
+    if (currentVersion >= defaultVersion) {
+      return;
     }
-  }
 
-  protected void migrate(int targetVersion) {
+    Messenger.log("Updating config {} to version {}", file, defaultVersion);
 
-  }
+    for (Migrator migrator : migrators) {
+      currentVersion = migrator.migrate(currentVersion, config);
+    }
 
-  public int getVersion() {
-    return config.getInt("version", 1);
+    patch(config, defaultConfig);
+
+    config.set("version", defaultVersion);
+    config.save(file);
   }
 
   /**
