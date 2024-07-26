@@ -2,6 +2,9 @@ package core.configs.client.resources;
 
 import io.github.empee.lightwire.annotations.LightWired;
 import core.MysticalBarriers;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import utils.Messenger;
 import utils.files.ResourceConfig;
 

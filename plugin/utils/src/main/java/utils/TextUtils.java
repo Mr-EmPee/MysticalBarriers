@@ -1,7 +1,9 @@
 package utils;
 
 import lombok.experimental.UtilityClass;
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
 import java.util.Collections;
 import java.util.Map;
@@ -13,8 +15,18 @@ import java.util.Map;
 @UtilityClass
 public class TextUtils {
 
+  private final LegacyComponentSerializer legacySerializer = LegacyComponentSerializer.legacy('&');
+  private final MiniMessage miniMessage = MiniMessage.miniMessage();
+
   public String colorize(String text) {
-    return ChatColor.translateAlternateColorCodes('&', text);
+    return legacySerializer.serialize(toComponent(text));
+  }
+
+  public Component toComponent(String input) {
+    Component component = legacySerializer.deserialize(input);
+    input = miniMessage.serialize(component);
+
+    return miniMessage.deserialize(input);
   }
 
   public String[] formatted(String text) {

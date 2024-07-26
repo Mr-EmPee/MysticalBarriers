@@ -3,6 +3,7 @@ package utils;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.UtilityClass;
+import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.slf4j.Logger;
@@ -18,6 +19,8 @@ public class Messenger {
   private final JavaPlugin plugin = JavaPlugin.getProvidingPlugin(Messenger.class);
   private final Logger consoleLogger = LoggerFactory.getLogger(plugin.getName());
 
+  private final BukkitAudiences audience = BukkitAudiences.create(plugin);
+
   @Getter @Setter
   private String prefix = "";
 
@@ -28,7 +31,7 @@ public class Messenger {
       msg = msg.replaceFirst("\\{}", o.toString());
     }
 
-    sender.sendMessage(TextUtils.colorize(msg));
+    audience.sender(sender).sendMessage(TextUtils.toComponent(msg));
   }
 
   public void log(String msg, Object... obj) {
@@ -39,8 +42,9 @@ public class Messenger {
     consoleLogger.warn(msg, obj);
   }
 
-  public void error(String msg, Object... obj) {
+  public void error(String msg, Throwable throwable, Object... obj) {
     consoleLogger.error(msg, obj);
+    throwable.printStackTrace();
   }
 
   public void error(String msg, Throwable exception) {

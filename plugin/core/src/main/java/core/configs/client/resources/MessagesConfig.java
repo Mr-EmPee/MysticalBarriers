@@ -54,7 +54,17 @@ public class MessagesConfig implements IReloadable {
   }
 
   private void loadMigrators() {
-    //Nothing
+    migrators.put("messages/generic.yml", List.of(
+        ((currentVersion, config) -> {
+          if (currentVersion > 2) {
+            return currentVersion;
+          }
+
+          config.set("errors", null);
+
+          return 3;
+        })
+    ));
   }
 
   private void loadMessages() {
@@ -104,7 +114,7 @@ public class MessagesConfig implements IReloadable {
   private List<ResourceConfig> getLanguage(String language) {
     var messages = languages.get(language);
     if (messages == null) {
-      Messenger.error("Can't find messages for language '{}', falling back to default lang", language);
+      Messenger.warn("Can't find messages for language '{}', falling back to default lang", language);
       messages = languages.get(pluginConfig.getLang());
     }
 
