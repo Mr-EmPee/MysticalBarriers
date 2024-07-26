@@ -16,6 +16,8 @@ import utils.converters.BukkitGson;
 
 import java.io.Closeable;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 
 
 /**
@@ -27,11 +29,18 @@ public class NitriteConfig implements Closeable {
 
   private final Nitrite database;
 
-  public NitriteConfig(JavaPlugin plugin) {
+  public NitriteConfig(JavaPlugin plugin) throws IOException {
     Messenger.log("Connecting to the database...");
 
+    File database = new File(plugin.getDataFolder(), "mysticalbarriers-h2-v3.mv.db");
+    File oldDatabase = new File(plugin.getDataFolder(), "database.nitrite");
+
+    if (!database.exists() && oldDatabase.exists()) {
+      Files.move(oldDatabase.toPath(), database.toPath());
+    }
+
     var persistentStorage = MVStoreModule.withConfig()
-        .filePath(new File(plugin.getDataFolder(), "database.nitrite"))
+        .filePath(database)
         .build();
 
     var mappingModule = NitriteModule.module(new GsonMapperPlugin(BukkitGson.gson()));
