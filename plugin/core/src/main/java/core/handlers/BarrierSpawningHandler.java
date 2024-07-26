@@ -13,6 +13,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import core.model.Barrier;
 import core.packets.MultiBlockPacket;
 import core.services.BarriersService;
+import utils.LocationUtils;
 import utils.regions.CubicRegion;
 
 import java.util.HashMap;
@@ -28,11 +29,11 @@ public class BarrierSpawningHandler implements Listener {
 
   @EventHandler
   public void onPlayerMove(PlayerMoveEvent event) {
-    if(event.getFrom().toBlockLocation().toVector().equals(event.getTo().toBlockLocation().toVector())) {
+    if(event.getFrom().toVector().equals(event.getTo().toVector())) {
       return;
     }
 
-    refreshBarriers(event.getTo().toBlockLocation(), event.getPlayer());
+    refreshBarriers(LocationUtils.toBlockLocation(event.getTo()), event.getPlayer());
   }
 
   @EventHandler

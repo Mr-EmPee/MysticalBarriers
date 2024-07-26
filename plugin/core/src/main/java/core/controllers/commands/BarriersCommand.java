@@ -1,68 +1,72 @@
 package core.controllers.commands;
 
-import com.mojang.brigadier.arguments.StringArgumentType;
-import com.mojang.brigadier.builder.ArgumentBuilder;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import core.controllers.commands.arguments.BarrierArgumentType;
+import com.github.empee.commands.CommandNode;
+import com.github.empee.commands.arguments.StringArgument;
+import core.MysticalBarriers;
+import core.controllers.commands.arguments.BarrierArgument;
 import core.controllers.guis.BarrierEditGUI;
-import io.github.empee.colonel.BrigadierCommand;
+import core.controllers.guis.BarrierListGUI;
+import core.controllers.guis.PluginGUI;
+import core.items.RegionSelectorWand;
+import core.registries.Permissions;
+import core.services.BarriersService;
 import io.github.empee.lightwire.annotations.LightWired;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.command.CommandSender;
-import core.MysticalBarriers;
-import core.controllers.guis.BarrierListGUI;
-import core.controllers.guis.PluginGUI;
-import core.model.Barrier;
-import core.registries.Permissions;
-import core.items.RegionSelectorWand;
-import core.services.BarriersService;
+import org.bukkit.entity.Player;
 import utils.Messenger;
 
 @LightWired
 @RequiredArgsConstructor
-public class BarriersCommand extends BrigadierCommand<CommandSender> {
+public class BarriersCommand implements ICommand {
 
   private final MysticalBarriers plugin;
   private final RegionSelectorWand selectionWand;
   private final BarriersService barriersService;
 
-  @Override
-  public LiteralArgumentBuilder<CommandSender> get() {
-    return literal(MysticalBarriers.COMMAND)
-        .requires(s -> s.hasPermission(Permissions.ADMIN))
-        .then(wand())
-        .then(create())
-        .then(modify())
-        .then(list())
-        .then(reload());
+  public CommandNode<CommandSender> get() {
+    return CommandNode.of("mysticalbarriers", CommandSender.class)
+        .withPermission(s -> s.hasPermission(Permissions.ADMIN))
+        .withAliases("mb")
+        .withChild(wand())
+        .withChild(create())
+        .withChild(modify())
+        .withChild(list())
+        .withChild(reload());
   }
 
-  public ArgumentBuilder<CommandSender, ?> wand() {
-    return node(literal("wand"))
-        .executes(c -> {
-          var player = player(c);
+  public CommandNode<Player> wand() {
+    return CommandNode.of("wand", Player.class)
+        .withExecutor(c -> {
+          Player player = c.getSource();
+
           player.getInventory().addItem(selectionWand.get());
           Messenger.log(player, "&aSelection wand given");
-        }).build();
+        });
   }
 
-  public ArgumentBuilder<CommandSender, ?> modify() {
-    return node(literal("edit"), arg("barrier", BarrierArgumentType.barrier(barriersService)))
-        .executes(c -> PluginGUI.get(BarrierEditGUI.class).open(player(c), c.getArgument("barrier", Barrier.class)))
-        .build();
+  public CommandNode<Player> modify() {
+    return CommandNode.of("edit", Player.class)
+        .withArgs(BarrierArgument.of("barrier"))
+        .withExecutor(c -> {
+          PluginGUI.get(BarrierEditGUI.class).open(c.getSource(), c.get("barrier"));
+        });
   }
 
-  public ArgumentBuilder<CommandSender, ?> list() {
-    return node(literal("list"))
-        .executes(c -> PluginGUI.get(BarrierListGUI.class).open(player(c)))
-        .build();
+  public CommandNode<Player> list() {
+    return CommandNode.of("list", Player.class)
+        .withExecutor(c -> {
+          PluginGUI.get(BarrierListGUI.class).open(c.getSource());
+        });
   }
 
-  public ArgumentBuilder<CommandSender, ?> create() {
-    return node(literal("create"), arg("id", StringArgumentType.string()))
-        .executes(c -> {
-          var player = player(c);
-          var id = c.getArgument("id", String.class);
+  public CommandNode<Player> create() {
+    return CommandNode.of("create", Player.class)
+        .withArgs(StringArgument.of("id"))
+        .withExecutor(c -> {
+          Player player = c.getSource();
+          String id = c.get("id");
+
           if (barriersService.findById(id).isPresent()) {
             Messenger.log(player, "&cA barrier with that id already exists");
             return;
@@ -78,13 +82,16 @@ public class BarriersCommand extends BrigadierCommand<CommandSender> {
           selectionWand.invalidate(player.getUniqueId());
 
           Messenger.log(player, "&aBarrier created");
-        }).build();
+        });
   }
 
-  public ArgumentBuilder<CommandSender, ?> reload() {
-    return node(literal("reload"))
-        .executes(c -> plugin.reload())
-        .build();
+  public CommandNode<CommandSender> reload() {
+    return CommandNode.of("reload", CommandSender.class)
+        .withExecutor(c -> {
+          plugin.reload();
+          
+          Messenger.log(c.getSource(), "&aThe plugin has been reloaded");
+        });
   }
 
 }

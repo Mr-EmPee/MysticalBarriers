@@ -1,5 +1,21 @@
-version: 2
+version: 3
 
-errors:
-  internal_error: "&cAn internal error occurred (╯°□°)╯︵ ┻━┻"
-  barrier_not_found: "&cBarrier not found"
+commands:
+  errors:
+    execution_error: "&cUnkown error while executing the command"
+    command_unk: "&cUnknown command"
+    illegal_sender: "&cSender type not allowed"
+    missing_permission: "&cNot enough permission"
+    not_executable: "&cNot a full command"
+    syntax_error: "&cUnable to parse the command"
+    arg_not_found: "&cThe command is missing an argument"
+    arg_parsing_error:
+      unk: "&cUnknown error while parsing argument"
+      uuid_syntax_error: "&cThe uuid '&e{input}&c' isn't valid"
+      player_not_online: "&cThe player '&e{input}&c' isn't online"
+      int_not_valid: "&cThe value '&e{input}&c' isn't an integer"
+      double_not_valid: "&cThe value '&e{input}&c' isn't a double"
+      number_too_high: "&cThe number '&e{input}&c' is too high"
+      number_too_low: "&cThe number '&e{input}&c' is too low"
+      enum_not_found: "&cThe value '&e{input}&c' isn't valid"
+      barrier_not_found: "&cThe barrier '&e{input}&c' doesn't exists"

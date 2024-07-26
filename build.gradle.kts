@@ -33,8 +33,6 @@ tasks.runServer {
 tasks.shadowJar {
   isEnableRelocation = isRelease()
   relocationPrefix = project.group.toString()
-
-  relocate("net.kyori.adventure", "$relocationPrefix.net.kyori.adventure")
 }
 
 fun isRelease(): Boolean {

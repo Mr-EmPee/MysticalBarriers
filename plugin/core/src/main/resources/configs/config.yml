@@ -3,7 +3,7 @@ version: 2
 lang: "en"
 
 messages:
-  prefix: "&f&l(&6&l!&f&l) &r "
+  prefix: "&f&l(&6&l!&f&l) &r"
 
 # Prevent chorus fruit teleportation within 8 blocks of a barrier
 block-chorus-teleportation: true

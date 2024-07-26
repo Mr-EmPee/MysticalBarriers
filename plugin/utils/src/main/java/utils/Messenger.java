@@ -19,8 +19,6 @@ public class Messenger {
   private final JavaPlugin plugin = JavaPlugin.getProvidingPlugin(Messenger.class);
   private final Logger consoleLogger = LoggerFactory.getLogger(plugin.getName());
 
-  private final BukkitAudiences audience = BukkitAudiences.create(plugin);
-
   @Getter @Setter
   private String prefix = "";
 
@@ -31,7 +29,7 @@ public class Messenger {
       msg = msg.replaceFirst("\\{}", o.toString());
     }
 
-    audience.sender(sender).sendMessage(TextUtils.toComponent(msg));
+    sender.sendMessage(TextUtils.colorize(msg));
   }
 
   public void log(String msg, Object... obj) {

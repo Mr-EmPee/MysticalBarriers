@@ -15,6 +15,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
+import utils.LocationUtils;
 import utils.Messenger;
 import utils.TextUtils;
 import utils.regions.CubicRegion;
@@ -65,7 +66,7 @@ public class RegionSelectorWand extends PluginItem implements Listener {
       return;
     }
 
-    var location = event.getClickedBlock().getLocation().toBlockLocation();
+    var location = LocationUtils.toBlockLocation(event.getClickedBlock().getLocation());
 
     select(player, location);
     Messenger.log(player, "&aSelected point at &e{} {} {}", location.getX(), location.getY(), location.getZ());

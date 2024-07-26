@@ -17,29 +17,29 @@ import java.io.Closeable;
 
 public class MysticalBarriers extends JavaPlugin {
 
-  public static final String COMMAND = "mb";
-  private final LightWire iocContainer = LightWire.of(getClass().getPackage());
+  private static LightWire IOC;
 
   @Override
   public void onEnable() {
     EasyGUI.init(this);
 
-    iocContainer.addComponent(this);
-    iocContainer.addComponent(new BukkitSyncedExecutor(this));
-    iocContainer.addComponent(new BukkitAsyncExecutor(this));
+    IOC = LightWire.of(getClass().getPackage());
+    IOC.addComponent(this);
+    IOC.addComponent(new BukkitSyncedExecutor(this));
+    IOC.addComponent(new BukkitAsyncExecutor(this));
 
-    iocContainer.load();
+    IOC.load();
   }
 
   public void reload() {
-    for (IReloadable reloadable : iocContainer.getInstances(IReloadable.class)) {
+    for (IReloadable reloadable : IOC.getInstances(IReloadable.class)) {
       reloadable.reload();
     }
   }
 
   @Override
   public void onDisable() {
-    for (Closeable closeable : iocContainer.getInstances(Closeable.class)) {
+    for (Closeable closeable : IOC.getInstances(Closeable.class)) {
       try {
         closeable.close();
       } catch (Exception e) {
@@ -53,6 +53,10 @@ public class MysticalBarriers extends JavaPlugin {
    */
   public boolean isDevelop() {
     return getDescription().getVersion().endsWith("-SNAPSHOT");
+  }
+
+  public static <T> T getInstance(Class<T> clazz) {
+    return IOC.getInstances(clazz).get(0);
   }
 
 }
