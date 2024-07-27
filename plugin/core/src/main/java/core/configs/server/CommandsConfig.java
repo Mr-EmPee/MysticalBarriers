@@ -9,15 +9,12 @@ import com.github.empee.commands.spigot.BukkitInjector;
 import core.configs.client.resources.MessagesConfig;
 import core.controllers.commands.ICommand;
 import io.github.empee.lightwire.annotations.LightWired;
-import lombok.extern.slf4j.Slf4j;
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 import utils.Messenger;
 
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 @LightWired
 public class CommandsConfig {

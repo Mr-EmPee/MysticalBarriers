@@ -2,7 +2,6 @@ package core.controllers.guis.themes.global;
 
 import com.cryptomorin.xseries.XMaterial;
 import core.configs.client.resources.MessagesConfig;
-import io.github.empee.easygui.guis.inventories.InventoryGUI;
 import io.github.empee.easygui.model.inventories.Item;
 import io.github.empee.easygui.model.inventories.containers.ScrollableContainer;
 import io.github.empee.lightwire.annotations.LightWired;

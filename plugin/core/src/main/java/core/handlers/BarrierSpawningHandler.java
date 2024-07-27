@@ -1,5 +1,8 @@
 package core.handlers;
 
+import core.model.Barrier;
+import core.packets.MultiBlockPacket;
+import core.services.BarriersService;
 import io.github.empee.lightwire.annotations.LightWired;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Location;
@@ -10,9 +13,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import core.model.Barrier;
-import core.packets.MultiBlockPacket;
-import core.services.BarriersService;
 import utils.LocationUtils;
 import utils.regions.CubicRegion;
 

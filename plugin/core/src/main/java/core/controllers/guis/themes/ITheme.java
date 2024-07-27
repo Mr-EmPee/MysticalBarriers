@@ -1,9 +1,9 @@
 package core.controllers.guis.themes;
 
 import com.cryptomorin.xseries.XMaterial;
+import core.configs.client.resources.MessagesConfig;
 import io.github.empee.itembuilder.StackBuilder;
 import lombok.RequiredArgsConstructor;
-import core.configs.client.resources.MessagesConfig;
 import utils.TextUtils;
 
 import java.util.Collections;

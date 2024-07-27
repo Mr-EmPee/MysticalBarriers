@@ -1,7 +1,7 @@
 package core.configs.server;
 
-import io.github.empee.lightwire.annotations.LightWired;
 import core.MysticalBarriers;
+import io.github.empee.lightwire.annotations.LightWired;
 import utils.Messenger;
 import utils.Metrics;
 

@@ -8,9 +8,6 @@ import com.comphenix.protocol.wrappers.BlockPosition;
 import com.comphenix.protocol.wrappers.ChunkCoordIntPair;
 import com.comphenix.protocol.wrappers.MultiBlockChangeInfo;
 import com.comphenix.protocol.wrappers.WrappedBlockData;
-
-import java.util.ArrayList;
-
 import lombok.SneakyThrows;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -18,6 +15,8 @@ import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 import utils.ServerVersion;
+
+import java.util.ArrayList;
 
 public final class MultiBlockPacket {
 

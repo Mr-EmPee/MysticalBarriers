@@ -1,12 +1,9 @@
 package core.configs.client.resources;
 
+import core.MysticalBarriers;
 import io.github.empee.lightwire.annotations.LightWired;
 import lombok.SneakyThrows;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.Nullable;
-import core.MysticalBarriers;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import utils.IReloadable;
 import utils.Messenger;
 import utils.files.JarUtils;

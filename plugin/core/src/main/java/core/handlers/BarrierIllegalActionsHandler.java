@@ -1,5 +1,8 @@
 package core.handlers;
 
+import core.configs.client.resources.PluginConfig;
+import core.model.Barrier;
+import core.services.BarriersService;
 import io.github.empee.lightwire.annotations.LightWired;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Location;
@@ -7,9 +10,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerTeleportEvent;
-import core.configs.client.resources.PluginConfig;
-import core.model.Barrier;
-import core.services.BarriersService;
 import utils.regions.CubicRegion;
 
 import java.util.ArrayList;

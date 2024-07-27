@@ -1,10 +1,7 @@
 package core.configs.client.resources;
 
-import io.github.empee.lightwire.annotations.LightWired;
 import core.MysticalBarriers;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import io.github.empee.lightwire.annotations.LightWired;
 import utils.Messenger;
 import utils.files.ResourceConfig;
 
@@ -18,26 +15,9 @@ import java.util.List;
 public class PluginConfig extends ResourceConfig {
 
   public PluginConfig(MysticalBarriers plugin) {
-    super(plugin, "configs/config.yml", plugin.isDevelop(), List.of(
-        fromV2ToV3()
-    ));
+    super(plugin, "configs/config.yml", plugin.isDevelop(), List.of());
 
     Messenger.setPrefix(getPrefix());
-  }
-
-  private static Migrator fromV2ToV3() {
-    return (currentVersion, config) -> {
-      if (currentVersion > 2) {
-        return currentVersion;
-      }
-
-      String prefix = config.getString("messages.prefix");
-      Component prefixComponent = LegacyComponentSerializer.legacy('&').deserialize(prefix);
-
-      config.set("messages.prefix", MiniMessage.miniMessage().serialize(prefixComponent));
-
-      return 3;
-    };
   }
 
   public boolean blockChorusTp() {

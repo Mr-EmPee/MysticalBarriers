@@ -1,6 +1,8 @@
 package core.handlers;
 
 import core.configs.client.resources.PluginConfig;
+import core.model.Barrier;
+import core.services.BarriersService;
 import io.github.empee.lightwire.annotations.LightWired;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Location;
@@ -15,8 +17,6 @@ import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
-import core.model.Barrier;
-import core.services.BarriersService;
 import utils.regions.CubicRegion;
 
 import java.util.ArrayList;

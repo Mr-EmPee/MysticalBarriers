@@ -1,5 +1,8 @@
 package core.items;
 
+import core.model.Barrier;
+import core.registries.Permissions;
+import core.services.BarriersService;
 import io.github.empee.itembuilder.StackBuilder;
 import io.github.empee.itembuilder.utils.ItemstackUtils;
 import io.github.empee.lightwire.annotations.LightWired;
@@ -12,9 +15,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
-import core.model.Barrier;
-import core.registries.Permissions;
-import core.services.BarriersService;
 import utils.Messenger;
 import utils.TextUtils;
 
