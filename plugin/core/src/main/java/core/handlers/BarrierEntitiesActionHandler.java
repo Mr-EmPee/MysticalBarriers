@@ -61,10 +61,9 @@ public class BarrierEntitiesActionHandler extends BukkitRunnable implements List
   public void onItemCollide(Item item) {
     var loc = item.getLocation();
 
-    item.teleport(item.getOrigin());
     item.setVelocity(new Vector());
 
-    loc.getWorld().playSound(loc, Sound.ENTITY_ENDERMAN_TELEPORT, 1, 1);
+    loc.getWorld().playSound(loc, Sound.BLOCK_BAMBOO_HIT, 1, 1);
   }
 
   @Override
