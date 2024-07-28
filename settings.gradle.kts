@@ -9,7 +9,6 @@ dependencyResolutionManagement {
   repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
 
   repositories {
-    mavenLocal()
     mavenCentral()
 
     maven("https://repo.dmulloy2.net/repository/public/")
