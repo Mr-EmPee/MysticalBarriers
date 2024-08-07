@@ -17,13 +17,12 @@ import java.io.Closeable;
 
 public class MysticalBarriers extends JavaPlugin {
 
-  private static LightWire IOC;
+  private static final LightWire IOC = LightWire.of(MysticalBarriers.class);
 
   @Override
   public void onEnable() {
     EasyGUI.init(this);
 
-    IOC = LightWire.of(getClass().getPackage());
     IOC.addComponent(this);
     IOC.addComponent(new BukkitSyncedExecutor(this));
     IOC.addComponent(new BukkitAsyncExecutor(this));
