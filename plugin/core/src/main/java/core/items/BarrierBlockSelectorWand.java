@@ -55,6 +55,12 @@ public class BarrierBlockSelectorWand extends PluginItem implements Listener {
     event.setCancelled(true);
     Player player = event.getPlayer();
 
+    var block = event.getClickedBlock() == null ? Material.AIR.createBlockData() : event.getClickedBlock().getBlockData();
+    if (block.getMaterial().isAir()) {
+      Messenger.log(player, "&cYou can't select AIR as a material!");
+      return;
+    }
+
     player.getInventory().remove(item);
 
     if (!player.hasPermission(Permissions.ADMIN)) {
@@ -62,7 +68,6 @@ public class BarrierBlockSelectorWand extends PluginItem implements Listener {
       return;
     }
 
-    var block = event.getClickedBlock() == null ? Material.AIR.createBlockData() : event.getClickedBlock().getBlockData();
     var barrier = getLinkedBarrier(item).orElse(null);
     if (barrier == null) {
       Messenger.log(player, "&cThe linked barrier doesn't exists anymore!");
