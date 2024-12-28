@@ -10,7 +10,7 @@ plugins {
 }
 
 group = "io.github.mr-empee.mysticalbarriers"
-version = findProperty("tag") ?: "2.3.1-SNAPSHOT"
+version = findProperty("tag") ?: "2.3.2-SNAPSHOT"
 
 dependencies {
   implementation(project(":plugin:core"))
@@ -27,7 +27,7 @@ bukkit {
 }
 
 tasks.runServer {
-  minecraftVersion("1.16.5")
+  minecraftVersion("1.21.1")
 }
 
 tasks.shadowJar {
