@@ -3,7 +3,9 @@ package core.items;
 import io.github.empee.itembuilder.StackBuilder;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class PluginItem {
 
@@ -28,8 +30,15 @@ public abstract class PluginItem {
     return getVersion(item) != null;
   }
 
+  @Nullable
   protected Integer getVersion(ItemStack item) {
-    return item.getItemMeta().getPersistentDataContainer().get(id, PersistentDataType.INTEGER);
+    ItemMeta meta = item.getItemMeta();
+
+    if (meta == null) {
+      return null;
+    }
+
+    return meta.getPersistentDataContainer().get(id, PersistentDataType.INTEGER);
   }
 
 }
