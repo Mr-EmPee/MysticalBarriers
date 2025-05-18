@@ -11,6 +11,7 @@ import org.dizitart.no2.repository.annotations.Id;
 import org.jetbrains.annotations.Nullable;
 import utils.regions.CubicRegion;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -42,6 +43,7 @@ public class Barrier {
     }
 
     if (structureCache == null) {
+      structureCache = new HashMap<>();
       structure.forEach(b -> structureCache.put(b.getLocation(), b));
     }
 

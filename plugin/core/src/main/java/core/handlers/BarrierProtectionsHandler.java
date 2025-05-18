@@ -10,6 +10,7 @@ import io.github.empee.lightwire.annotations.LightWired;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -57,8 +58,8 @@ public class BarrierProtectionsHandler extends PacketAdapter implements Listener
     var player = event.getPlayer();
 
     Location location = packet.getBlockPositionModifier().read(0).toLocation(player.getWorld());
-    Block block = location.getBlock();
-    if (block.getType() != Material.AIR) {
+    Block serverBlock = location.getBlock();
+    if (serverBlock.getType() != Material.AIR) {
       return;
     }
 
@@ -71,7 +72,12 @@ public class BarrierProtectionsHandler extends PacketAdapter implements Listener
       return;
     }
 
-    packet.getBlockData().write(0, WrappedBlockData.createData(barrier.getBlockDataAt(location)));
+    BlockData barrierBlock = barrier.getBlockDataAt(location);
+    if (barrierBlock == null) {
+      return;
+    }
+
+    packet.getBlockData().write(0, WrappedBlockData.createData(barrierBlock));
   }
 
 }
