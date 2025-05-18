@@ -12,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import utils.regions.CubicRegion;
 
 import java.util.List;
+import java.util.Map;
 
 @Builder
 @Getter @Setter
@@ -29,19 +30,24 @@ public class Barrier {
   private BlockData fillBlock = DEFAULT_FILL_BLOCK;
   private List<Block> structure;
 
+  private transient Map<Location, Block> structureCache;
+
   @Builder.Default
   private int activationRange = 3;
 
   @Nullable
-  public BlockData getBlockAt(Location location) {
+  public BlockData getBlockDataAt(Location location) {
     if (structure == null) {
       return fillBlock;
     }
 
-    for (Block block : structure) {
-      if (location.equals(block.getLocation())) {
-        return block.getData();
-      }
+    if (structureCache == null) {
+      structure.forEach(b -> structureCache.put(b.getLocation(), b));
+    }
+
+    Block result = structureCache.get(location);
+    if (result != null) {
+      return result.getData();
     }
 
     return null;

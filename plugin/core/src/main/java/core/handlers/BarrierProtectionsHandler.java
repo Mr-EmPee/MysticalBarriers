@@ -71,7 +71,7 @@ public class BarrierProtectionsHandler extends PacketAdapter implements Listener
       return;
     }
 
-    packet.getBlockData().write(0, WrappedBlockData.createData(barrier.getBlockAt(location)));
+    packet.getBlockData().write(0, WrappedBlockData.createData(barrier.getBlockDataAt(location)));
   }
 
 }

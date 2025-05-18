@@ -65,7 +65,7 @@ public class BarrierSpawningHandler implements Listener {
       region.forEach(l -> {
         var serverBlock = l.getBlock();
         if (serverBlock.isEmpty()) {
-          var barrierBlock = barrier.getBlockAt(l);
+          var barrierBlock = barrier.getBlockDataAt(l);
           if (barrierBlock == null) {
             return;
           }
