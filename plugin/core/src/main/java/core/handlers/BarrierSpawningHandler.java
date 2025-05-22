@@ -50,18 +50,18 @@ public class BarrierSpawningHandler implements Listener {
   //TODO Async
   //TODO Despawn only out of range and spawn only new blocks
   private void refreshBarriers(Location loc, Player player) {
-    despawnBarriersNear(loc, player);
+    despawnBarriersNear(player);
     spawnBarriersNear(loc, player);
   }
 
-  private void spawnBarriersNear(Location loc, Player player) {
-    var newVisibleRegions = findRegionsWithinVisibleRange(loc);
+  private void spawnBarriersNear(Location center, Player player) {
+    var newVisibleRegions = findRegionsWithinVisibleRange(center);
     newVisibleRegions.forEach((barrier, region) -> {
       if (barriersService.isHidden(barrier, player)) {
         return;
       }
 
-      var packet = new MultiBlockPacket(loc, true);
+      var packet = new MultiBlockPacket();
       region.forEach(l -> {
         var serverBlock = l.getBlock();
         if (serverBlock.isEmpty()) {
@@ -80,11 +80,11 @@ public class BarrierSpawningHandler implements Listener {
     spawnedBarriers.put(player.getUniqueId(), newVisibleRegions);
   }
 
-  private void despawnBarriersNear(Location loc, Player player) {
+  private void despawnBarriersNear(Player player) {
     var lastVisibleRegions = spawnedBarriers.getOrDefault(player.getUniqueId(), new HashMap<>());
 
     lastVisibleRegions.forEach((barrier, region) -> {
-      var packet = new MultiBlockPacket(loc, true);
+      var packet = new MultiBlockPacket();
       region.forEach(l -> {
         if (l.getBlock().isEmpty()) {
           packet.addBlock(Material.AIR, l);

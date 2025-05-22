@@ -5,7 +5,10 @@ plugins {
 
 dependencies {
     compileOnly("org.spigotmc:spigot-api:1.16.5-R0.1-SNAPSHOT")
-    compileOnly("com.comphenix.protocol:ProtocolLib:4.8.0")
+
+    implementation(project(":plugin:versions:common"))
+    implementation(project(":plugin:versions:protocolib"))
+    implementation(project(":plugin:versions:spigot:19"))
 
     implementation(project(":plugin:utils"))
 
@@ -29,4 +32,4 @@ dependencies {
     implementation("com.github.cryptomorin:XSeries:9.7.0")
 }
 
-java.toolchain.languageVersion.set(JavaLanguageVersion.of(11))
+java.toolchain.languageVersion.set(JavaLanguageVersion.of(17))

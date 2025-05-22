@@ -20,14 +20,13 @@ bukkit {
     val bootstrap = "core.MysticalBarriers"
     main = if (isRelease()) "$group.$bootstrap" else bootstrap
 
-    softDepend = listOf("Multiverse-Core", "MultiWorld", "LuckPerms")
-    depend = listOf("ProtocolLib")
+    softDepend = listOf("ProtocolLib", "Multiverse-Core", "MultiWorld", "LuckPerms")
     load = PluginLoadOrder.POSTWORLD
     apiVersion = "1.16"
 }
 
 tasks.runServer {
-    minecraftVersion("1.21.4")
+    minecraftVersion("1.18.2")
 
     downloadPlugins {
         modrinth("luckperms", "v5.4.145-bukkit")

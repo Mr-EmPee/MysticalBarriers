@@ -3,6 +3,9 @@ rootProject.name = "MysticalBarriers"
 includeBuild("./gradle/build-logic")
 
 include(":plugin:utils")
+include(":plugin:versions:common")
+include(":plugin:versions:protocolib")
+include(":plugin:versions:spigot:19")
 include(":plugin:core")
 
 dependencyResolutionManagement {
